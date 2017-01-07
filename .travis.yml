@@ -13,3 +13,6 @@ install:
 
 script:
   - tox -e $TOX_ENV
+  - coverage run driver.py test
+
+after_success: coveralls
