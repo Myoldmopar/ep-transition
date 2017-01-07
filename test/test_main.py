@@ -1,5 +1,22 @@
+import sys
 import unittest
 from transition.filetype import TypeEnum
+from transition.idf.process import process_one_file
+import StringIO
+
+
+class TestIDFProcessing(unittest.TestCase):
+    def test_valid_idf(self):
+        idf_object = """
+Objecttype,
+object_name,
+something, !- with a comment
+
+,
+last field with space; ! and comment for fun
+"""
+        ret_value = process_one_file(StringIO.StringIO(idf_object))
+        self.assertEquals(1, len(ret_value))
 
 
 class TestA(unittest.TestCase):
