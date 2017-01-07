@@ -1,0 +1,1 @@
+This folder just holds IDF supporting classes/methods/etc.
