@@ -1,3 +1,2 @@
 class UnimplementedMethodException(Exception):
     pass
-
