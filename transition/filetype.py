@@ -1,3 +1,3 @@
 class TypeEnum(object):
-    IDF = -1
-    JSON = 0
+    IDF = 0
+    JSON = 1

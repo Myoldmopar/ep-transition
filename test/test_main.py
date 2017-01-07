@@ -1,10 +1,5 @@
-import os
-import sys
 import unittest
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-
-# from mypyopt.ReturnStateEnum import ReturnStateEnum
+from transition.filetype import TypeEnum
 
 
 class TestA(unittest.TestCase):
@@ -12,11 +7,12 @@ class TestA(unittest.TestCase):
         """
         Does test setup
         """
-	self.a = 1
-	self.b = 2
+        self.a = 1
+        self.b = 2
 
     def test_it(self):
         self.assertEqual(3, self.a+self.b)
+        self.assertEqual(0, TypeEnum.IDF)
 
 # allow execution directly as python tests/test_main.py
 if __name__ == '__main__':
