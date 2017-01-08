@@ -6,3 +6,6 @@ Documentation is hosted on [ReadTheDocs](http://energyplus-python-transition.rea
 
 ## Testing [![](https://travis-ci.org/Myoldmopar/ep-transition.svg?branch=master)](https://travis-ci.org/Myoldmopar/ep-transition)
 The source is tested using the python unittest framework.  To execute all the unit tests, just execute the test file (since it calls `unittest.main()`): `python test/test_main.py`.  The tests are also executed by [Travis CI](https://travis-ci.org/Myoldmopar/ep-transition).
+
+## Test Coverage [![Coverage Status](https://coveralls.io/repos/github/Myoldmopar/ep-transition/badge.svg?branch=master)](https://coveralls.io/github/Myoldmopar/ep-transition?branch=master)
+The unit testing code coverage is reported by Travis to Coveralls.
