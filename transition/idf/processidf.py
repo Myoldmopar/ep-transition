@@ -2,15 +2,27 @@ from idfobject import IDFObject
 from .. import inputprocessor
 from .. import exceptions
 
+import os
+
 
 class IDFProcessor(inputprocessor.InputFileProcessor):
 
-    def __init__(self, opened_file_object):
-        self.opened_file_object = opened_file_object
+    def __init__(self):
+        self.input_file_stream = None
 
-    def process_one_file(self):
+    def process_file_given_file_path(self, file_path):
+        if not os.path.exists(file_path):
+            raise exceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
+        self.input_file_stream = open(file_path, 'r')
+        return self.process_file()
+
+    def process_file_via_stream(self, input_file_stream):
+        self.input_file_stream = input_file_stream
+        return self.process_file()
+
+    def process_file(self):
         # phase 0: read in lines of file
-        lines = self.opened_file_object.readlines()
+        lines = self.input_file_stream.readlines()
 
         # phases 1 and 2: remove comments and blank lines
         lines_a = []

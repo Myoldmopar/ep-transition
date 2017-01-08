@@ -4,3 +4,7 @@ class UnimplementedMethodException(Exception):
 
 class MalformedIDFException(Exception):
     pass
+
+
+class ProcessingException(Exception):
+    pass
