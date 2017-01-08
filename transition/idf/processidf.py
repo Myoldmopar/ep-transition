@@ -3,7 +3,6 @@ from .. import inputprocessor
 
 
 class IDFProcessor(inputprocessor.InputFileProcessor):
-
     def process_one_file(self, opened_file_object):
         # phase 0: read in lines of file
         lines = opened_file_object.readlines()

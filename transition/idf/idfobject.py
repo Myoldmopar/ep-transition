@@ -13,8 +13,5 @@ class IDFObject(object):
             s += "  " + self.fields[-1] + ";\n"
         return s
 
-    def print_object(self):
-        print self.object_string()
-
     def write_object(self, file_object):
         file_object.write(self.object_string())
