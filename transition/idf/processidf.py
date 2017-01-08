@@ -3,9 +3,13 @@ from .. import inputprocessor
 
 
 class IDFProcessor(inputprocessor.InputFileProcessor):
-    def process_one_file(self, opened_file_object):
+
+    def __init__(self, opened_file_object):
+        self.opened_file_object = opened_file_object
+
+    def process_one_file(self):
         # phase 0: read in lines of file
-        lines = opened_file_object.readlines()
+        lines = self.opened_file_object.readlines()
 
         # phases 1 and 2: remove comments and blank lines
         lines_a = []
