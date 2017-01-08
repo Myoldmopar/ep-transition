@@ -57,16 +57,14 @@ def drive(argv, test_mode=False):
     if argv[1] == valid_args[0].cli_argument:  # test
         tests = unittest.TestLoader().discover('test')
         unittest.TextTestRunner().run(tests)
-        return 0
     elif argv[1] == valid_args[1].cli_argument:  # usage
         if not test_mode:  # pragma: no cover
             usage()
-        return 0
     elif argv[1] == valid_args[2].cli_argument:  # update
         input_file = argv[2]
         i = IDFProcessor()
         i.process_file_given_file_path(input_file)
-        return 0
+    return 0
 
 
 if __name__ == "__main__":

@@ -20,6 +20,25 @@ ObjectType,
         ret_value = processor.process_file_via_stream(StringIO.StringIO(idf_object))
         self.assertEquals(1, len(ret_value))
 
+    def test_indented_idf(self):
+        idf_object = """
+    ObjectType,
+    This Object Name,   !- Name
+          Descriptive Field,  !- Field Name
+\t3.4,                !- Numeric Field
+ ,                   !- Optional Blank Field
+ Final Value;        !- With Semicolon
+"""
+        processor = IDFProcessor()
+        ret_value = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(1, len(ret_value))
+
+    def test_one_line_idf(self):
+        idf_object = """ObjectType,This Object Name,Descriptive Field,3.4,,Final Value;"""
+        processor = IDFProcessor()
+        ret_value = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(1, len(ret_value))
+
     def test_valid_goofy_idf(self):
         idf_object = """
 Objecttype,
