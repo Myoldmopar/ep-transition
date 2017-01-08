@@ -1,6 +1,7 @@
-import unittest
-from transition.idf.processidf import IDFProcessor
 import StringIO
+import unittest
+
+from transition.idf.processidf import IDFProcessor
 
 
 class TestIDFProcessing(unittest.TestCase):
@@ -11,6 +12,7 @@ object_name,
 something, !- with a comment
 
 ,
+! here is a comment line
 last field with space; ! and comment for fun
 """
         processor = IDFProcessor()
