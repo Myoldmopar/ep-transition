@@ -1,5 +1,6 @@
 from idfobject import IDFObject
 from .. import inputprocessor
+from .. import exceptions
 
 
 class IDFProcessor(inputprocessor.InputFileProcessor):
@@ -25,9 +26,14 @@ class IDFProcessor(inputprocessor.InputFileProcessor):
                 elif exclamation > 0:
                     this_line = line_text[:exclamation]
                 if not this_line == "":
-                    lines_a.append(this_line)
+                    lines_a.append(this_line.strip())
 
-        # intermediates: join entire array and re-split by semicolon
+        # intermediate: check for malformed idf syntax
+        for l in lines_a:
+            if not (l.endswith(',') or l.endswith(';')):
+                raise exceptions.MalformedIDFException("IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
+
+        # intermediate: join entire array and re-split by semicolon
         idf_data_joined = ''.join(lines_a)
         idf_object_strings = idf_data_joined.split(";")
 
