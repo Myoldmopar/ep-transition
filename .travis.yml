@@ -9,7 +9,7 @@ env:
 install:
   - sudo apt-get install python-enchant -y
   - pip install --upgrade pip
-  - pip install tox coveralls
+  - pip install -r requirements.txt
 
 script:
   - tox -e $TOX_ENV
