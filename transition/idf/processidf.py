@@ -1,12 +1,11 @@
-from idfobject import IDFObject
-from .. import inputprocessor
-from .. import exceptions
-
 import os
+
+from idfobject import IDFObject
+from .. import exceptions
+from .. import inputprocessor
 
 
 class IDFProcessor(inputprocessor.InputFileProcessor):
-
     def __init__(self):
         self.input_file_stream = None
 

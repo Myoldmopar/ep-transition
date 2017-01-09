@@ -1,9 +1,9 @@
 import StringIO
-import unittest
 import os
+import unittest
 
-from transition.idf.processidf import IDFProcessor
 from transition.exceptions import MalformedIDFException, ProcessingException
+from transition.idf.processidf import IDFProcessor
 
 
 class TestIDFProcessingViaStream(unittest.TestCase):
@@ -76,7 +76,6 @@ something without a semicolon !- with a comment
 
 
 class TestIDFProcessingViaFile(unittest.TestCase):
-
     def test_valid_idf_file_simple(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "1ZoneEvapCooler.idf")

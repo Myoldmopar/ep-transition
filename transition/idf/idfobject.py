@@ -8,9 +8,12 @@ class IDFObject(object):
             s = self.object_name + ";\n"
         else:
             s = self.object_name + ",\n"
+            max_actual_field_length = len(max(self.fields, key=len))
+            max_max_field_length = 28
+            padding_size = min(max_actual_field_length + 1, max_max_field_length)
             for field in self.fields[:-1]:
-                s += "  " + field + ",\n"
-            s += "  " + self.fields[-1] + ";\n"
+                s += "  " + (field + ',').ljust(padding_size) + "!-\n"
+            s += "  " + (self.fields[-1] + ';').ljust(padding_size) + "!-\n"
         return s
 
     def write_object(self, file_object):
