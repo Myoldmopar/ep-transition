@@ -14,10 +14,10 @@ class TestIDFObject(unittest.TestCase):
         s = StringIO.StringIO()
         obj.write_object(s)
         expected_string = """Objecttype,
-  object_name,          !-
-  something,            !-
-  ,                     !-
-  last field with space;!-
+  object_name,             !-
+  something,               !-
+  ,                        !-
+  last field with space;   !-
 """
         self.assertEqual(expected_string, s.getvalue())
         tokens = ["Objecttypenofields"]
