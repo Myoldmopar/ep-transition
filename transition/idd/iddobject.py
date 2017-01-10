@@ -25,3 +25,10 @@ class IDDStructure:
         self.s_version = None
         self.single_line_objects = []
         self.groups = []
+
+    def get_object_by_type(self, type_to_get):
+        for g in self.groups:
+            for o in g.objects:
+                if o.name.upper() == type_to_get.upper():
+                    return o
+        return None

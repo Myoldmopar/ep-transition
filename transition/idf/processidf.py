@@ -7,6 +7,7 @@ from transition import inputprocessor
 
 class IDFProcessor(inputprocessor.InputFileProcessor):
     def __init__(self):
+        self.idf = None
         self.input_file_stream = None
 
     def process_file_given_file_path(self, file_path):
@@ -60,4 +61,14 @@ class IDFProcessor(inputprocessor.InputFileProcessor):
             object_details.append(nice_object)
             idf_objects.append(IDFObject(nice_object))
 
+        self.idf = idf_objects
         return idf_objects
+
+    def get_idf_objects_by_type(self, type_to_get):
+        return [i for i in self.idf if i.object_name.upper() == type_to_get.upper()]
+
+    def write_idf(self, idd_structure):
+        with open('/tmp/new_idf', 'w') as f:
+            for idf_obj in self.idf:
+                idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
+                f.write(idf_obj.object_string(idd_obj) + '\n')

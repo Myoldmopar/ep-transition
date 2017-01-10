@@ -1,8 +1,8 @@
 import os
 
-from transition.idd.iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
 from transition import exceptions
 from transition import inputprocessor
+from transition.idd.iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
 
 
 class CurrentReadType:
@@ -22,6 +22,7 @@ class CurrentReadType:
 
 class IDDProcessor(inputprocessor.InputFileProcessor):
     def __init__(self):
+        self.idd = None
         self.idd_file_stream = None
         self.file_path = None
         self.group_flag_string = "\\group"
@@ -82,18 +83,18 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
     def process_file(self):
 
         # flags and miscellaneous variables
-        line_index = 0  # 1-based counter for the current line of the file
+        line_index = 1  # 1-based counter for the current line of the file
         last_field_for_object = False  # this will be the last field if a semicolon is encountered
 
         # variables used as we are building the input structure
-        idd_details = IDDStructure(self.file_path)  # empty overall IDD structure
+        self.idd = IDDStructure(self.file_path)  # empty overall IDD structure
         cur_group = None  # temporary placeholder for an IDD group
         cur_object = None  # temporary placeholder for an IDD object
         cur_field = None  # temporary placeholder for an IDD field
         cur_obj_meta_data_type = None  # temporary placeholder for the type of object metadata encountered
 
         # variables related to building and processing tokens
-        token_builder = ''  # constantly adjusting stringbuilder holding the current token
+        token_builder = ''
 
         # state machine variables
         read_status = CurrentReadType.ReadAnything  # current state machine reading status
@@ -152,13 +153,14 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                 if peeked_char == '\n':
                     # first update the previous group
                     if cur_group is not None:
-                        idd_details.groups.append(cur_group)
+                        self.idd.groups.append(cur_group)
                     group_declaration = token_builder
                     group_flag_index = group_declaration.find(self.group_flag_string)
-                    if group_flag_index == -1:
+                    if group_flag_index == -1:  # pragma: no cover
                         # add error to error report
-                        raise exceptions.ProcessingException(  # pragma: no cover
-                            "Group keyword not found where expected, line=" + str(line_index))  # pragma: no cover
+                        raise exceptions.ProcessingException(
+                            "Group keyword not found where expected",
+                            line_index=line_index)
                     else:
                         group_declaration = group_declaration[len(self.group_flag_string):]
                     cur_group = IDDGroup(group_declaration.strip())
@@ -183,13 +185,14 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     # since this whole object is a single line, we can just add it directly to the current group
                     object_title = token_builder
                     # this is added to singleline objects because CurGroup isn't instantiated yet, should fix
-                    idd_details.single_line_objects.append(object_title)
+                    self.idd.single_line_objects.append(object_title)
                     token_builder = ''  # to clear the builder
                     self.read_one_char()  # to clear the semicolon
                     read_status = CurrentReadType.ReadAnything
-                elif peeked_char in ['\n', '!']:
-                    raise exceptions.ProcessingException(  # pragma: no cover
-                        "An object name was not properly terminated by a comma or semicolon; line=" + str(line_index))  # pragma: no cover
+                elif peeked_char in ['\n', '!']:  # pragma: no cover
+                    raise exceptions.ProcessingException(
+                        "An object name was not properly terminated by a comma or semicolon",
+                        line_index=line_index)
 
             elif read_status == CurrentReadType.LookingForObjectMetaDataOrNextField:
 
@@ -221,8 +224,9 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                                 cur_object.meta_data[cur_obj_meta_data_type] = string_list
                             else:  # pragma: no cover   -- strings already exist, this is not valid...
                                 raise exceptions.ProcessingException(
-                                    "Erroneous object meta data - repeated \"" + token_builder + "\"; line=" + str(line_index) + "; object=" + str(
-                                        cur_object.name))
+                                    "Erroneous object meta data - repeated \"" + token_builder + "\"",
+                                    line_index=line_index,
+                                    object_name=cur_object.name)
                             cur_obj_meta_data_type = None
                             read_status = CurrentReadType.LookingForObjectMetaDataOrNextField
                         else:
@@ -231,8 +235,9 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     else:  # pragma: no cover
                         # token_builder = ''
                         raise exceptions.ProcessingException(
-                            "Erroneous object meta data tag found; line=" + str(line_index) + "; object=" + str(
-                                cur_object.name))
+                            "Erroneous object meta data tag found",
+                            line_index=line_index,
+                            object_name=cur_object.name)
                 else:
                     # just keep reading
                     pass
@@ -264,8 +269,9 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     read_status = CurrentReadType.ReadingFieldMetaDataOrNextANValue
                 elif peeked_char == '\n':  # pragma: no cover
                     raise exceptions.ProcessingException(
-                        "Blank or erroneous ""AN"" field index value; line=" + str(line_index) + "; object=" + str(
-                            cur_object.name))
+                        "Blank or erroneous ""AN"" field index value",
+                        line_index=line_index,
+                        object_name=cur_object.name)
 
             elif read_status == CurrentReadType.ReadingFieldMetaDataOrNextANValue:
 
@@ -298,8 +304,10 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                                 cur_field.meta_data[flag_found] = string_list
                     else:  # pragma: no cover
                         raise exceptions.ProcessingException(
-                            "Erroneous field meta data entry found; line=" + str(line_index) + "; object=" + str(
-                                cur_object.name) + "; field=" + str(cur_field.field_name))
+                            "Erroneous field meta data entry found",
+                            line_index=line_index,
+                            object_name=cur_object.name,
+                            field_name=cur_field.field_name)
                     token_builder = ''
                     if last_field_for_object:
                         read_status = CurrentReadType.LookingForFieldMetaDataOrNextObject
@@ -357,6 +365,6 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
         # end the file here, but should watch for end-of-file in other CASEs also
         # cur_object.fields.append(cur_field)
         # cur_group.objects.append(cur_object)
-        idd_details.groups.append(cur_group)
+        self.idd.groups.append(cur_group)
 
-        return idd_details
+        return self.idd

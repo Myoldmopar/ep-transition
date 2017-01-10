@@ -4,18 +4,19 @@ import sys
 import unittest
 
 from transition.idf.processidf import IDFProcessor
+from transition.idd.processidd import IDDProcessor
 
 
 class Argument:
-    def __init__(self, cli_argument, additional_arg, usage_hint):
+    def __init__(self, cli_argument, num_additional_args, usage_hint):
         self.cli_argument = cli_argument
-        self.additional_arg = additional_arg
+        self.num_additional_args = num_additional_args
         self.usage_hint = usage_hint
 
 
-valid_args = [Argument('test', False, ''),
-              Argument('usage', False, ''),
-              Argument('update', True, '<path/to/file/to/update>')]
+valid_args = [Argument('test', 0, ''),
+              Argument('usage', 0, ''),
+              Argument('update', 2, '<path/to/file/to/update> <path/to/matching/idd>')]
 
 
 def usage(test_mode=False):
@@ -44,10 +45,7 @@ def drive(argv, test_mode=False):
             print("Error: Unexpected error in processing command line arguments")
         usage(test_mode)
         return 1
-    if cur_arg.additional_arg:
-        expected_total_argv = 3
-    else:
-        expected_total_argv = 2
+    expected_total_argv = 2 + cur_arg.num_additional_args
     if len(argv) != expected_total_argv:
         if not test_mode:  # pragma: no cover
             print("Error: Invalid number of command line arguments")
@@ -62,8 +60,17 @@ def drive(argv, test_mode=False):
             usage()
     elif argv[1] == valid_args[2].cli_argument:  # update
         input_file = argv[2]
-        i = IDFProcessor()
-        i.process_file_given_file_path(input_file)
+        idf_processor = IDFProcessor()
+        idf_processor.process_file_given_file_path(input_file)
+        idd_file = argv[3]
+        idd_processor = IDDProcessor()
+        idd_structure = idd_processor.process_file_given_file_path(idd_file)
+        idd_obj = idd_structure.get_object_by_type('AirLoopHVAC:ControllerList')
+        idf_objs = idf_processor.get_idf_objects_by_type('AirLoopHVAC:ControllerList')
+        for idf_obj in idf_objs:
+            print('')
+            print(idf_obj.object_string(idd_obj))
+        idf_processor.write_idf(idd_structure)
     return 0
 
 
