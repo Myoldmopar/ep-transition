@@ -5,7 +5,7 @@ class IDFObject(object):
 
     def object_string(self, idd_object=None):
         if not idd_object:
-            idd_fields = ['']*len(self.fields)
+            idd_fields = [''] * len(self.fields)
         else:
             idd_fields = []
             for field in idd_object.fields:
@@ -15,7 +15,7 @@ class IDFObject(object):
         else:
             s = self.object_name + ",\n"
             padding_size = 25
-            last_idd_field = idd_fields[len(self.fields)-1]
+            last_idd_field = idd_fields[len(self.fields) - 1]
             for idf_field, idd_field in zip(self.fields[:-1], idd_fields):
                 s += "  " + (idf_field + ',').ljust(padding_size) + "!- " + idd_field + "\n"
             s += "  " + (self.fields[-1] + ';').ljust(padding_size) + "!- " + last_idd_field + "\n"
