@@ -1,13 +1,11 @@
 import os
 
-from iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
+from transition.idd.iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
 from transition import exceptions
 from transition import inputprocessor
 
 
 class CurrentReadType:
-    def __init__(self):
-        pass
     EncounteredComment_ReadToCR = 0
     ReadAnything = 1
     ReadingGroupDeclaration = 2

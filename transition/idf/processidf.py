@@ -1,6 +1,6 @@
 import os
 
-from idfobject import IDFObject
+from transition.idf.idfobject import IDFObject
 from transition import exceptions
 from transition import inputprocessor
 
