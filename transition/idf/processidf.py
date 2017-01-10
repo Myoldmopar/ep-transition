@@ -1,8 +1,8 @@
 import os
 
 from idfobject import IDFObject
-from .. import exceptions
-from .. import inputprocessor
+from transition import exceptions
+from transition import inputprocessor
 
 
 class IDFProcessor(inputprocessor.InputFileProcessor):

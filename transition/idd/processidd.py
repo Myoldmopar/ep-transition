@@ -1,9 +1,25 @@
 import os
 
-from enums import ObjFlagEnum, FieldFlagEnum, CurrentReadType
 from iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
-from .. import exceptions
-from .. import inputprocessor
+from transition import exceptions
+from transition import inputprocessor
+
+
+class CurrentReadType:
+    def __init__(self):
+        pass
+    EncounteredComment_ReadToCR = 0
+    ReadAnything = 1
+    ReadingGroupDeclaration = 2
+    ReadingObjectName = 3
+    LookingForObjectMetaDataOrNextField = 4  # check for "\" or an alphanumeric character
+    ReadingObjectMetaData = 5
+    ReadingObjectMetaDataContents = 6
+    ReadingFieldANValue = 7
+    ReadingFieldMetaData = 8
+    ReadingFieldMetaDataOrNextANValue = 9
+    LookingForFieldMetaDataOrNextObject = 10
+    LookingForFieldMetaDataOrNextField = 11
 
 
 class IDDProcessor(inputprocessor.InputFileProcessor):
@@ -11,33 +27,33 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
         self.idd_file_stream = None
         self.file_path = None
         self.group_flag_string = "\\group"
-        self.obj_flags = {"\\memo": ObjFlagEnum.Memo,
-                          "\\unique-object": ObjFlagEnum.UniqueObject,
-                          "\\required-object": ObjFlagEnum.RequiredObject,
-                          "\\min-fields": ObjFlagEnum.MinFields,
-                          "\\obselete": ObjFlagEnum.Obselete,
-                          "\\extensible": ObjFlagEnum.Extensible,
-                          "\\format": ObjFlagEnum.Format}
-        self.field_flags = {"\\field": FieldFlagEnum.Field,
-                            "\\note": FieldFlagEnum.Note,
-                            "\\required-field": FieldFlagEnum.RequiredField,
-                            "\\begin-extensible": FieldFlagEnum.BeginExtensible,
-                            "\\units": FieldFlagEnum.Units,
-                            "\\ip-units": FieldFlagEnum.IPUnits,
-                            "\\scheduleunits": FieldFlagEnum.ScheduleUnits,
-                            "\\minimum": FieldFlagEnum.Minimum,
-                            "\\maximum": FieldFlagEnum.Maximum,
-                            "\\default": FieldFlagEnum.Default,
-                            "\\deprecated": FieldFlagEnum.Deprecated,
-                            "\\autosizable": FieldFlagEnum.AutoSizable,
-                            "\\autocalculatable": FieldFlagEnum.AutoCalculatable,
-                            "\\type": FieldFlagEnum.Type,
-                            "\\retaincase": FieldFlagEnum.RetainCase,
-                            "\\key": FieldFlagEnum.Key,
-                            "\\object-list": FieldFlagEnum.ObjectList,
-                            "\\reference": FieldFlagEnum.Reference,
-                            "\\external-list": FieldFlagEnum.ExternalList,
-                            "\\memo": FieldFlagEnum.Memo}
+        self.obj_flags = ["\\memo",
+                          "\\unique-object",
+                          "\\required-object",
+                          "\\min-fields",
+                          "\\obselete",
+                          "\\extensible",
+                          "\\format"]
+        self.field_flags = ["\\field",
+                            "\\note",
+                            "\\required-field",
+                            "\\begin-extensible",
+                            "\\units",
+                            "\\ip-units",
+                            "\\scheduleunits",
+                            "\\minimum",
+                            "\\maximum",
+                            "\\default",
+                            "\\deprecated",
+                            "\\autosizable",
+                            "\\autocalculatable",
+                            "\\type",
+                            "\\retaincase",
+                            "\\key",
+                            "\\object-list",
+                            "\\reference",
+                            "\\external-list",
+                            "\\memo"]
 
     def process_file_given_file_path(self, file_path):
         if not os.path.exists(file_path):
@@ -106,7 +122,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
             # if we aren't already processing a comment, and we have a comment:
             #  don't append to the token builder, just set read status
             if read_status != CurrentReadType.EncounteredComment_ReadToCR:
-                if just_read_char == '!' and read_status != CurrentReadType.ReadingSpecialFieldMetaData:
+                if just_read_char == '!':
                     if read_status != CurrentReadType.ReadingFieldMetaData:
                         read_status = CurrentReadType.EncounteredComment_ReadToCR
                 else:
@@ -150,9 +166,6 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     cur_group = IDDGroup(group_declaration.strip())
                     token_builder = ""
                     read_status = CurrentReadType.ReadAnything  # to start looking for groups/objects/comments/whatever
-                else:
-                    # just keep reading
-                    pass
 
             elif read_status == CurrentReadType.ReadingObjectName:
 
@@ -179,9 +192,6 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                 elif peeked_char in ['\n', '!']:
                     raise exceptions.ProcessingException(  # pragma: no cover
                         "An object name was not properly terminated by a comma or semicolon; line=" + str(line_index))  # pragma: no cover
-                else:
-                    # just keep reading
-                    pass
 
             elif read_status == CurrentReadType.LookingForObjectMetaDataOrNextField:
 
@@ -203,29 +213,25 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
             elif read_status == CurrentReadType.ReadingObjectMetaData:
 
                 if peeked_char in [' ', ':', '\n']:
-                    flag_found = False
                     if token_builder in self.obj_flags:
-                        flag_found = True
-                        cur_obj_meta_data_type = self.obj_flags[token_builder]
-                    if flag_found:
+                        cur_obj_meta_data_type = token_builder
                         token_builder = ''
-                        if cur_obj_meta_data_type in [ObjFlagEnum.Obselete, ObjFlagEnum.RequiredObject,
-                                                      ObjFlagEnum.UniqueObject]:
+                        if cur_obj_meta_data_type in ['\\obselete', '\\required-object', '\\unique-object']:
                             # these do not carry further data, stop reading now
                             if cur_obj_meta_data_type not in cur_object.meta_data:
-                                string_list = [""]
+                                string_list = [None]
                                 cur_object.meta_data[cur_obj_meta_data_type] = string_list
-                            else:  # strings already exist
-                                string_list = cur_object.meta_data(cur_obj_meta_data_type)
-                                string_list.append("")
-                                cur_object.meta_data[cur_obj_meta_data_type] = string_list
+                            else:  # pragma: no cover   -- strings already exist, this is not valid...
+                                raise exceptions.ProcessingException(
+                                    "Erroneous object meta data - repeated \"" + token_builder + "\"; line=" + str(line_index) + "; object=" + str(
+                                        cur_object.name))
                             cur_obj_meta_data_type = None
                             read_status = CurrentReadType.LookingForObjectMetaDataOrNextField
                         else:
                             # these will have following data, just set the flag
                             read_status = CurrentReadType.ReadingObjectMetaDataContents
                     else:  # pragma: no cover
-                        token_builder = ''
+                        # token_builder = ''
                         raise exceptions.ProcessingException(
                             "Erroneous object meta data tag found; line=" + str(line_index) + "; object=" + str(
                                 cur_object.name))
@@ -247,9 +253,6 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     token_builder = ''
                     cur_obj_meta_data_type = None
                     read_status = CurrentReadType.LookingForObjectMetaDataOrNextField
-                else:
-                    # just keep reading
-                    pass
 
             elif read_status == CurrentReadType.ReadingFieldANValue:
 
@@ -265,9 +268,6 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     raise exceptions.ProcessingException(
                         "Blank or erroneous ""AN"" field index value; line=" + str(line_index) + "; object=" + str(
                             cur_object.name))
-                else:
-                    # just keep reading
-                    pass
 
             elif read_status == CurrentReadType.ReadingFieldMetaDataOrNextANValue:
 
@@ -279,46 +279,25 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     # this is hit when we have an AN value right after a previous AN value, so no meta data is added
                     cur_object.fields.append(cur_field)
                     read_status = CurrentReadType.ReadingFieldANValue
-                else:
-                    # just keep reading...
-                    pass
 
-            elif read_status in [CurrentReadType.ReadingFieldMetaData, CurrentReadType.ReadingSpecialFieldMetaData]:
+            elif read_status == CurrentReadType.ReadingFieldMetaData:
 
                 if peeked_char == '\n':
 
                     # for this one, let's read all the way to the end of the line, then parse data
-                    flag_found = False
-                    verified_flag_key = ''
-                    for k, v in self.field_flags.iteritems():
-                        flag_index = token_builder.find(k)
-                        if flag_index >= 0:
-                            verified_flag_key = k
-                            flag_found = True
-                            break
+                    flag_found = next((x for x in self.field_flags if x in token_builder), None)
                     if flag_found:
-                        flag = self.field_flags[verified_flag_key]
-                        data = token_builder[len(verified_flag_key):]
-                        if flag == FieldFlagEnum.Field:
+                        data = token_builder[len(flag_found):]
+                        if flag_found == '\\field':
                             cur_field.field_name = data
                         else:
-                            if flag not in cur_field.meta_data:
+                            if flag_found not in cur_field.meta_data:
                                 string_list = [data]
-                                cur_field.meta_data[flag] = string_list
+                                cur_field.meta_data[flag_found] = string_list
                             else:
-                                string_list = cur_field.meta_data[flag]
+                                string_list = cur_field.meta_data[flag_found]
                                 string_list.append(data)
-                                cur_field.meta_data[flag] = string_list
-                    elif token_builder.strip()[0] == "!":  # we have a 'fancy' schedule unit type, add it as a note
-                        flag = FieldFlagEnum.ScheduleUnits
-                        data = token_builder[1:].strip()
-                        if flag not in cur_field.meta_data:
-                            string_list = [data]
-                            cur_field.meta_data[flag] = string_list
-                        else:
-                            string_list = cur_field.meta_data[flag]
-                            string_list.append(data)
-                            cur_field.meta_data[flag] = string_list
+                                cur_field.meta_data[flag_found] = string_list
                     else:  # pragma: no cover
                         raise exceptions.ProcessingException(
                             "Erroneous field meta data entry found; line=" + str(line_index) + "; object=" + str(
@@ -348,20 +327,12 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                 elif peeked_char == '\n':
                     # just let it keep reading
                     pass
-                else:
-                    # just keep reading
-                    pass
 
             elif read_status == CurrentReadType.LookingForFieldMetaDataOrNextObject:
 
-                import string
                 if peeked_char == '\\':
                     token_builder = ''
                     read_status = CurrentReadType.ReadingFieldMetaData
-
-                elif peeked_char == '!':
-                    token_builder = ''
-                    read_status = CurrentReadType.ReadingSpecialFieldMetaData
 
                 elif peeked_char == '\n':
                     # blank line will mean we are concluding this object
@@ -369,12 +340,6 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     cur_object.fields.append(cur_field)
                     cur_group.objects.append(cur_object)
                     read_status = CurrentReadType.ReadAnything
-
-                elif peeked_char.upper() in string.ascii_uppercase or peeked_char in range(10):
-                    token_builder = ''
-                    cur_object.fields.append(cur_field)
-                    cur_group.objects.append(cur_object)
-                    read_status = CurrentReadType.ReadingObjectName
 
             elif read_status == CurrentReadType.EncounteredComment_ReadToCR:
 
@@ -388,9 +353,12 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                         read_status = CurrentReadType.ReadAnything
                     token_builder = ''
 
+            # don't ever put code here that could have side effects,
+            # as the blocks are not required to call continue when they are done
+
         # end the file here, but should watch for end-of-file in other CASEs also
-        cur_object.fields.append(cur_field)
-        cur_group.objects.append(cur_object)
+        # cur_object.fields.append(cur_field)
+        # cur_group.objects.append(cur_object)
         idd_details.groups.append(cur_group)
 
         return idd_details
