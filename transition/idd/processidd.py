@@ -32,7 +32,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
         self.field_flags = ["\\field", "\\note", "\\required-field", "\\begin-extensible", "\\unitsBasedOnField",
                             "\\units", "\\ip-units", "\\scheduleunits", "\\minimum", "\\maximum", "\\default",
                             "\\deprecated", "\\autosizable", "\\autocalculatable", "\\type", "\\retaincase",
-                            "\\key", "\\object-list", "\\reference", "\\external-list", "\\memo"]
+                            "\\key", "\\object-list", "\\reference", "\\external-list"]
 
     def process_file_given_file_path(self, file_path):
         if not os.path.exists(file_path):

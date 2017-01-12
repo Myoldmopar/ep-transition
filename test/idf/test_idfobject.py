@@ -7,6 +7,7 @@ from transition.idd.processidd import IDDProcessor
 
 
 class TestIDFObject(TestCase):
+
     def test_valid_object(self):
         tokens = ["Objecttype", "object_name", "something", "", "last field with space"]
         obj = IDFObject(tokens)

@@ -17287,7 +17287,7 @@ SurfaceProperty:SolarIncidentInside,
        \type object-list
        \object-list ConstructionNames
   A4;  \field Inside Surface Incident Sun Solar Radiation Schedule Name
-       \memo Values in schedule are expected to be in W/m2
+       \note Values in schedule are expected to be in W/m2
        \required-field
        \type object-list
        \object-list ScheduleNames
@@ -17306,24 +17306,24 @@ ComplexFenestrationProperty:SolarAbsorbedLayers,
        \type object-list
        \object-list ComplexFenestrationStates
   A4,  \field Layer 1 Solar Radiation Absorbed Schedule Name
-       \memo Values in schedule are expected to be in W/m2
+       \note Values in schedule are expected to be in W/m2
        \required-field
        \type object-list
        \object-list ScheduleNames
   A5,  \field Layer 2 Solar Radiation Absorbed Schedule Name
-       \memo Values in schedule are expected to be in W/m2
+       \note Values in schedule are expected to be in W/m2
        \type object-list
        \object-list ScheduleNames
   A6,  \field Layer 3 Solar Radiation Absorbed Schedule Name
-       \memo Values in schedule are expected to be in W/m2
+       \note Values in schedule are expected to be in W/m2
        \type object-list
        \object-list ScheduleNames
   A7,  \field Layer 4 Solar Radiation Absorbed Schedule Name
-       \memo Values in schedule are expected to be in W/m2
+       \note Values in schedule are expected to be in W/m2
        \type object-list
        \object-list ScheduleNames
   A8;  \field Layer 5 Solar Radiation Absorbed Schedule Name
-       \memo Values in schedule are expected to be in W/m2
+       \note Values in schedule are expected to be in W/m2
        \type object-list
        \object-list ScheduleNames
 
@@ -76809,12 +76809,12 @@ DemandManager:Thermostats,
        \units minutes
        \note If blank, duration defaults to the timestep
   N2 , \field Fixed Rate
-       \memo Used in case when Limit strategy is set to FixedRate
+       \note Used in case when Limit strategy is set to FixedRate
        \type real
        \minimum 0.0
        \units m3/s
   N3 , \field Reduction Ratio
-       \memo Used in case when Limit Control is set to ReductionRatio
+       \note Used in case when Limit Control is set to ReductionRatio
        \type real
        \minimum 0.0
        \maximum 1.0

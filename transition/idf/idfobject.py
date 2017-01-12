@@ -31,6 +31,8 @@ class IDFObject(object):
     def validate(self, idd_object):
         issues = []
         # need to first check min-fields
+        # need to check \default for each field to fill it first if it is blank
+        # need to check \type choice and \keys
         for idf, idd in zip(self.fields, idd_object.fields):
             if '\\required-field' in idd.meta_data:
                 if idf == '':
