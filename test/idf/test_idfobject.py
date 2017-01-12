@@ -30,6 +30,29 @@ class TestIDFObject(TestCase):
         obj.write_object(s)
 
 
+class TestSingleLineIDFValidation(TestCase):
+
+    def test_valid_single_token_object_no_idd(self):
+        tokens = ["SingleLineObject"]
+        obj = IDFObject(tokens)
+        self.assertEquals("SingleLineObject", obj.object_name)
+        self.assertEquals(0, len(obj.fields))
+        s = obj.object_string()
+        self.assertEquals("SingleLineObject;\n", s)
+
+    def test_valid_single_token_object_with_idd(self):
+        idd_string = """
+        \group MyGroup
+        SingleLineObject;"""
+        idd_object = IDDProcessor().process_file_via_string(idd_string).get_object_by_type('SingleLineObject')
+        tokens = ["SingleLineObject"]
+        obj = IDFObject(tokens)
+        self.assertEquals("SingleLineObject", obj.object_name)
+        self.assertEquals(0, len(obj.fields))
+        s = obj.object_string(idd_object)
+        self.assertEquals("SingleLineObject;\n", s)
+
+
 class TestIDFValidation(TestCase):
 
     def setUp(self):

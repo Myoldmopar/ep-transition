@@ -5,6 +5,8 @@ from transition import exceptions
 from transition import inputprocessor
 from transition.idd.iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
 
+# TODO: Add a test for indented IDD object name
+
 
 class CurrentReadType:
     EncounteredComment_ReadToCR = 0
@@ -170,7 +172,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     # since this whole object is a single line, we can just add it directly to the current group
                     object_title = token_builder
                     # this is added to singleline objects because CurGroup isn't instantiated yet, should fix
-                    self.idd.single_line_objects.append(object_title)
+                    self.idd.single_line_objects.append(object_title.strip())
                     token_builder = ''  # to clear the builder
                     self.read_one_char()  # to clear the semicolon
                     read_status = CurrentReadType.ReadAnything

@@ -21,6 +21,7 @@ class ControllerListTransitionRule(TransitionRule):
             if oac.fields[0].upper() == original_idf_fields[2].upper():
                 random_field = oac.fields[7]
                 objects_to_delete.append(ObjectTypeAndName("OUTDOORAIR:NODE", oac.fields[4]))
+                objects_to_delete.append(ObjectTypeAndName("OUTDOORAIR:NODE", oac.fields[3]))
         new_idf_fields = original_idf_fields
         new_idf_fields[2] = random_field
         new_controller_list_object = IDFObject([core_object.object_name] + new_idf_fields)

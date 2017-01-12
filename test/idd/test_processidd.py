@@ -74,7 +74,7 @@ Version,A1;
           N2;  \\field NumericFieldB
                \\autosizabled
                 """
-        with self.assertRaises(ProcessingException):
+        with self.assertRaises(ProcessingException) as e:
             IDDProcessor().process_file_via_string(idd_string).get_object_by_type('MyObject')
 
     def test_invalid_idd_metadata(self):

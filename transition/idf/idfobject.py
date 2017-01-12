@@ -26,10 +26,10 @@ class IDFObject(object):
                         padding_size) + "!- \n"
             return s
         else:
-            idd_fields = idd_object.fields
             if len(self.fields) == 0:
                 s = self.object_name + ";\n"
             else:
+                idd_fields = idd_object.fields
                 s = self.object_name + ",\n"
                 padding_size = 25
                 for index, idf_idd_fields in enumerate(zip(self.fields, idd_fields)):
