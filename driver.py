@@ -3,8 +3,10 @@
 import sys
 import unittest
 
+from transition.idf.idfobject import IDFStructure
 from transition.idf.processidf import IDFProcessor
 from transition.idd.processidd import IDDProcessor
+from transition.rules.rules86to87.branch_object import BranchTransitionRule
 
 
 class Argument:
@@ -16,7 +18,7 @@ class Argument:
 
 valid_args = [Argument('test', 0, ''),
               Argument('usage', 0, ''),
-              Argument('update', 2, '<path/to/file/to/update> <path/to/matching/idd>')]
+              Argument('update', 3, '<path/to/file/to/update> <path/to/original/idd> <path/to/new/idd>')]
 
 
 def usage(test_mode=False):
@@ -62,10 +64,30 @@ def drive(argv, test_mode=False):
         input_file = argv[2]
         idf_processor = IDFProcessor()
         idf_structure = idf_processor.process_file_given_file_path(input_file)
-        idd_file = argv[3]
-        idd_processor = IDDProcessor()
-        idd_structure = idd_processor.process_file_given_file_path(idd_file)
-        idf_structure.write_idf(idd_structure)
+        original_idd_file = argv[3]
+        original_idd_processor = IDDProcessor()
+        original_idd_structure = original_idd_processor.process_file_given_file_path(original_idd_file)
+        # TODO: validate the current idf against the original IDD
+        new_idd_file = argv[4]
+        new_idd_processor = IDDProcessor()
+        new_idd_structure = new_idd_processor.process_file_given_file_path(new_idd_file)
+        rules = [BranchTransitionRule()]
+        rule_map = {}
+        for rule in rules:
+            rule_map[rule.get_name_of_object_to_transition().upper()] = [rule.get_names_of_dependent_objects(), rule.transition]
+        new_idf_structure = IDFStructure("/newly/generated/idf")
+        new_idf_structure.objects = []
+        for original_idf_object in idf_structure.objects:
+            if original_idf_object.object_name.upper() in rule_map:
+                this_rule = rule_map[original_idf_object.object_name.upper()]
+                dependents = {}
+                for dependent_idf_type in this_rule[0]:
+                    dependents[dependent_idf_type] = idf_structure.get_idf_objects_by_type(dependent_idf_type)
+                new_idf_objects = this_rule[1](original_idf_object, dependents)
+                new_idf_structure.objects.extend(new_idf_objects)
+            else:
+                new_idf_structure.objects.append(original_idf_object)
+        new_idf_structure.write_idf(new_idd_structure)
     return 0
 
 

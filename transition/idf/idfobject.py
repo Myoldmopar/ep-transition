@@ -11,6 +11,7 @@ class IDFObject(object):
         self.fields = tokens[1:]
 
     def object_string(self, idd_object=None):
+        # TODO: Add units in {} to all numeric fields, not sure about determining dimensionless
         if not idd_object:
             idd_fields = [''] * len(self.fields)
         else:
