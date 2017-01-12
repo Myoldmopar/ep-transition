@@ -14,4 +14,3 @@ class ProcessingException(Exception):
 
     def __str__(self):
         print("Processing Exception on line number " + str(self.line_index))
-
