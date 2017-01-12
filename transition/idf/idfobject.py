@@ -11,23 +11,39 @@ class IDFObject(object):
         self.fields = tokens[1:]
 
     def object_string(self, idd_object=None):
-        # TODO: Add units in {} to all numeric fields, not sure about determining dimensionless
         if not idd_object:
-            idd_fields = [''] * len(self.fields)
+            if len(self.fields) == 0:
+                s = self.object_name + ";\n"
+            else:
+                s = self.object_name + ",\n"
+                padding_size = 25
+                for index, idf_field in enumerate(self.fields):
+                    if index == len(self.fields) - 1:
+                        terminator = ';'
+                    else:
+                        terminator = ','
+                    s += "  " + (idf_field + terminator).ljust(
+                        padding_size) + "!- \n"
+            return s
         else:
-            idd_fields = []
-            for field in idd_object.fields:
-                idd_fields.append(field.field_name)
-        if len(self.fields) == 0:
-            s = self.object_name + ";\n"
-        else:
-            s = self.object_name + ",\n"
-            padding_size = 25
-            last_idd_field = idd_fields[len(self.fields) - 1]
-            for idf_field, idd_field in zip(self.fields[:-1], idd_fields):
-                s += "  " + (idf_field + ',').ljust(padding_size) + "!- " + idd_field + "\n"
-            s += "  " + (self.fields[-1] + ';').ljust(padding_size) + "!- " + last_idd_field + "\n"
-        return s
+            idd_fields = idd_object.fields
+            if len(self.fields) == 0:
+                s = self.object_name + ";\n"
+            else:
+                s = self.object_name + ",\n"
+                padding_size = 25
+                for index, idf_idd_fields in enumerate(zip(self.fields, idd_fields)):
+                    idf_field, idd_field = idf_idd_fields
+                    if index == len(self.fields) - 1:
+                        terminator = ';'
+                    else:
+                        terminator = ','
+                    if '\\units' in idd_field.meta_data:
+                        units_string = ' {' + idd_field.meta_data['\\units'][0] + '}'
+                    else:
+                        units_string = ''
+                    s += "  " + (idf_field + terminator).ljust(padding_size) + "!- " + idd_field.field_name + units_string + "\n"
+            return s
 
     def validate(self, idd_object):
         issues = []

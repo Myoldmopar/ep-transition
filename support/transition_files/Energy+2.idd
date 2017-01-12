@@ -56843,7 +56843,7 @@ AirLoopHVAC:ControllerList,
        \type choice
        \key Controller:WaterCoil
        \key Controller:OutdoorAir
-  A3 , \field Controller 1 Name
+  A3 , \field STUPID FIELD HERE
        \required-field
        \type object-list
        \object-list AirLoopControllers

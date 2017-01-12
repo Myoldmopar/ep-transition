@@ -6,7 +6,7 @@ import unittest
 from transition.idf.idfobject import IDFStructure
 from transition.idf.processidf import IDFProcessor
 from transition.idd.processidd import IDDProcessor
-from transition.rules.rules86to87.branch_object import BranchTransitionRule
+from transition.rules.rules86to87 import branch, controller_list
 
 
 class Argument:
@@ -71,23 +71,39 @@ def drive(argv, test_mode=False):
         new_idd_file = argv[4]
         new_idd_processor = IDDProcessor()
         new_idd_structure = new_idd_processor.process_file_given_file_path(new_idd_file)
-        rules = [BranchTransitionRule()]
+        rules = [branch.BranchTransitionRule(), controller_list.ControllerListTransitionRule()]
         rule_map = {}
         for rule in rules:
             rule_map[rule.get_name_of_object_to_transition().upper()] = [rule.get_names_of_dependent_objects(), rule.transition]
-        new_idf_structure = IDFStructure("/newly/generated/idf")
-        new_idf_structure.objects = []
+        objects_to_delete = []
+        new_idf_objects = []
         for original_idf_object in idf_structure.objects:
             if original_idf_object.object_name.upper() in rule_map:
                 this_rule = rule_map[original_idf_object.object_name.upper()]
                 dependents = {}
                 for dependent_idf_type in this_rule[0]:
-                    dependents[dependent_idf_type] = idf_structure.get_idf_objects_by_type(dependent_idf_type)
-                new_idf_objects = this_rule[1](original_idf_object, dependents)
-                new_idf_structure.objects.extend(new_idf_objects)
+                    dependents[dependent_idf_type.upper()] = idf_structure.get_idf_objects_by_type(dependent_idf_type)
+                transition_response = this_rule[1](original_idf_object, dependents)
+                new_idf_objects.extend(transition_response.to_write)
+                objects_to_delete.extend(transition_response.to_delete)
             else:
-                new_idf_structure.objects.append(original_idf_object)
-        new_idf_structure.write_idf(new_idd_structure)
+                new_idf_objects.append(original_idf_object)
+        delete_map = {}
+        for object_to_delete in objects_to_delete:
+            if object_to_delete.type.upper() in delete_map:
+                delete_map[object_to_delete.type.upper()].append(object_to_delete.name.upper())
+            else:
+                delete_map[object_to_delete.type.upper()] = [object_to_delete.name.upper()]
+        newer_idf_structure = IDFStructure("/newly/generated/idf")
+        newer_idf_structure.objects = []
+        for new_idf_object in new_idf_objects:
+            delete = False
+            if new_idf_object.object_name.upper() in delete_map:
+                if new_idf_object.fields[0].upper() in delete_map[new_idf_object.object_name.upper()]:
+                    delete = True
+            if not delete:
+                newer_idf_structure.objects.append(new_idf_object)
+        newer_idf_structure.write_idf(new_idd_structure)
     return 0
 
 
