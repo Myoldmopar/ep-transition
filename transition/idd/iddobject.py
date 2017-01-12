@@ -27,8 +27,14 @@ class IDDStructure:
         self.groups = []
 
     def get_object_by_type(self, type_to_get):
+        # check the normal objects
         for g in self.groups:
             for o in g.objects:
                 if o.name.upper() == type_to_get.upper():
                     return o
+        # check single line objects? Weird...but might be useful
+        for o in self.single_line_objects:
+            if o.upper() == type_to_get.upper():
+                return o
+        # if we haven't returned, fail
         return None

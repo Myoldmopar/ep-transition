@@ -1,4 +1,5 @@
 import os
+import StringIO
 
 from transition import exceptions
 from transition import inputprocessor
@@ -10,7 +11,7 @@ class CurrentReadType:
     ReadAnything = 1
     ReadingGroupDeclaration = 2
     ReadingObjectName = 3
-    LookingForObjectMetaDataOrNextField = 4  # check for "\" or an alphanumeric character
+    LookingForObjectMetaDataOrNextField = 4
     ReadingObjectMetaData = 5
     ReadingObjectMetaDataContents = 6
     ReadingFieldANValue = 7
@@ -26,33 +27,12 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
         self.idd_file_stream = None
         self.file_path = None
         self.group_flag_string = "\\group"
-        self.obj_flags = ["\\memo",
-                          "\\unique-object",
-                          "\\required-object",
-                          "\\min-fields",
-                          "\\obselete",
-                          "\\extensible",
-                          "\\format"]
-        self.field_flags = ["\\field",
-                            "\\note",
-                            "\\required-field",
-                            "\\begin-extensible",
-                            "\\units",
-                            "\\ip-units",
-                            "\\scheduleunits",
-                            "\\minimum",
-                            "\\maximum",
-                            "\\default",
-                            "\\deprecated",
-                            "\\autosizable",
-                            "\\autocalculatable",
-                            "\\type",
-                            "\\retaincase",
-                            "\\key",
-                            "\\object-list",
-                            "\\reference",
-                            "\\external-list",
-                            "\\memo"]
+        self.obj_flags = ["\\memo", "\\unique-object", "\\required-object", "\\min-fields",
+                          "\\obselete", "\\extensible", "\\format"]
+        self.field_flags = ["\\field", "\\note", "\\required-field", "\\begin-extensible", "\\unitsBasedOnField",
+                            "\\units", "\\ip-units", "\\scheduleunits", "\\minimum", "\\maximum", "\\default",
+                            "\\deprecated", "\\autosizable", "\\autocalculatable", "\\type", "\\retaincase",
+                            "\\key", "\\object-list", "\\reference", "\\external-list", "\\memo"]
 
     def process_file_given_file_path(self, file_path):
         if not os.path.exists(file_path):
@@ -64,6 +44,11 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
     def process_file_via_stream(self, idd_file_stream):
         self.idd_file_stream = idd_file_stream
         self.file_path = "/streamed/idd"
+        return self.process_file()
+
+    def process_file_via_string(self, idd_string):
+        self.idd_file_stream = StringIO.StringIO(idd_string)
+        self.file_path = "/string/idd/snippet"
         return self.process_file()
 
     def peek_one_char(self):
@@ -292,6 +277,16 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     flag_found = next((x for x in self.field_flags if x in token_builder), None)
                     if flag_found:
                         data = token_builder[len(flag_found):]
+                        # data needs to start with a space, otherwise things like: \fieldd My Field would be valid
+                        if len(data) > 0:
+                            if data[0] not in [' ', '>', '<']:
+                                raise exceptions.ProcessingException(
+                                    'Invalid meta data, expected a space after the meta data specifier before the data',
+                                    line_index=line_index,
+                                    object_name=cur_object.name,
+                                    field_name=cur_field.field_name
+                                )
+                        data = data.strip()
                         if flag_found == '\\field':
                             cur_field.field_name = data
                         else:

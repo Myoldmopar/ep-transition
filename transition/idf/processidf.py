@@ -1,6 +1,7 @@
 import os
+import StringIO
 
-from transition.idf.idfobject import IDFObject
+from transition.idf.idfobject import IDFObject, IDFStructure
 from transition import exceptions
 from transition import inputprocessor
 
@@ -8,19 +9,28 @@ from transition import inputprocessor
 class IDFProcessor(inputprocessor.InputFileProcessor):
     def __init__(self):
         self.idf = None
+        self.file_path = None
         self.input_file_stream = None
 
     def process_file_given_file_path(self, file_path):
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
         self.input_file_stream = open(file_path, 'r')
+        self.file_path = file_path
         return self.process_file()
 
     def process_file_via_stream(self, input_file_stream):
         self.input_file_stream = input_file_stream
+        self.file_path = "/streamed/idf"
+        return self.process_file()
+
+    def process_file_via_string(self, idf_string):
+        self.input_file_stream = StringIO.StringIO(idf_string)
+        self.file_path = "/string/idf/snippet"
         return self.process_file()
 
     def process_file(self):
+        self.idf = IDFStructure(self.file_path)
         # phase 0: read in lines of file
         lines = self.input_file_stream.readlines()
 
@@ -61,14 +71,5 @@ class IDFProcessor(inputprocessor.InputFileProcessor):
             object_details.append(nice_object)
             idf_objects.append(IDFObject(nice_object))
 
-        self.idf = idf_objects
-        return idf_objects
-
-    def get_idf_objects_by_type(self, type_to_get):
-        return [i for i in self.idf if i.object_name.upper() == type_to_get.upper()]
-
-    def write_idf(self, idd_structure):
-        with open('/tmp/new_idf', 'w') as f:
-            for idf_obj in self.idf:
-                idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
-                f.write(idf_obj.object_string(idd_obj) + '\n')
+        self.idf.objects = idf_objects
+        return self.idf

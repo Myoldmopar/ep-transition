@@ -17,8 +17,8 @@ ObjectType,
  Final Value;        !- With Semicolon
 """
         processor = IDFProcessor()
-        ret_value = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(ret_value))
+        idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(1, len(idf_structure.objects))
 
     def test_indented_idf(self):
         idf_object = """
@@ -30,14 +30,14 @@ ObjectType,
  Final Value;        !- With Semicolon
 """
         processor = IDFProcessor()
-        ret_value = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(ret_value))
+        idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(1, len(idf_structure.objects))
 
     def test_one_line_idf(self):
         idf_object = """ObjectType,This Object Name,Descriptive Field,3.4,,Final Value;"""
         processor = IDFProcessor()
-        ret_value = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(ret_value))
+        idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(1, len(idf_structure.objects))
 
     def test_valid_goofy_idf(self):
         idf_object = """
@@ -50,8 +50,8 @@ something, !- with a comment
 last field with space; ! and comment for fun
 """
         processor = IDFProcessor()
-        ret_value = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(ret_value))
+        idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(1, len(idf_structure.objects))
 
     def test_missing_comma(self):
         idf_object = """
@@ -80,15 +80,15 @@ class TestIDFProcessingViaFile(unittest.TestCase):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "1ZoneEvapCooler.idf")
         processor = IDFProcessor()
-        ret_value = processor.process_file_given_file_path(idf_path)
-        self.assertEquals(74, len(ret_value))
+        idf_structure = processor.process_file_given_file_path(idf_path)
+        self.assertEquals(74, len(idf_structure.objects))
 
     def test_valid_idf_file_complex(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "RefBldgLargeHotelNew2004.idf")
         processor = IDFProcessor()
-        ret_value = processor.process_file_given_file_path(idf_path)
-        self.assertEquals(1078, len(ret_value))
+        idf_structure = processor.process_file_given_file_path(idf_path)
+        self.assertEquals(1078, len(idf_structure.objects))
 
     def test_missing_idf(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
@@ -101,5 +101,5 @@ class TestIDFProcessingViaFile(unittest.TestCase):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "Blank.idf")
         processor = IDFProcessor()
-        ret_value = processor.process_file_given_file_path(idf_path)
-        self.assertEquals(0, len(ret_value))
+        idf_structure = processor.process_file_given_file_path(idf_path)
+        self.assertEquals(0, len(idf_structure.objects))

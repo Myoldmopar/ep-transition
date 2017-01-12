@@ -61,16 +61,11 @@ def drive(argv, test_mode=False):
     elif argv[1] == valid_args[2].cli_argument:  # update
         input_file = argv[2]
         idf_processor = IDFProcessor()
-        idf_processor.process_file_given_file_path(input_file)
+        idf_structure = idf_processor.process_file_given_file_path(input_file)
         idd_file = argv[3]
         idd_processor = IDDProcessor()
         idd_structure = idd_processor.process_file_given_file_path(idd_file)
-        idd_obj = idd_structure.get_object_by_type('AirLoopHVAC:ControllerList')
-        idf_objs = idf_processor.get_idf_objects_by_type('AirLoopHVAC:ControllerList')
-        for idf_obj in idf_objs:
-            print('')
-            print(idf_obj.object_string(idd_obj))
-        idf_processor.write_idf(idd_structure)
+        idf_structure.write_idf(idd_structure)
     return 0
 
 

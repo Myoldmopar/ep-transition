@@ -1,10 +1,13 @@
 import os
-import unittest
+from unittest import TestCase, skipIf
 
+from transition import settings
 import driver
 
 
-class TestDriver(unittest.TestCase):
+class TestDriver(TestCase):
+
+    @skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_driver(self):
         # normal arg mode
         cur_dir = os.path.dirname(os.path.realpath(__file__))
