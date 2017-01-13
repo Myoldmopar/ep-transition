@@ -3,10 +3,7 @@
 import sys
 import unittest
 
-from transition.idf.idfobject import IDFStructure
-from transition.idf.processidf import IDFProcessor
-from transition.idd.processidd import IDDProcessor
-from transition.rules.rules86to87 import branch, controller_list
+from transition.manager import TransitionManager
 
 
 class Argument:
@@ -16,9 +13,11 @@ class Argument:
         self.usage_hint = usage_hint
 
 
-valid_args = [Argument('test', 0, ''),
-              Argument('usage', 0, ''),
-              Argument('update', 3, '<path/to/file/to/update> <path/to/original/idd> <path/to/new/idd>')]
+valid_args = [
+    Argument('test', 0, ''),
+    Argument('usage', 0, ''),
+    Argument('update', 4, '<path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
+]
 
 
 def usage(test_mode=False):
@@ -61,49 +60,8 @@ def drive(argv, test_mode=False):
         if not test_mode:  # pragma: no cover
             usage()
     elif argv[1] == valid_args[2].cli_argument:  # update
-        input_file = argv[2]
-        idf_processor = IDFProcessor()
-        idf_structure = idf_processor.process_file_given_file_path(input_file)
-        original_idd_file = argv[3]
-        original_idd_processor = IDDProcessor()
-        original_idd_structure = original_idd_processor.process_file_given_file_path(original_idd_file)
-        # TODO: validate the current idf against the original IDD
-        new_idd_file = argv[4]
-        new_idd_processor = IDDProcessor()
-        new_idd_structure = new_idd_processor.process_file_given_file_path(new_idd_file)
-        rules = [branch.BranchTransitionRule(), controller_list.ControllerListTransitionRule()]
-        rule_map = {}
-        for rule in rules:
-            rule_map[rule.get_name_of_object_to_transition().upper()] = [rule.get_names_of_dependent_objects(), rule.transition]
-        objects_to_delete = []
-        new_idf_objects = []
-        for original_idf_object in idf_structure.objects:
-            if original_idf_object.object_name.upper() in rule_map:
-                this_rule = rule_map[original_idf_object.object_name.upper()]
-                dependents = {}
-                for dependent_idf_type in this_rule[0]:
-                    dependents[dependent_idf_type.upper()] = idf_structure.get_idf_objects_by_type(dependent_idf_type)
-                transition_response = this_rule[1](original_idf_object, dependents)
-                new_idf_objects.extend(transition_response.to_write)
-                objects_to_delete.extend(transition_response.to_delete)
-            else:
-                new_idf_objects.append(original_idf_object)
-        delete_map = {}
-        for object_to_delete in objects_to_delete:
-            if object_to_delete.type.upper() in delete_map:
-                delete_map[object_to_delete.type.upper()].append(object_to_delete.name.upper())
-            else:
-                delete_map[object_to_delete.type.upper()] = [object_to_delete.name.upper()]
-        newer_idf_structure = IDFStructure("/newly/generated/idf")
-        newer_idf_structure.objects = []
-        for new_idf_object in new_idf_objects:
-            delete = False
-            if new_idf_object.object_name.upper() in delete_map:
-                if new_idf_object.fields[0].upper() in delete_map[new_idf_object.object_name.upper()]:
-                    delete = True
-            if not delete:
-                newer_idf_structure.objects.append(new_idf_object)
-        newer_idf_structure.write_idf(new_idd_structure)
+        manager = TransitionManager(argv[2], argv[3], argv[4], argv[5])
+        manager.perform_transition()
     return 0
 
 

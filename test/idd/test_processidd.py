@@ -3,8 +3,8 @@ import os
 from unittest import TestCase, skipIf
 
 from transition import settings
-from transition.idd.processidd import IDDProcessor
 from transition.exceptions import ProcessingException
+from transition.idd.processidd import IDDProcessor
 
 
 class TestIDDProcessingViaStream(TestCase):
@@ -106,7 +106,6 @@ Version,A1;
 
 
 class TestIDDProcessingViaFile(TestCase):
-
     @skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_valid_idd(self):  # pragma: no cover
         cur_dir = os.path.dirname(os.path.realpath(__file__))

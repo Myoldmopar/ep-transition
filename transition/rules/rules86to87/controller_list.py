@@ -1,9 +1,8 @@
-from transition.rules.base_rule import ObjectTypeAndName, TransitionRule, TransitionReturn
 from transition.idf.idfobject import IDFObject
+from transition.rules.base_rule import ObjectTypeAndName, TransitionRule, TransitionReturn
 
 
 class ControllerListTransitionRule(TransitionRule):
-
     def get_name_of_object_to_transition(self):
         return "AirLoopHVAC:ControllerList"
 

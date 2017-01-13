@@ -2,14 +2,12 @@ from transition.exceptions import UnimplementedMethodException
 
 
 class ObjectTypeAndName:
-
     def __init__(self, object_type, object_name):
         self.type = object_type
         self.name = object_name
 
 
 class TransitionReturn:
-
     def __init__(self, objects_to_write, objects_to_delete=None):
         self.to_write = objects_to_write
         if not objects_to_delete:
@@ -18,7 +16,6 @@ class TransitionReturn:
 
 
 class TransitionRule:
-
     def __init__(self):
         pass
 

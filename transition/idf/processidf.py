@@ -1,9 +1,9 @@
-import os
 import StringIO
+import os
 
-from transition.idf.idfobject import IDFObject, IDFStructure
 from transition import exceptions
 from transition import inputprocessor
+from transition.idf.idfobject import IDFObject, IDFStructure
 
 
 class IDFProcessor(inputprocessor.InputFileProcessor):

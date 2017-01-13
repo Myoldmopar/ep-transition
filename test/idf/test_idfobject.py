@@ -1,13 +1,12 @@
 import StringIO
 from unittest import TestCase
 
+from transition.idd.processidd import IDDProcessor
 from transition.idf.idfobject import IDFObject
 from transition.idf.processidf import IDFProcessor
-from transition.idd.processidd import IDDProcessor
 
 
 class TestIDFObject(TestCase):
-
     def test_valid_object(self):
         tokens = ["Objecttype", "object_name", "something", "", "last field with space"]
         obj = IDFObject(tokens)
@@ -31,7 +30,6 @@ class TestIDFObject(TestCase):
 
 
 class TestSingleLineIDFValidation(TestCase):
-
     def test_valid_single_token_object_no_idd(self):
         tokens = ["SingleLineObject"]
         obj = IDFObject(tokens)
@@ -54,7 +52,6 @@ class TestSingleLineIDFValidation(TestCase):
 
 
 class TestIDFValidation(TestCase):
-
     def setUp(self):
         idd_string = """
 \group MyGroup

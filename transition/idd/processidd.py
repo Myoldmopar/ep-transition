@@ -1,5 +1,5 @@
-import os
 import StringIO
+import os
 
 from transition import exceptions
 from transition import inputprocessor
@@ -354,8 +354,8 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                         read_status = CurrentReadType.ReadAnything
                     token_builder = ''
 
-            # don't ever put code here that could have side effects,
-            # as the blocks are not required to call continue when they are done
+                    # don't ever put code here that could have side effects,
+                    # as the blocks are not required to call continue when they are done
 
         # end the file here, but should watch for end-of-file in other CASEs also
         # cur_object.fields.append(cur_field)

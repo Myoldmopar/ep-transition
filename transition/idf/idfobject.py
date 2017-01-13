@@ -42,7 +42,8 @@ class IDFObject(object):
                         units_string = ' {' + idd_field.meta_data['\\units'][0] + '}'
                     else:
                         units_string = ''
-                    s += "  " + (idf_field + terminator).ljust(padding_size) + "!- " + idd_field.field_name + units_string + "\n"
+                    s += "  " + (idf_field + terminator).ljust(
+                        padding_size) + "!- " + idd_field.field_name + units_string + "\n"
             return s
 
     def validate(self, idd_object):
@@ -97,7 +98,7 @@ class IDFObject(object):
                         pass  # everything is ok
                     elif idf.upper() == 'AUTOSIZE':
                         issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                      'Autosize detected in numeric field that is _not_ listed autosizable'))
+                                                      'Autosize detected in numeric field that is _not_ listed autosizable'))
                     else:
                         issues.append(ValidationIssue(idd_object.name, idd.field_name,
                                                       'Non-numeric value in idd-specified numeric field'))
@@ -117,8 +118,8 @@ class IDFStructure(object):
     def get_idf_objects_by_type(self, type_to_get):
         return [i for i in self.objects if i.object_name.upper() == type_to_get.upper()]
 
-    def write_idf(self, idd_structure):
-        with open('/tmp/new_idf', 'w') as f:
+    def write_idf(self, idf_path, idd_structure=None):
+        with open(idf_path, 'w') as f:
             for idf_obj in self.objects:
                 idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
                 f.write(idf_obj.object_string(idd_obj) + '\n')
