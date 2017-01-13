@@ -1,9 +1,5 @@
 language: python
 
-os:
-  - linux
-  - osx
-
 env:
   matrix:
     - TOX_ENV=python
