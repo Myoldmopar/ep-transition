@@ -1,6 +1,6 @@
 # import unittest
 #
-# from transition.manager import TransitionManager
+# from eptransition.manager import TransitionManager
 #
 #
 # class TestManager(unittest.TestCase):

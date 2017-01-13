@@ -2,9 +2,9 @@ import StringIO
 import os
 from unittest import TestCase, skipIf
 
-from transition import settings
-from transition.exceptions import ProcessingException
-from transition.idd.processidd import IDDProcessor
+from eptransition import settings
+from eptransition.epexceptions import ProcessingException
+from eptransition.idd.processidd import IDDProcessor
 
 
 class TestIDDProcessingViaStream(TestCase):

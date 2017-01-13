@@ -1,5 +1,5 @@
-from transition.idf.idfobject import IDFObject
-from transition.rules.base_rule import ObjectTypeAndName, TransitionRule, TransitionReturn
+from eptransition.idf.idfobject import IDFObject
+from eptransition.rules.base_rule import ObjectTypeAndName, TransitionRule, TransitionReturn
 
 
 class ControllerListTransitionRule(TransitionRule):
