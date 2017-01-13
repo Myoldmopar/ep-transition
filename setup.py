@@ -1,7 +1,7 @@
 from codecs import open
 from os.path import abspath, dirname, join
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from eptransition import __version__, driver
 
@@ -19,7 +19,7 @@ setup(
     version=__version__,
     description='EnergyPlus file eptransition in Python.',
     long_description=long_description,
-    url='https://github.com/myoldmopar/ep-eptransition',
+    url='https://github.com/myoldmopar/ep-transition',
     author='Edwin Lee',
     author_email='leeed2001@gmail.com',
     license='UNLICENSE',
@@ -38,14 +38,14 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     keywords='cli',
-    packages=['eptransition'],
+    packages=find_packages(exclude=['test', 'support', 'build', '.tox', 'dist', 'docs', 'scripts']),
     install_requires=[],
     extras_require={
         'test': ['coverage', 'unittest', 'coveralls'],
     },
     entry_points={
         'console_scripts': [
-            'eptransition=driver:drive_from_cmdline',
+            'eptransition=eptransition.driver:drive_from_cmdline',
         ],
     }
 )
