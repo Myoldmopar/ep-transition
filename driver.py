@@ -3,8 +3,7 @@
 import sys
 import unittest
 
-from transition.idf.processidf import IDFProcessor
-from transition.idd.processidd import IDDProcessor
+from transition.manager import TransitionManager
 
 
 class Argument:
@@ -14,9 +13,11 @@ class Argument:
         self.usage_hint = usage_hint
 
 
-valid_args = [Argument('test', 0, ''),
-              Argument('usage', 0, ''),
-              Argument('update', 2, '<path/to/file/to/update> <path/to/matching/idd>')]
+valid_args = [
+    Argument('test', 0, ''),
+    Argument('usage', 0, ''),
+    Argument('update', 4, '<path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
+]
 
 
 def usage(test_mode=False):
@@ -59,13 +60,8 @@ def drive(argv, test_mode=False):
         if not test_mode:  # pragma: no cover
             usage()
     elif argv[1] == valid_args[2].cli_argument:  # update
-        input_file = argv[2]
-        idf_processor = IDFProcessor()
-        idf_structure = idf_processor.process_file_given_file_path(input_file)
-        idd_file = argv[3]
-        idd_processor = IDDProcessor()
-        idd_structure = idd_processor.process_file_given_file_path(idd_file)
-        idf_structure.write_idf(idd_structure)
+        manager = TransitionManager(argv[2], argv[3], argv[4], argv[5])
+        manager.perform_transition()
     return 0
 
 

@@ -12,21 +12,39 @@ class IDFObject(object):
 
     def object_string(self, idd_object=None):
         if not idd_object:
-            idd_fields = [''] * len(self.fields)
+            if len(self.fields) == 0:
+                s = self.object_name + ";\n"
+            else:
+                s = self.object_name + ",\n"
+                padding_size = 25
+                for index, idf_field in enumerate(self.fields):
+                    if index == len(self.fields) - 1:
+                        terminator = ';'
+                    else:
+                        terminator = ','
+                    s += "  " + (idf_field + terminator).ljust(
+                        padding_size) + "!- \n"
+            return s
         else:
-            idd_fields = []
-            for field in idd_object.fields:
-                idd_fields.append(field.field_name)
-        if len(self.fields) == 0:
-            s = self.object_name + ";\n"
-        else:
-            s = self.object_name + ",\n"
-            padding_size = 25
-            last_idd_field = idd_fields[len(self.fields) - 1]
-            for idf_field, idd_field in zip(self.fields[:-1], idd_fields):
-                s += "  " + (idf_field + ',').ljust(padding_size) + "!- " + idd_field + "\n"
-            s += "  " + (self.fields[-1] + ';').ljust(padding_size) + "!- " + last_idd_field + "\n"
-        return s
+            if len(self.fields) == 0:
+                s = self.object_name + ";\n"
+            else:
+                idd_fields = idd_object.fields
+                s = self.object_name + ",\n"
+                padding_size = 25
+                for index, idf_idd_fields in enumerate(zip(self.fields, idd_fields)):
+                    idf_field, idd_field = idf_idd_fields
+                    if index == len(self.fields) - 1:
+                        terminator = ';'
+                    else:
+                        terminator = ','
+                    if '\\units' in idd_field.meta_data:
+                        units_string = ' {' + idd_field.meta_data['\\units'][0] + '}'
+                    else:
+                        units_string = ''
+                    s += "  " + (idf_field + terminator).ljust(
+                        padding_size) + "!- " + idd_field.field_name + units_string + "\n"
+            return s
 
     def validate(self, idd_object):
         issues = []
@@ -80,7 +98,7 @@ class IDFObject(object):
                         pass  # everything is ok
                     elif idf.upper() == 'AUTOSIZE':
                         issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                      'Autosize detected in numeric field that is _not_ listed autosizable'))
+                                                      'Autosize detected in numeric field that is _not_ listed autosizable'))
                     else:
                         issues.append(ValidationIssue(idd_object.name, idd.field_name,
                                                       'Non-numeric value in idd-specified numeric field'))
@@ -93,14 +111,24 @@ class IDFObject(object):
 class IDFStructure(object):
     def __init__(self, file_path):
         self.file_path = file_path
+        # TODO: Parse and store IDF version
         self.version = None
         self.objects = None
 
     def get_idf_objects_by_type(self, type_to_get):
         return [i for i in self.objects if i.object_name.upper() == type_to_get.upper()]
 
-    def write_idf(self, idd_structure):
-        with open('/tmp/new_idf', 'w') as f:
+    def write_idf(self, idf_path, idd_structure=None):
+        with open(idf_path, 'w') as f:
             for idf_obj in self.objects:
                 idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
                 f.write(idf_obj.object_string(idd_obj) + '\n')
+
+    def validate(self, idd_structure):
+        issues = []
+        for idf_object in self.objects:
+            idd_object = idd_structure.get_object_by_type(idf_object.object_name)
+            this_object_issues = idf_object.validate(idd_object)
+            if this_object_issues:
+                issues.extend(this_object_issues)
+        return issues

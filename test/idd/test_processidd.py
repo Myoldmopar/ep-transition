@@ -3,8 +3,8 @@ import os
 from unittest import TestCase, skipIf
 
 from transition import settings
-from transition.idd.processidd import IDDProcessor
 from transition.exceptions import ProcessingException
+from transition.idd.processidd import IDDProcessor
 
 
 class TestIDDProcessingViaStream(TestCase):
@@ -20,6 +20,22 @@ Version,
       \\default 8.6
 
 """
+        processor = IDDProcessor()
+        ret_value = processor.process_file_via_stream(StringIO.StringIO(idd_object))
+        self.assertEquals(1, len(ret_value.groups))
+        self.assertEquals(1, len(ret_value.groups[0].objects))
+
+    def test_proper_idd_indented(self):
+        idd_object = """
+    \\group Simulation Parameters
+
+    Version,
+          \\memo Specifies the EnergyPlus version of the IDF file.
+          \\unique-object
+          \format singleLine
+      A1 ; \\field Version Identifier
+          \\default 8.6
+    """
         processor = IDDProcessor()
         ret_value = processor.process_file_via_stream(StringIO.StringIO(idd_object))
         self.assertEquals(1, len(ret_value.groups))
@@ -74,7 +90,7 @@ Version,A1;
           N2;  \\field NumericFieldB
                \\autosizabled
                 """
-        with self.assertRaises(ProcessingException):
+        with self.assertRaises(ProcessingException) as e:
             IDDProcessor().process_file_via_string(idd_string).get_object_by_type('MyObject')
 
     def test_invalid_idd_metadata(self):
@@ -90,7 +106,6 @@ Version,A1;
 
 
 class TestIDDProcessingViaFile(TestCase):
-
     @skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_valid_idd(self):  # pragma: no cover
         cur_dir = os.path.dirname(os.path.realpath(__file__))
