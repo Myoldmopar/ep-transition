@@ -1,4 +1,5 @@
 language: python
+cache: pip
 env:
   matrix:
   - TOX_ENV=python
@@ -11,11 +12,12 @@ install:
 - pip install tox coveralls
 script:
 - tox -e $TOX_ENV
-after_success: coveralls
+after_success: test $TOX_ENV = "python" && coveralls
 deploy:
 - provider: pypi
   user: Myoldmopar
   skip_cleanup: true
+  skip_upload_docs: true
   password:
     secure: Ax9rCEWnrKPsfLVHe7t5jbS2uS1/aerbvi9GXEYoTWh3/B3a3G3eP2HKt8dITZomuPzXh7Wu6FRmcteJ9DUk6PHcqSKgLIf47JN6q/Afvz6PapTt2PNIAEp2rIyRBMlvbI915Z5v4JJ6td59xSIX9MNKIHBDgDQzZocACc0xjW4z11t8ZgUhBSFOxbEQHDSCVbI2bfjBXXS3ynljg+Z5CmkcGePaUYsDFrognaw8Jbl+Ru7bq6kRDnIhtW2sR4BXdo9Lf9Bp6qY4Wap2570xr9DbTuvebsci+Ouy9Dasu3rVzI6qEqOB9IVN8u9AL6P1q86tyQzH51jELoofd0sBlalL3mKaP5MXkghSpQQS18iboKWS5AMiznnFla5y0amUDscAhA1u6DbxcG6uvL6Cm5wEebLqoDdDfWDSo9rPSwdu3REJ0Y7+KsO11otjlqhoulWxkcM5WSRRaA7ZQrC308U0sEeK/FmUT+Xug4bfXJf6lWl1RvDVqls64v7Cqq1IGabIeBNwS8rCP7is2a2tQdo/A27+jfLUKv8eu6VfNWdSzi2rRaNky6+7hdZzUL28I6WCx4gTmyJxKlTUSnT6CBYMi77ePvnGrb73rLq8PMiX2LD6qPYmcwVc7mxz9Wk1yqsIUGZn6YRqXR2FI763ebeK1m4cNUMCZsApYydywJk=
   on:
