@@ -3,7 +3,7 @@
 import sys
 import unittest
 
-from transition.manager import TransitionManager
+from manager import TransitionManager
 
 
 class Argument:
@@ -65,5 +65,9 @@ def drive(argv, test_mode=False):
     return 0
 
 
-if __name__ == "__main__":
+def drive_from_cmdline():  # pragma no cover
     sys.exit(drive(sys.argv))
+
+
+if __name__ == "__main__":  # pragma no cover
+    drive_from_cmdline()

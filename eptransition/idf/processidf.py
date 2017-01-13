@@ -1,12 +1,11 @@
 import StringIO
 import os
 
-from transition import exceptions
-from transition import inputprocessor
-from transition.idf.idfobject import IDFObject, IDFStructure
+from eptransition import epexceptions
+from eptransition.idf.idfobject import IDFObject, IDFStructure
 
 
-class IDFProcessor(inputprocessor.InputFileProcessor):
+class IDFProcessor:
     def __init__(self):
         self.idf = None
         self.file_path = None
@@ -14,7 +13,7 @@ class IDFProcessor(inputprocessor.InputFileProcessor):
 
     def process_file_given_file_path(self, file_path):
         if not os.path.exists(file_path):
-            raise exceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
+            raise epexceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
         self.input_file_stream = open(file_path, 'r')
         self.file_path = file_path
         return self.process_file()
@@ -53,7 +52,7 @@ class IDFProcessor(inputprocessor.InputFileProcessor):
         # intermediate: check for malformed idf syntax
         for l in lines_a:
             if not (l.endswith(',') or l.endswith(';')):
-                raise exceptions.MalformedIDFException("IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
+                raise epexceptions.MalformedIDFException("IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
 
         # intermediate: join entire array and re-split by semicolon
         idf_data_joined = ''.join(lines_a)

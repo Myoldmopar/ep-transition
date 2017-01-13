@@ -1,8 +1,7 @@
 import os
 from unittest import TestCase, skipIf
 
-import driver
-from transition import settings
+from eptransition import settings, driver
 
 
 class TestDriver(TestCase):

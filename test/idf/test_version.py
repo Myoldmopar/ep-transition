@@ -1,6 +1,6 @@
 import unittest
 
-from transition.version import START_VERSION, END_VERSION, VersionInformation
+from eptransition.version import START_VERSION, END_VERSION, VersionInformation
 
 
 class TestVersions(unittest.TestCase):

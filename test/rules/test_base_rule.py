@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from transition.exceptions import UnimplementedMethodException
-from transition.rules.base_rule import TransitionRule
+from eptransition.epexceptions import UnimplementedMethodException
+from eptransition.rules.base_rule import TransitionRule
 
 
 class TestBaseRule(TestCase):

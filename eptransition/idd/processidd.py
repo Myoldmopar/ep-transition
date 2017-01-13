@@ -1,9 +1,8 @@
 import StringIO
 import os
 
-from transition import exceptions
-from transition import inputprocessor
-from transition.idd.iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
+from eptransition import epexceptions
+from iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
 
 
 class CurrentReadType:
@@ -21,7 +20,7 @@ class CurrentReadType:
     LookingForFieldMetaDataOrNextField = 11
 
 
-class IDDProcessor(inputprocessor.InputFileProcessor):
+class IDDProcessor:
     def __init__(self):
         self.idd = None
         self.idd_file_stream = None
@@ -36,7 +35,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
 
     def process_file_given_file_path(self, file_path):
         if not os.path.exists(file_path):
-            raise exceptions.ProcessingException("Input IDD file not found=\"" + file_path + "\"")  # pragma: no cover
+            raise epexceptions.ProcessingException("Input IDD file not found=\"" + file_path + "\"")  # pragma: no cover
         self.idd_file_stream = open(file_path, 'r')
         self.file_path = file_path
         return self.process_file()
@@ -143,7 +142,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     group_flag_index = group_declaration.find(self.group_flag_string)
                     if group_flag_index == -1:  # pragma: no cover
                         # add error to error report
-                        raise exceptions.ProcessingException(
+                        raise epexceptions.ProcessingException(
                             "Group keyword not found where expected",
                             line_index=line_index)
                     else:
@@ -175,7 +174,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                     self.read_one_char()  # to clear the semicolon
                     read_status = CurrentReadType.ReadAnything
                 elif peeked_char in ['\n', '!']:  # pragma: no cover
-                    raise exceptions.ProcessingException(
+                    raise epexceptions.ProcessingException(
                         "An object name was not properly terminated by a comma or semicolon",
                         line_index=line_index)
 
@@ -208,7 +207,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                                 string_list = [None]
                                 cur_object.meta_data[cur_obj_meta_data_type] = string_list
                             else:  # pragma: no cover   -- strings already exist, this is not valid...
-                                raise exceptions.ProcessingException(
+                                raise epexceptions.ProcessingException(
                                     "Erroneous object meta data - repeated \"" + token_builder + "\"",
                                     line_index=line_index,
                                     object_name=cur_object.name)
@@ -219,7 +218,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                             read_status = CurrentReadType.ReadingObjectMetaDataContents
                     else:  # pragma: no cover
                         # token_builder = ''
-                        raise exceptions.ProcessingException(
+                        raise epexceptions.ProcessingException(
                             "Erroneous object meta data tag found",
                             line_index=line_index,
                             object_name=cur_object.name)
@@ -253,7 +252,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                         last_field_for_object = True
                     read_status = CurrentReadType.ReadingFieldMetaDataOrNextANValue
                 elif peeked_char == '\n':  # pragma: no cover
-                    raise exceptions.ProcessingException(
+                    raise epexceptions.ProcessingException(
                         "Blank or erroneous ""AN"" field index value",
                         line_index=line_index,
                         object_name=cur_object.name)
@@ -280,7 +279,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                         # data needs to start with a space, otherwise things like: \fieldd My Field would be valid
                         if len(data) > 0:
                             if data[0] not in [' ', '>', '<']:
-                                raise exceptions.ProcessingException(
+                                raise epexceptions.ProcessingException(
                                     'Invalid meta data, expected a space after the meta data specifier before the data',
                                     line_index=line_index,
                                     object_name=cur_object.name,
@@ -298,7 +297,7 @@ class IDDProcessor(inputprocessor.InputFileProcessor):
                                 string_list.append(data)
                                 cur_field.meta_data[flag_found] = string_list
                     else:  # pragma: no cover
-                        raise exceptions.ProcessingException(
+                        raise epexceptions.ProcessingException(
                             "Erroneous field meta data entry found",
                             line_index=line_index,
                             object_name=cur_object.name,

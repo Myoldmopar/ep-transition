@@ -1,6 +1,6 @@
 import unittest
 
-from transition.filetype import TypeEnum
+from eptransition.filetype import TypeEnum
 
 
 class TestTypeEnums(unittest.TestCase):

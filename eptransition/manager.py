@@ -1,7 +1,7 @@
-from transition.idd.processidd import IDDProcessor
-from transition.idf.idfobject import IDFStructure
-from transition.idf.processidf import IDFProcessor
-from transition.rules.rules86to87 import controller_list, branch
+from idd.processidd import IDDProcessor
+from idf.idfobject import IDFStructure
+from idf.processidf import IDFProcessor
+from rules.rules86to87 import controller_list, branch
 
 
 class TransitionManager(object):

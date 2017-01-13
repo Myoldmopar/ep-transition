@@ -1,9 +1,9 @@
 import StringIO
 from unittest import TestCase
 
-from transition.idd.processidd import IDDProcessor
-from transition.idf.idfobject import IDFObject
-from transition.idf.processidf import IDFProcessor
+from eptransition.idd.processidd import IDDProcessor
+from eptransition.idf.idfobject import IDFObject
+from eptransition.idf.processidf import IDFProcessor
 
 
 class TestIDFObject(TestCase):

@@ -1,4 +1,4 @@
-from transition.exceptions import UnimplementedMethodException
+from eptransition.epexceptions import UnimplementedMethodException
 
 
 class ObjectTypeAndName:
@@ -29,4 +29,4 @@ class TransitionRule:
 
     def transition(self, core_object, dependent_objects):
         raise UnimplementedMethodException(
-            "TransitionRule derived classes should override transition() method")
+            "TransitionRule derived classes should override eptransition() method")
