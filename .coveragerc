@@ -1,4 +1,5 @@
 [run]
 omit =
         /usr/*
+        .tox/*
         setup.py
