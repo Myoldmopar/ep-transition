@@ -5,8 +5,6 @@ from transition import exceptions
 from transition import inputprocessor
 from transition.idd.iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
 
-# TODO: Add a test for indented IDD object name
-
 
 class CurrentReadType:
     EncounteredComment_ReadToCR = 0

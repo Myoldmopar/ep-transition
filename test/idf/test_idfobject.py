@@ -68,7 +68,8 @@ MyObject,
        \\maximum< 2
        \\autosizable
         """
-        self.idd_object = IDDProcessor().process_file_via_string(idd_string).get_object_by_type('MyObject')
+        self.idd_structure = IDDProcessor().process_file_via_string(idd_string)
+        self.idd_object = self.idd_structure.get_object_by_type('MyObject')
 
     def test_valid_idf_object(self):
         idf_string = "MyObject,1,1;"
@@ -123,3 +124,21 @@ MyObject,
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
+
+    def test_whole_idf_valid(self):
+        idf_string = "MyObject,1,1;MyObject,1,1;"
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        issues = idf_structure.validate(self.idd_structure)
+        self.assertEqual(len(issues), 0)
+
+    def test_whole_idf_one_invalid(self):
+        idf_string = "MyObject,-1,1;MyObject,1,1;"
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        issues = idf_structure.validate(self.idd_structure)
+        self.assertEqual(len(issues), 1)
+
+    def test_whole_idf_two_invalid(self):
+        idf_string = "MyObject,-1,1;MyObject,-1,1;"
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        issues = idf_structure.validate(self.idd_structure)
+        self.assertEqual(len(issues), 2)

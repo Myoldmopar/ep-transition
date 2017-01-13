@@ -110,6 +110,7 @@ class IDFObject(object):
 class IDFStructure(object):
     def __init__(self, file_path):
         self.file_path = file_path
+        # TODO: Parse and store IDF version
         self.version = None
         self.objects = None
 
@@ -121,3 +122,12 @@ class IDFStructure(object):
             for idf_obj in self.objects:
                 idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
                 f.write(idf_obj.object_string(idd_obj) + '\n')
+
+    def validate(self, idd_structure):
+        issues = []
+        for idf_object in self.objects:
+            idd_object = idd_structure.get_object_by_type(idf_object.object_name)
+            this_object_issues = idf_object.validate(idd_object)
+            if this_object_issues:
+                issues.extend(this_object_issues)
+        return issues

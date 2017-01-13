@@ -28,4 +28,3 @@ class ControllerListTransitionRule(TransitionRule):
         # return a list since some transitions may split/add new objects
         objects_to_write = [new_controller_list_object]
         return TransitionReturn(objects_to_write, objects_to_delete)
-        # TODO: return something different including a list of objects to delete

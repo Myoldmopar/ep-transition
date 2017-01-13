@@ -22,16 +22,14 @@ class TransitionRule:
     def __init__(self):
         pass
 
-    # TODO: Could add unit tests to validate these can't be instantiated without exception
-
-    def get_name_of_object_to_transition(self):  # pragma no cover
+    def get_name_of_object_to_transition(self):
         raise UnimplementedMethodException(
             "TransitionRule derived classes should override get_name_of_object_to_transition() method")
 
-    def get_names_of_dependent_objects(self):  # pragma no cover
+    def get_names_of_dependent_objects(self):
         raise UnimplementedMethodException(
             "TransitionRule derived classes should override get_names_of_dependent_objects() method")
 
-    def transition(self, core_object, dependent_objects):  # pragma no cover
+    def transition(self, core_object, dependent_objects):
         raise UnimplementedMethodException(
             "TransitionRule derived classes should override transition() method")

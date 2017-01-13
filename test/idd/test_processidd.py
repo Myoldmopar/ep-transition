@@ -25,6 +25,22 @@ Version,
         self.assertEquals(1, len(ret_value.groups))
         self.assertEquals(1, len(ret_value.groups[0].objects))
 
+    def test_proper_idd_indented(self):
+        idd_object = """
+    \\group Simulation Parameters
+
+    Version,
+          \\memo Specifies the EnergyPlus version of the IDF file.
+          \\unique-object
+          \format singleLine
+      A1 ; \\field Version Identifier
+          \\default 8.6
+    """
+        processor = IDDProcessor()
+        ret_value = processor.process_file_via_stream(StringIO.StringIO(idd_object))
+        self.assertEquals(1, len(ret_value.groups))
+        self.assertEquals(1, len(ret_value.groups[0].objects))
+
     def test_repeated_object_meta_idd(self):
         idd_object = """
 \\group Simulation Parameters
