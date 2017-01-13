@@ -25,3 +25,4 @@ deploy:
   file: dist/ep-transition-wheel.zip
   on:
     tags: true
+    condition: $TOX_ENV = package
