@@ -68,13 +68,13 @@ class TransitionManager(object):
         if original_idf_file_type == START_VERSION.file_type and original_idd_file_type == START_VERSION.file_type:
             pass  # that's a good thing
         else:
-            raise FileTypeException("Original files don't match expected version file type; expected: "
-                                    + START_VERSION.file_type)
+            raise FileTypeException("Original files don't match expected version file type; expected: " +
+                                    START_VERSION.file_type)
         if new_idf_file_type == END_VERSION.file_type and new_idd_file_type == END_VERSION.file_type:
             pass  # that's a good thing
         else:
-            raise FileTypeException("Updated files don't match expected version file type; expected: "
-                                    + END_VERSION.file_type)
+            raise FileTypeException("Updated files don't match expected version file type; expected: " +
+                                    END_VERSION.file_type)
 
         # process the original input file
         original_idf_processor = IDFProcessor()
