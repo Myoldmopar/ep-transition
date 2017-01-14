@@ -3,15 +3,6 @@ EnergyPlus Python Transition
 
 Python version of the E+ input file transition utility
 
-.. |image0| image:: https://readthedocs.org/projects/energyplus-python-transition/badge/?version=latest
-   :target: http://energyplus-python-transition.readthedocs.org/en/latest/
-.. |image1| image:: https://travis-ci.org/Myoldmopar/ep-transition.svg?branch=master
-   :target: https://travis-ci.org/Myoldmopar/ep-transition
-.. |Coverage Status| image:: https://coveralls.io/repos/github/Myoldmopar/ep-transition/badge.svg?branch=master
-   :target: https://coveralls.io/github/Myoldmopar/ep-transition?branch=master
-.. |PyPI version| image:: https://badge.fury.io/py/eptransition.svg
-   :target: https://badge.fury.io/py/eptransition
-
 Documentation |image0|
 ----------------------
 
@@ -48,3 +39,11 @@ via ``pip install eptransition``. The wheel is also posted to the
 Page <https://github.com/Myoldmopar/ep-transition/releases/>`__ for
 manual download/installation if desired.
 
+.. |image0| image:: https://readthedocs.org/projects/energyplus-python-transition/badge/?version=latest
+   :target: http://energyplus-python-transition.readthedocs.org/en/latest/
+.. |image1| image:: https://travis-ci.org/Myoldmopar/ep-transition.svg?branch=master
+   :target: https://travis-ci.org/Myoldmopar/ep-transition
+.. |Coverage Status| image:: https://coveralls.io/repos/github/Myoldmopar/ep-transition/badge.svg?branch=master
+   :target: https://coveralls.io/github/Myoldmopar/ep-transition?branch=master
+.. |PyPI version| image:: https://badge.fury.io/py/eptransition.svg
+   :target: https://badge.fury.io/py/eptransition

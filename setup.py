@@ -13,7 +13,7 @@ if len(sys.argv) > 1:
         sys.exit(driver.drive(sys.argv))
 
 this_dir = abspath(dirname(__file__))
-with open(join(this_dir, 'README'), encoding='utf-8') as file:
+with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
     long_description = file.read()
 
 setup(
