@@ -7,5 +7,6 @@ class VersionInformation(object):
         self.file_type = file_type
 
 
+# TODO: This should be a start/end for a specific version
 START_VERSION = VersionInformation(8.6, TypeEnum.IDF)
 END_VERSION = VersionInformation(8.7, TypeEnum.IDF)

@@ -60,82 +60,104 @@ MyObject,
        \\minimum 0
        \\maximum 2
        \\required-field
-  N2;  \\field NumericFieldB
+  N2,  \\field NumericFieldB
        \\minimum> 0
        \\maximum< 2
        \\autosizable
+  N3;  \\field NumericFieldB
+       \\minimum> 0
+       \\maximum< 2
+       \\autocalculatable
         """
         self.idd_structure = IDDProcessor().process_file_via_string(idd_string)
         self.idd_object = self.idd_structure.get_object_by_type('MyObject')
 
     def test_valid_idf_object(self):
-        idf_string = "MyObject,1,1;"
+        idf_string = "MyObject,1,1,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 0)
 
     def test_non_numeric(self):
-        idf_string = "MyObject,A,1;"
+        idf_string = "MyObject,A,1,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
+    def test_blank_numeric(self):
+        idf_string = "MyObject,1,,1;"
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 0)
+
     def test_non_numeric_but_autosize(self):
-        idf_string = "MyObject,1,AutoSize;"
+        idf_string = "MyObject,1,AutoSize,1;"
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 0)
+
+    def test_non_numeric_but_autocalculatable(self):
+        idf_string = "MyObject,1,1,AutoCalculate;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 0)
 
     def test_non_numeric_autosize_but_not_allowed(self):
-        idf_string = "MyObject,AutoSize,1;"
+        idf_string = "MyObject,AutoSize,1,1;"
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 1)
+
+    def test_non_numeric_autocalculate_but_not_allowed(self):
+        idf_string = "MyObject,AutoCalculate,1,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
     def test_numeric_too_high_a(self):
-        idf_string = "MyObject,3,1;"
+        idf_string = "MyObject,3,1,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
     def test_numeric_too_high_b(self):
-        idf_string = "MyObject,1,2;"
+        idf_string = "MyObject,1,2,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
     def test_numeric_too_low_a(self):
-        idf_string = "MyObject,-1,1;"
+        idf_string = "MyObject,-1,1,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
     def test_numeric_too_low_b(self):
-        idf_string = "MyObject,1,0;"
+        idf_string = "MyObject,1,0,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
     def test_missing_required_field(self):
-        idf_string = "MyObject,,1;"
+        idf_string = "MyObject,,1,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
     def test_whole_idf_valid(self):
-        idf_string = "MyObject,1,1;MyObject,1,1;"
+        idf_string = "MyObject,1,1,1;MyObject,1,1,1;"
         idf_structure = IDFProcessor().process_file_via_string(idf_string)
         issues = idf_structure.validate(self.idd_structure)
         self.assertEqual(len(issues), 0)
 
     def test_whole_idf_one_invalid(self):
-        idf_string = "MyObject,-1,1;MyObject,1,1;"
+        idf_string = "MyObject,-1,1,1;MyObject,1,1,1;"
         idf_structure = IDFProcessor().process_file_via_string(idf_string)
         issues = idf_structure.validate(self.idd_structure)
         self.assertEqual(len(issues), 1)
 
     def test_whole_idf_two_invalid(self):
-        idf_string = "MyObject,-1,1;MyObject,-1,1;"
+        idf_string = "MyObject,-1,1,1;MyObject,-1,1,1;"
         idf_structure = IDFProcessor().process_file_via_string(idf_string)
         issues = idf_structure.validate(self.idd_structure)
         self.assertEqual(len(issues), 2)
