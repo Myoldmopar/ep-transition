@@ -12,7 +12,9 @@ class TestDriver(TestCase):
         idf_path = os.path.join(cur_dir, "..", "support", "transition_files", "1ZoneEvapCooler.idf")
         idd_path = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+.idd")
         idd_path_2 = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+2.idd")
-        r = driver.drive(['program_name', 'update', idf_path, '/tmp/new_idf', idd_path, idd_path_2], True)
+        if os.path.exists('/tmp/new_idf.idf'):
+            os.remove('/tmp/new_idf.idf')
+        r = driver.drive(['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path, idd_path_2], True)
         self.assertEqual(0, r)
         # usage mode
         r = driver.drive(['program_name', 'usage'], True)

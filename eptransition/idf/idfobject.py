@@ -4,6 +4,9 @@ class ValidationIssue:
         self.field_name = field_name
         self.message = message
 
+    def __str__(self):
+        return "Issue found: object {}; field {}; message: {}".format(self.object_name, self.field_name, self.message)
+
 
 class IDFObject(object):
     def __init__(self, tokens):
@@ -48,9 +51,9 @@ class IDFObject(object):
 
     def validate(self, idd_object):
         issues = []
-        # need to first check min-fields
-        # need to check \default for each field to fill it first if it is blank
-        # need to check \type choice and \keys
+        # TODO: first check min-fields
+        # TODO: check \default for each field to fill it first if it is blank
+        # TODO: check \type choice and \keys
         for idf, idd in zip(self.fields, idd_object.fields):
             if '\\required-field' in idd.meta_data:
                 if idf == '':
@@ -59,49 +62,55 @@ class IDFObject(object):
                     continue
             an_code = idd.field_an_index
             if an_code[0] == 'N':
-                try:
-                    number = float(idf)
-                    if '\\maximum' in idd.meta_data:
-                        max_constraint_string = idd.meta_data['\\maximum'][0]
-                        if max_constraint_string[0] == "<":
-                            max_val = float(max_constraint_string[1:])
-                            if number >= max_val:
-                                issues.append(ValidationIssue(
-                                    idd_object.name, idd.field_name,
-                                    'Field value higher than idd-specified maximum>; actual={}, max={}'.format(
-                                        number, max_val)))
+                if idf.strip() != '':
+                    try:
+                        number = float(idf)
+                        if '\\maximum' in idd.meta_data:
+                            max_constraint_string = idd.meta_data['\\maximum'][0]
+                            if max_constraint_string[0] == "<":
+                                max_val = float(max_constraint_string[1:])
+                                if number >= max_val:
+                                    issues.append(ValidationIssue(
+                                        idd_object.name, idd.field_name,
+                                        'Field value higher than idd-specified maximum>; actual={}, max={}'.format(
+                                            number, max_val)))
+                            else:
+                                max_val = float(max_constraint_string)
+                                if number > max_val:
+                                    issues.append(ValidationIssue(
+                                        idd_object.name, idd.field_name,
+                                        'Field value higher than idd-specified maximum; actual={}, max={}'.format(
+                                            number, max_val)))
+                        if '\\minimum' in idd.meta_data:
+                            min_constraint_string = idd.meta_data['\\minimum'][0]
+                            if min_constraint_string[0] == ">":
+                                min_val = float(min_constraint_string[1:])
+                                if number <= min_val:
+                                    issues.append(ValidationIssue(
+                                        idd_object.name, idd.field_name,
+                                        'Field value lower than idd-specified minimum<; actual={}, max={}'.format(
+                                            number, max_val)))
+                            else:
+                                min_val = float(min_constraint_string)
+                                if number < min_val:
+                                    issues.append(ValidationIssue(
+                                        idd_object.name, idd.field_name,
+                                        'Field value lower than idd-specified minimum; actual={}, max={}'.format(
+                                            number, max_val)))
+                    except ValueError:
+                        if '\\autosizable' in idd.meta_data and idf.upper() == 'AUTOSIZE':
+                            pass  # everything is ok
+                        elif idf.upper() == 'AUTOSIZE':
+                            issues.append(ValidationIssue(idd_object.name, idd.field_name,
+                                                          'Autosize detected in numeric field that is _not_ listed autosizable'))
+                        elif '\\autocalculatable' in idd.meta_data and idf.upper() == 'AUTOCALCULATE':
+                            pass  # everything is ok
+                        elif idf.upper() == 'AUTOCALCULATE':
+                            issues.append(ValidationIssue(idd_object.name, idd.field_name,
+                                                          'Autocalculate detected in numeric field that is _not_ listed autocalculatable'))
                         else:
-                            max_val = float(max_constraint_string)
-                            if number > max_val:
-                                issues.append(ValidationIssue(
-                                    idd_object.name, idd.field_name,
-                                    'Field value higher than idd-specified maximum; actual={}, max={}'.format(
-                                        number, max_val)))
-                    if '\\minimum' in idd.meta_data:
-                        min_constraint_string = idd.meta_data['\\minimum'][0]
-                        if min_constraint_string[0] == ">":
-                            min_val = float(min_constraint_string[1:])
-                            if number <= min_val:
-                                issues.append(ValidationIssue(
-                                    idd_object.name, idd.field_name,
-                                    'Field value lower than idd-specified minimum<; actual={}, max={}'.format(
-                                        number, max_val)))
-                        else:
-                            min_val = float(min_constraint_string)
-                            if number < min_val:
-                                issues.append(ValidationIssue(
-                                    idd_object.name, idd.field_name,
-                                    'Field value lower than idd-specified minimum; actual={}, max={}'.format(
-                                        number, max_val)))
-                except ValueError:
-                    if '\\autosizable' in idd.meta_data and idf.upper() == 'AUTOSIZE':
-                        pass  # everything is ok
-                    elif idf.upper() == 'AUTOSIZE':
-                        issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                                      'Autosize detected in numeric field that is _not_ listed autosizable'))
-                    else:
-                        issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                                      'Non-numeric value in idd-specified numeric field'))
+                            issues.append(ValidationIssue(idd_object.name, idd.field_name,
+                                                          'Non-numeric value in idd-specified numeric field'))
         return issues
 
     def write_object(self, file_object):
