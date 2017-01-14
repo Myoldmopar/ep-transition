@@ -101,20 +101,23 @@ class TransitionManager(object):
         issues = original_idf_structure.validate(original_idd_structure)
         if len(issues) > 0:  # pragma no cover
             # TODO: Once issues have severities, just check for fatal errors
-            raise ManagerProcessingException("Issues found in validating of original idf against original idd; aborting")
+            raise ManagerProcessingException(
+                "Issues found in validating of original idf against original idd; aborting")
 
         # check the version of the original idf
         try:
             original_version_object = original_idf_structure.get_idf_objects_by_type("Version")[0]
         except:  # pragma no cover
-            raise ManagerProcessingException("Could not access version object in original idf; this is invalid, aborting.")
+            raise ManagerProcessingException(
+                "Could not access version object in original idf; this is invalid, aborting.")
         try:
             version_value = float(original_version_object.fields[0])
         except:  # pragma no cover
             raise ManagerProcessingException("Could not coerce version field into numeric representation; aborting.")
         if version_value != START_VERSION.version:  # pragma no cover
-            raise ManagerProcessingException("Input file version does not match expected.  (expected={};found={})".format(
-                START_VERSION.version, version_value))
+            raise ManagerProcessingException(
+                "Input file version does not match expected.  (expected={};found={})".format(
+                    START_VERSION.version, version_value))
 
         # now read in the rules and create a map based on the upper case version of the IDF object to transition
         # TODO: Read in only the rules for this particular version

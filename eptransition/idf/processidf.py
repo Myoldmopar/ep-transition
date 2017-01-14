@@ -52,7 +52,8 @@ class IDFProcessor:
         # intermediate: check for malformed idf syntax
         for l in lines_a:
             if not (l.endswith(',') or l.endswith(';')):
-                raise epexceptions.MalformedIDFException("IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
+                raise epexceptions.MalformedIDFException(
+                    "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
 
         # intermediate: join entire array and re-split by semicolon
         idf_data_joined = ''.join(lines_a)
