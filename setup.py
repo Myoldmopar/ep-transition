@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from codecs import open
 from os.path import abspath, dirname, join
 
@@ -31,7 +33,7 @@ setup(
         'Programming Language :: Python',
     ],
     keywords='cli energyplus',
-    packages=find_packages(exclude=['test', 'support', 'build', '.tox', 'dist', 'docs', 'scripts']),
+    packages=find_packages(exclude=['test', 'test.*', '.tox']),
     install_requires=[],
     extras_require={
         'test': ['coverage', 'unittest', 'coveralls'],

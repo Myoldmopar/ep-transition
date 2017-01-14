@@ -10,5 +10,5 @@ The source is tested using the python unittest framework.  To execute all the un
 ## Test Coverage [![Coverage Status](https://coveralls.io/repos/github/Myoldmopar/ep-transition/badge.svg?branch=master)](https://coveralls.io/github/Myoldmopar/ep-transition?branch=master)
 Coverage of the code from unit testing is reported by [Travis](https://travis-ci.org/Myoldmopar/ep-transition) to [Coveralls](https://coveralls.io/github/Myoldmopar/ep-transition).  Anything less than 100% coverage will be frowned upon.
 
-## Deployment [![PyPI version](https://badge.fury.io/py/eptransition.svg)](https://badge.fury.io/py/eptransition)
-This package is deployed to [PyPi](https://pypi.python.org/pypi/eptransition/) and is available via pip install (**Don't do this right now until issue #11 is resolved**).  The wheel is also posted to the [Github Release Page](https://github.com/Myoldmopar/ep-transition/releases/) for manual download/installation if desired.
+## Installation [![PyPI version](https://badge.fury.io/py/eptransition.svg)](https://badge.fury.io/py/eptransition)
+This package is deployed to [PyPi](https://pypi.python.org/pypi/eptransition/) and is available via `pip install eptransition`.  The wheel is also posted to the [Github Release Page](https://github.com/Myoldmopar/ep-transition/releases/) for manual download/installation if desired.
