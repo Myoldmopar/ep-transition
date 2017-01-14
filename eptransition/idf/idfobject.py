@@ -4,7 +4,7 @@ class ValidationIssue:
         self.field_name = field_name
         self.message = message
 
-    def __str__(self):
+    def __str__(self):  # pragma no cover
         return "Issue found: object {}; field {}; message: {}".format(self.object_name, self.field_name, self.message)
 
 

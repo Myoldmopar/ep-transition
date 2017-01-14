@@ -108,6 +108,12 @@ MyObject,
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 1)
 
+    def test_non_numeric_autocalculate_but_not_allowed(self):
+        idf_string = "MyObject,AutoCalculate,1,1;"
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 1)
+
     def test_numeric_too_high_a(self):
         idf_string = "MyObject,3,1,1;"
         idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]

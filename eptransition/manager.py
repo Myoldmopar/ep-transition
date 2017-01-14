@@ -20,59 +20,59 @@ class TransitionManager(object):
     def perform_transition(self):
 
         # Validate file path things
-        if not os.path.exists(self.original_input_file):
+        if not os.path.exists(self.original_input_file):  # pragma no cover
             raise FileAccessException(
                 "Could not access original input file at path = \"" + self.original_input_file + "\"")
-        if not os.path.exists(self.original_idd_file):
+        if not os.path.exists(self.original_idd_file):  # pragma no cover
             raise FileAccessException(
                 "Could not access original IDD file at path = \"" + self.original_idd_file + "\"")
-        if not os.path.exists(self.new_idd_file):
+        if not os.path.exists(self.new_idd_file):  # pragma no cover
             raise FileAccessException(
                 "Could not access updated IDD file at path = \"" + self.new_idd_file + "\"")
-        if os.path.exists(self.new_input_file):
+        if os.path.exists(self.new_input_file):  # pragma no cover
             raise FileAccessException(
                 "Updated input file already exists at = \"" + self.new_input_file + "\"; remove before running!")
         try:
             open(self.new_input_file, 'w').write('-')
-        except:
+        except:  # pragma no cover
             raise FileAccessException(
                 "Could not write to updated file name at = \"" + self.new_input_file + "\"; aborting!")
 
         # Check file types
         if self.original_input_file.endswith('.idf'):
             original_idf_file_type = TypeEnum.IDF
-        elif self.original_input_file.endswith('.jdf'):
+        elif self.original_input_file.endswith('.jdf'):  # pragma no cover
             original_idf_file_type = TypeEnum.JSON
-        else:
+        else:  # pragma no cover
             raise FileTypeException("Original input file path has unexpected extension, should be .idf or .jdf")
         if self.new_input_file.endswith('.idf'):
             new_idf_file_type = TypeEnum.IDF
-        elif self.new_input_file.endswith('.jdf'):
+        elif self.new_input_file.endswith('.jdf'):  # pragma no cover
             new_idf_file_type = TypeEnum.JSON
-        else:
+        else:  # pragma no cover
             raise FileTypeException("New input file path has unexpected extension, should be .idf or .jdf")
         if self.original_idd_file.endswith('.idd'):
             original_idd_file_type = TypeEnum.IDF
-        elif self.original_idd_file.endswith('.jdd'):
+        elif self.original_idd_file.endswith('.jdd'):  # pragma no cover
             original_idd_file_type = TypeEnum.JSON
-        else:
+        else:  # pragma no cover
             raise FileTypeException("Original input dictionary path has unexpected extension, should be .idd or .jdd")
         if self.new_idd_file.endswith('.idd'):
             new_idd_file_type = TypeEnum.IDF
-        elif self.new_idd_file.endswith('.jdd'):
+        elif self.new_idd_file.endswith('.jdd'):  # pragma no cover
             new_idd_file_type = TypeEnum.JSON
-        else:
+        else:  # pragma no cover
             raise FileTypeException("New input dictionary path has unexpected extension, should be .idd or .jdd")
 
         # now validate the file types
         if original_idf_file_type == START_VERSION.file_type and original_idd_file_type == START_VERSION.file_type:
             pass  # that's a good thing
-        else:
+        else:  # pragma no cover
             raise FileTypeException("Original files don't match expected version file type; expected: " +
                                     START_VERSION.file_type)
         if new_idf_file_type == END_VERSION.file_type and new_idd_file_type == END_VERSION.file_type:
             pass  # that's a good thing
-        else:
+        else:  # pragma no cover
             raise FileTypeException("Updated files don't match expected version file type; expected: " +
                                     END_VERSION.file_type)
 
@@ -80,39 +80,39 @@ class TransitionManager(object):
         original_idf_processor = IDFProcessor()
         try:
             original_idf_structure = original_idf_processor.process_file_given_file_path(self.original_input_file)
-        except:
+        except:  # pragma no cover
             raise ManagerProcessingException("Could not process original idf; aborting")
 
         # and process the original idd file
         original_idd_processor = IDDProcessor()
         try:
             original_idd_structure = original_idd_processor.process_file_given_file_path(self.original_idd_file)
-        except:
+        except:  # pragma no cover
             raise ManagerProcessingException("Could not process original idd; aborting")
 
         # and process the new idd file
         new_idd_processor = IDDProcessor()
         try:
             new_idd_structure = new_idd_processor.process_file_given_file_path(self.new_idd_file)
-        except:
+        except:  # pragma no cover
             raise ManagerProcessingException("Could not process new idd; aborting")
 
         # validate the current idf before continuing
         issues = original_idf_structure.validate(original_idd_structure)
-        if len(issues) > 0:
+        if len(issues) > 0:  # pragma no cover
             # TODO: Once issues have severities, just check for fatal errors
             raise ManagerProcessingException("Issues found in validating of original idf against original idd; aborting")
 
         # check the version of the original idf
         try:
             original_version_object = original_idf_structure.get_idf_objects_by_type("Version")[0]
-        except:
+        except:  # pragma no cover
             raise ManagerProcessingException("Could not access version object in original idf; this is invalid, aborting.")
         try:
             version_value = float(original_version_object.fields[0])
-        except:
+        except:  # pragma no cover
             raise ManagerProcessingException("Could not coerce version field into numeric representation; aborting.")
-        if version_value != START_VERSION.version:
+        if version_value != START_VERSION.version:  # pragma no cover
             raise ManagerProcessingException("Input file version does not match expected.  (expected={};found={})".format(
                 START_VERSION.version, version_value))
 

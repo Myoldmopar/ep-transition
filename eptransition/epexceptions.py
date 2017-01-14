@@ -16,7 +16,7 @@ class FileTypeException(Exception):
 
 class ManagerProcessingException(Exception):
     def __str__(self):
-        print(self.message)
+        print(self.message)  # pragma no cover
 
 
 class ProcessingException(Exception):

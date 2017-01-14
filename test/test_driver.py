@@ -13,7 +13,7 @@ class TestDriver(TestCase):
         idd_path = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+.idd")
         idd_path_2 = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+2.idd")
         if os.path.exists('/tmp/new_idf.idf'):
-            os.remove('/tmp/new_idf.idf')
+            os.remove('/tmp/new_idf.idf')  # pragma no cover
         r = driver.drive(['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path, idd_path_2], True)
         self.assertEqual(0, r)
         # usage mode
