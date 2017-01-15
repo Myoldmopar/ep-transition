@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-import unittest
 
-from manager import TransitionManager
+from eptransition.manager import TransitionManager
 
 
 class Argument:
@@ -14,7 +13,6 @@ class Argument:
 
 
 valid_args = [
-    Argument('test', 0, ''),
     Argument('usage', 0, ''),
     Argument('update', 4, '<path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
 ]
@@ -53,13 +51,10 @@ def drive(argv, test_mode=False):
         usage(test_mode)
         return 1
     # now do operations
-    if argv[1] == valid_args[0].cli_argument:  # test
-        tests = unittest.TestLoader().discover('test')
-        unittest.TextTestRunner().run(tests)
-    elif argv[1] == valid_args[1].cli_argument:  # usage
+    if argv[1] == valid_args[0].cli_argument:  # usage
         if not test_mode:  # pragma: no cover
             usage()
-    elif argv[1] == valid_args[2].cli_argument:  # update
+    elif argv[1] == valid_args[1].cli_argument:  # update
         manager = TransitionManager(argv[2], argv[3], argv[4], argv[5])
         manager.perform_transition()
     return 0

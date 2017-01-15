@@ -1,22 +1,23 @@
 #!/usr/bin/env python
 
-from codecs import open
-from os.path import abspath, dirname, join
-
-from setuptools import setup, find_packages
-
-from eptransition import __version__, driver
-
+import codecs
+import unittest
+import os
+import setuptools
 import sys
+
+from eptransition import __version__
+
 if len(sys.argv) > 1:
     if sys.argv[1] == 'test':
-        sys.exit(driver.drive(sys.argv))
+        tests = unittest.TestLoader().discover('test')
+        unittest.TextTestRunner().run(tests)
 
-this_dir = abspath(dirname(__file__))
-with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
-    long_description = file.read()
+this_dir = os.path.abspath(os.path.dirname(__file__))
+with codecs.open(os.path.join(this_dir, 'README.rst'), encoding='utf-8') as i_file:
+    long_description = i_file.read()
 
-setup(
+setuptools.setup(
     name='eptransition',
     version=__version__,
     description='EnergyPlus file transition in Python.',
@@ -33,14 +34,14 @@ setup(
         'Programming Language :: Python',
     ],
     keywords='cli energyplus',
-    packages=find_packages(exclude=['test', 'test.*', '.tox']),
+    packages=setuptools.find_packages(exclude=['test', 'test.*', '.tox']),
     install_requires=[],
     extras_require={
         'test': ['coverage', 'unittest', 'coveralls'],
     },
     entry_points={
         'console_scripts': [
-            'eptransition=eptransition.driver:drive_from_cmdline',
+            'eptransition=eptransition.transition:drive_from_cmdline',
         ],
     }
 )

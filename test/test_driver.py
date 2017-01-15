@@ -1,11 +1,11 @@
 import os
-from unittest import TestCase, skipIf
+import unittest
 
-from eptransition import settings, driver
+from eptransition import settings, transition
 
 
-class TestDriver(TestCase):
-    @skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
+class TestDriver(unittest.TestCase):
+    @unittest.skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_driver(self):
         # normal arg mode
         cur_dir = os.path.dirname(os.path.realpath(__file__))
@@ -14,16 +14,16 @@ class TestDriver(TestCase):
         idd_path_2 = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+2.idd")
         if os.path.exists('/tmp/new_idf.idf'):
             os.remove('/tmp/new_idf.idf')  # pragma no cover
-        r = driver.drive(['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path, idd_path_2], True)
+        r = transition.drive(['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path, idd_path_2], True)
         self.assertEqual(0, r)
         # usage mode
-        r = driver.drive(['program_name', 'usage'], True)
+        r = transition.drive(['program_name', 'usage'], True)
         self.assertEqual(0, r)
         # incorrect number of args
-        r = driver.drive(['program_name'], True)
+        r = transition.drive(['program_name'], True)
         self.assertEqual(1, r)
-        r = driver.drive(['program_name', 'usage', 'what'], True)
+        r = transition.drive(['program_name', 'usage', 'what'], True)
         self.assertEqual(1, r)
         # bad arg mode
-        r = driver.drive(['program_name', 'badarg'], True)
+        r = transition.drive(['program_name', 'badarg'], True)
         self.assertEqual(1, r)

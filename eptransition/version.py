@@ -1,4 +1,4 @@
-from filetype import TypeEnum
+from eptransition.filetype import TypeEnum
 
 
 class VersionInformation(object):
