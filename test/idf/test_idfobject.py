@@ -29,7 +29,7 @@ class TestIDFObject(unittest.TestCase):
         obj.write_object(s)
 
 
-class TestSingleLineIDFValidation(TestCase):
+class TestSingleLineIDFValidation(unittest.TestCase):
     def test_valid_single_token_object_no_idd(self):
         tokens = ["SingleLineObject"]
         obj = IDFObject(tokens)
@@ -51,7 +51,7 @@ class TestSingleLineIDFValidation(TestCase):
         self.assertEquals("SingleLineObject;\n", s)
 
 
-class TestIDFFieldValidation(TestCase):
+class TestIDFFieldValidation(unittest.TestCase):
     def setUp(self):
         idd_string = """
 \group MyGroup
@@ -174,7 +174,7 @@ MyObject,
         self.assertEqual(len(issues), 2)
 
 
-class TestIDFObjectValidation(TestCase):
+class TestIDFObjectValidation(unittest.TestCase):
     def setUp(self):
         idd_string = """
 \group MyGroup
