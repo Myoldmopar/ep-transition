@@ -131,7 +131,8 @@ class IDFStructure(object):
     def __init__(self, file_path):
         self.file_path = file_path
         # TODO: Parse and store IDF version
-        self.version = None
+        self.version_string = None
+        self.version_float = None
         self.objects = None
 
     def get_idf_objects_by_type(self, type_to_get):

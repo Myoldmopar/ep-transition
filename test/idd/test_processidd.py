@@ -1,15 +1,17 @@
 import StringIO
 import os
-import unittest
+from unittest import TestCase, skipIf
 
 from eptransition import settings
 from eptransition.epexceptions import ProcessingException
 from eptransition.idd.processidd import IDDProcessor
 
 
-class TestIDDProcessingViaStream(unittest.TestCase):
+class TestIDDProcessingViaStream(TestCase):
     def test_proper_idd(self):
         idd_object = """
+!IDD_Version 1.2.0
+!IDD_BUILD abcdef1234
 \\group Simulation Parameters
 
 Version,
@@ -27,6 +29,8 @@ Version,
 
     def test_proper_idd_indented(self):
         idd_object = """
+    !IDD_Version 1.2.0
+    !IDD_BUILD abcdef1234
     \\group Simulation Parameters
 
     Version,
@@ -43,6 +47,8 @@ Version,
 
     def test_repeated_object_meta_idd(self):
         idd_object = """
+!IDD_Version 0.1.0
+!IDD_BUILD abcdef1234
 \\group Simulation Parameters
 
 Version,
@@ -63,6 +69,8 @@ Version,
 
     def test_single_line_obj_lookup(self):
         idd_object = """
+!IDD_Version 1.2.0
+!IDD_BUILD abcdef1234
 Simulation Input;
 \\group Stuff
 Version,A1;
@@ -74,6 +82,8 @@ Version,A1;
 
     def test_invalid_idd_obj_lookup(self):
         idd_object = """
+!IDD_Version 1.2.0
+!IDD_BUILD abcdef1234
 \\group Stuff
 Version,A1;
 """
@@ -84,6 +94,8 @@ Version,A1;
 
     def test_invalid_idd_metadata_no_space(self):
         idd_string = """
+        !IDD_Version 1.2.0
+        !IDD_BUILD abcdef1234
         \group MyGroup
         MyObject,
           N1,  \\field NumericFieldA
@@ -95,6 +107,8 @@ Version,A1;
 
     def test_invalid_idd_metadata(self):
         idd_string = """
+        !IDD_Version 1.2.0
+        !IDD_BUILD abcdef1234
         \group MyGroup
         MyObject,
           N1,  \\field NumericFieldA
@@ -104,9 +118,40 @@ Version,A1;
         with self.assertRaises(ProcessingException):
             IDDProcessor().process_file_via_string(idd_string).get_object_by_type('MyObject')
 
+    def test_missing_version(self):
+        idd_string = """
+        !IDD_BUILD abcdef1234
+        \group MyGroup
+        MyObject,
+          N1;  \\field NumericFieldA
+        """
+        with self.assertRaises(ProcessingException) as e:
+            IDDProcessor().process_file_via_string(idd_string)
 
-class TestIDDProcessingViaFile(unittest.TestCase):
-    @unittest.skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
+    def test_missing_build(self):
+        idd_string = """
+        !IDD_Version 1.2.0
+        \group MyGroup
+        MyObject,
+          N1;  \\field NumericFieldA
+        """
+        with self.assertRaises(ProcessingException) as e:
+            IDDProcessor().process_file_via_string(idd_string)
+
+    def test_nonnumeric_version(self):
+        idd_string = """
+        !IDD_Version X.Y.Z
+        !IDD_BUILD abcdef1234
+        \group MyGroup
+        MyObject,
+          N1;  \\field NumericFieldA
+        """
+        with self.assertRaises(ProcessingException) as e:
+            IDDProcessor().process_file_via_string(idd_string)
+
+
+class TestIDDProcessingViaFile(TestCase):
+    @skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_valid_idd(self):  # pragma: no cover
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idd_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "Energy+.idd")

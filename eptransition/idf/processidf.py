@@ -111,4 +111,17 @@ class IDFProcessor:
                     idf_objects.append(IDFObject(nice_object))
 
         self.idf.objects = idf_objects
+
+        try:
+            self.idf.version_string = self.idf.get_idf_objects_by_type('Version')[0].fields[0]
+        except IndexError:
+            raise epexceptions.ProcessingException("Could not get version object in idf!")
+        try:
+            version_tokens = self.idf.version_string.split('.')
+            tmp_string = '{}.{}'.format(version_tokens[0], version_tokens[1])
+            self.idf.version_float = float(tmp_string)
+        except ValueError:
+            raise epexceptions.ProcessingException(
+                "Found IDF version, but could not coerce into floating point representation")
+
         return self.idf

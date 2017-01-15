@@ -351,14 +351,24 @@ class IDDProcessor:
                         revert_status_after_comment = None
                     else:
                         read_status = CurrentReadType.ReadAnything
+                    if 'IDD_Version' in token_builder:
+                        self.idd.version_string = token_builder.strip().split(' ')[1].strip()
+                        try:
+                            version_tokens = self.idd.version_string.split('.')
+                            tmp_string = '{}.{}'.format(version_tokens[0], version_tokens[1])
+                            self.idd.version_float = float(tmp_string)
+                        except ValueError:
+                            raise epexceptions.ProcessingException(
+                                "Found IDD version, but could not coerce into floating point representation")
+                    elif 'IDD_BUILD' in token_builder:
+                        self.idd.build_string = token_builder.strip().split(' ')[1].strip()
                     token_builder = ''
 
-                    # don't ever put code here that could have side effects,
-                    # as the blocks are not required to call continue when they are done
-
         # end the file here, but should watch for end-of-file in other CASEs also
-        # cur_object.fields.append(cur_field)
-        # cur_group.objects.append(cur_object)
         self.idd.groups.append(cur_group)
+
+        # we should assert that we have version and build strings, even in testing
+        if (not self.idd.version_float) or (not self.idd.build_string):
+            raise epexceptions.ProcessingException("IDD did not appear to include standard version headers")
 
         return self.idd

@@ -9,6 +9,7 @@ from eptransition.idf.processidf import IDFProcessor
 class TestIDFProcessingViaStream(unittest.TestCase):
     def test_proper_idf(self):
         idf_object = """
+Version,1.1;
 ObjectType,
  This Object Name,   !- Name
  Descriptive Field,  !- Field Name
@@ -18,10 +19,11 @@ ObjectType,
 """
         processor = IDFProcessor()
         idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(idf_structure.objects))
+        self.assertEquals(2, len(idf_structure.objects))
 
     def test_indented_idf(self):
         idf_object = """
+    Version,1.1;
     ObjectType,
     This Object Name,   !- Name
           Descriptive Field,  !- Field Name
@@ -31,16 +33,17 @@ ObjectType,
 """
         processor = IDFProcessor()
         idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(idf_structure.objects))
+        self.assertEquals(2, len(idf_structure.objects))
 
     def test_one_line_idf(self):
-        idf_object = """ObjectType,This Object Name,Descriptive Field,3.4,,Final Value;"""
+        idf_object = """Version,1.1;ObjectType,This Object Name,Descriptive Field,3.4,,Final Value;"""
         processor = IDFProcessor()
         idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(idf_structure.objects))
+        self.assertEquals(2, len(idf_structure.objects))
 
     def test_invalid_goofy_idf(self):
         idf_object = """
+Version,1.1;
 Objecttype,
 object_name,
 something, !- with a comment
@@ -55,6 +58,7 @@ last field with space; ! and comment for fun
 
     def test_missing_comma(self):
         idf_object = """
+Version,1.1;
 Objecttype,
 object_name,
 a line without a comma
@@ -66,6 +70,7 @@ something, !- with a comment
 
     def test_missing_semicolon(self):
         idf_object = """
+Version,1.1;
 Objecttype,
 object_name,
 something without a semicolon !- with a comment
@@ -101,5 +106,13 @@ class TestIDFProcessingViaFile(unittest.TestCase):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "Blank.idf")
         processor = IDFProcessor()
+        with self.assertRaises(ProcessingException) as e:  # should fail because needs version object at least
+            processor.process_file_given_file_path(idf_path)
+
+    def test_minimal_idf(self):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "Minimal.idf")
+        processor = IDFProcessor()
         idf_structure = processor.process_file_given_file_path(idf_path)
-        self.assertEquals(0, len(idf_structure.objects))
+        self.assertEquals(1, len(idf_structure.objects))
+        self.assertAlmostEqual(idf_structure.version_float, 1.1, 1)

@@ -23,7 +23,9 @@ class IDDStructure:
     def __init__(self, file_path):
         self.file_path = file_path
         # TODO: Parse and store IDD version
-        self.version = None
+        self.version_string = None
+        self.build_string = None
+        self.version_float = None
         self.single_line_objects = []
         self.groups = []
 
