@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 
 from codecs import open
+import unittest
 from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-from eptransition import __version__, driver
+from eptransition import __version__
 
 import sys
 if len(sys.argv) > 1:
     if sys.argv[1] == 'test':
-        sys.exit(driver.drive(sys.argv))
+        tests = unittest.TestLoader().discover('test')
+        unittest.TextTestRunner().run(tests)
 
 this_dir = abspath(dirname(__file__))
 with open(join(this_dir, 'README.rst'), encoding='utf-8') as file:
