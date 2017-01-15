@@ -105,7 +105,7 @@ Version,A1;
             IDDProcessor().process_file_via_string(idd_string).get_object_by_type('MyObject')
 
 
-class TestIDDProcessingViaFile(TestCase):
+class TestIDDProcessingViaFile(unittest.TestCase):
     @unittest.skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_valid_idd(self):  # pragma: no cover
         cur_dir = os.path.dirname(os.path.realpath(__file__))
