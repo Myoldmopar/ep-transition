@@ -2,7 +2,7 @@ import StringIO
 import os
 
 from eptransition import epexceptions
-from iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
+from eptransition.idd.iddobject import IDDField, IDDObject, IDDStructure, IDDGroup
 
 
 class CurrentReadType:

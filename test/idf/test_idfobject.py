@@ -1,12 +1,12 @@
 import StringIO
-from unittest import TestCase
+import unittest
 
 from eptransition.idd.processidd import IDDProcessor
 from eptransition.idf.idfobject import IDFObject
 from eptransition.idf.processidf import IDFProcessor
 
 
-class TestIDFObject(TestCase):
+class TestIDFObject(unittest.TestCase):
     def test_valid_object(self):
         tokens = ["Objecttype", "object_name", "something", "", "last field with space"]
         obj = IDFObject(tokens)

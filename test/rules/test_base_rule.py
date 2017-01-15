@@ -1,10 +1,10 @@
-from unittest import TestCase
+import unittest
 
 from eptransition.epexceptions import UnimplementedMethodException
 from eptransition.rules.base_rule import TransitionRule
 
 
-class TestBaseRule(TestCase):
+class TestBaseRule(unittest.TestCase):
     def test_uninstantiatable(self):
         # calling the constructor is OK in case the derived class wants to always do this for good practice:
         r = TransitionRule()

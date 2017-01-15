@@ -1,13 +1,13 @@
 import StringIO
 import os
-from unittest import TestCase, skipIf
+import unittest
 
 from eptransition import settings
 from eptransition.epexceptions import ProcessingException
 from eptransition.idd.processidd import IDDProcessor
 
 
-class TestIDDProcessingViaStream(TestCase):
+class TestIDDProcessingViaStream(unittest.TestCase):
     def test_proper_idd(self):
         idd_object = """
 \\group Simulation Parameters
@@ -106,7 +106,7 @@ Version,A1;
 
 
 class TestIDDProcessingViaFile(TestCase):
-    @skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
+    @unittest.skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_valid_idd(self):  # pragma: no cover
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idd_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "Energy+.idd")
