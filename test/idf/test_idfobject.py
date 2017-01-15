@@ -51,7 +51,7 @@ class TestSingleLineIDFValidation(TestCase):
         self.assertEquals("SingleLineObject;\n", s)
 
 
-class TestIDFValidation(TestCase):
+class TestIDFFieldValidation(TestCase):
     def setUp(self):
         idd_string = """
 \group MyGroup
@@ -172,3 +172,36 @@ MyObject,
         idf_structure = IDFProcessor().process_file_via_string(idf_string)
         issues = idf_structure.validate(self.idd_structure)
         self.assertEqual(len(issues), 2)
+
+
+class TestIDFObjectValidation(TestCase):
+    def setUp(self):
+        idd_string = """
+\group MyGroup
+ObjectU,
+  \\unique-object
+  \\required-object
+  N1;  \\field NumericFieldA
+
+OtherObject,
+  N1;  \\field Again
+        """
+        self.idd_structure = IDDProcessor().process_file_via_string(idd_string)
+
+    def test_valid_object(self):
+        idf_string = "ObjectU,1;"
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        issues = idf_structure.validate(self.idd_structure)
+        self.assertEqual(len(issues), 0)
+
+    def test_missing_required_object(self):
+        idf_string = "OtherObject,1;"
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        issues = idf_structure.validate(self.idd_structure)
+        self.assertEqual(len(issues), 1)
+
+    def test_multiple_unique_object(self):
+        idf_string = "ObjectU,1;ObjectU,1;"
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        issues = idf_structure.validate(self.idd_structure)
+        self.assertEqual(len(issues), 1)

@@ -150,6 +150,16 @@ class IDFStructure(object):
 
     def validate(self, idd_structure):
         issues = []
+        required_objects = idd_structure.get_objects_with_meta_data('\\required-object')
+        for r in required_objects:
+            objects = self.get_idf_objects_by_type(r.name)
+            if len(objects) == 0:
+                issues.append(ValidationIssue(r.name, message="Required object not found in IDF contents"))
+        unique_objects = idd_structure.get_objects_with_meta_data('\\unique-object')
+        for u in unique_objects:
+            objects = self.get_idf_objects_by_type(u.name)
+            if len(objects) > 1:
+                issues.append(ValidationIssue(u.name, message="Unique object has multiple instances in IDF contents"))
         for idf_object in self.objects:
             if idf_object.comment:
                 continue
