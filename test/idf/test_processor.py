@@ -2,8 +2,8 @@ import StringIO
 import os
 import unittest
 
-from eptransition.epexceptions import MalformedIDFException, ProcessingException
-from eptransition.idf.processidf import IDFProcessor
+from eptransition.exceptions import MalformedIDFException, ProcessingException
+from eptransition.idf.processor import IDFProcessor
 
 
 class TestIDFProcessingViaStream(unittest.TestCase):

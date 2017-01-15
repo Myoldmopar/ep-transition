@@ -1,4 +1,4 @@
-from eptransition.epexceptions import UnimplementedMethodException
+from eptransition.exceptions import UnimplementedMethodException
 
 
 class ObjectTypeAndName:

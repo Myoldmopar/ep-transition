@@ -1,6 +1,6 @@
 import unittest
 
-from eptransition.epexceptions import UnimplementedMethodException
+from eptransition.exceptions import UnimplementedMethodException
 from eptransition.rules.base_rule import TransitionRule
 
 

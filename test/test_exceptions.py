@@ -1,6 +1,6 @@
 import unittest
 
-from eptransition.epexceptions import UnimplementedMethodException
+from eptransition.exceptions import UnimplementedMethodException
 
 
 class TestUnimplementedMethodException(unittest.TestCase):
