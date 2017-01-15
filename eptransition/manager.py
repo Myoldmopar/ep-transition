@@ -3,21 +3,40 @@ import os
 from eptransition.epexceptions import FileAccessException, FileTypeException, ManagerProcessingException
 from eptransition.filetype import TypeEnum
 from eptransition.idd.processidd import IDDProcessor
-from eptransition.idf.idfobject import IDFStructure
+from eptransition.idf.idfobject import IDFStructure, IDFObject
 from eptransition.idf.processidf import IDFProcessor
-from eptransition.rules.rules86to87 import controller_list, branch
-from eptransition.version import START_VERSION, END_VERSION
+from eptransition.rules import base_rule
+from eptransition.version import VERSIONS
 
 
 class TransitionManager(object):
-    def __init__(self, original_input_file, new_input_file, original_idd_file, new_idd_file):
-        # TODO: The version information should be passed in to translate a specific version
+    def __init__(self, start_version, end_version, original_input_file,
+                 new_input_file, original_idd_file, new_idd_file):
+        self.start_version = VERSIONS[start_version]
+        self.end_version = VERSIONS[end_version]
         self.original_input_file = original_input_file
         self.new_input_file = new_input_file
         self.original_idd_file = original_idd_file
         self.new_idd_file = new_idd_file
 
     def perform_transition(self):
+
+        class VersionRule(base_rule.TransitionRule):
+
+            def __init__(self, end_version):
+                base_rule.TransitionRule.__init__(self)
+                self.end_version_id = end_version.version
+
+            def get_name_of_object_to_transition(self):
+                return "Version"
+
+            def get_names_of_dependent_objects(self):
+                return []
+
+            def transition(self, core_object, dependent_objects):
+                new_idf_fields = [self.end_version_id]
+                new_version_object = IDFObject([core_object.object_name] + new_idf_fields)
+                return base_rule.TransitionReturn([new_version_object])
 
         # Validate file path things
         if not os.path.exists(self.original_input_file):  # pragma no cover
@@ -65,16 +84,16 @@ class TransitionManager(object):
             raise FileTypeException("New input dictionary path has unexpected extension, should be .idd or .jdd")
 
         # now validate the file types
-        if original_idf_file_type == START_VERSION.file_type and original_idd_file_type == START_VERSION.file_type:
+        if original_idf_file_type == self.start_version.file_type and original_idd_file_type == self.start_version.file_type:
             pass  # that's a good thing
         else:  # pragma no cover
             raise FileTypeException("Original files don't match expected version file type; expected: " +
-                                    START_VERSION.file_type)
-        if new_idf_file_type == END_VERSION.file_type and new_idd_file_type == END_VERSION.file_type:
+                                    self.start_version.file_type)
+        if new_idf_file_type == self.end_version.file_type and new_idd_file_type == self.end_version.file_type:
             pass  # that's a good thing
         else:  # pragma no cover
             raise FileTypeException("Updated files don't match expected version file type; expected: " +
-                                    END_VERSION.file_type)
+                                    self.end_version.file_type)
 
         # process the original input file
         original_idf_processor = IDFProcessor()
@@ -105,24 +124,17 @@ class TransitionManager(object):
                 "Issues found in validating of original idf against original idd; aborting")
 
         # check the version of the original idf
-        try:
-            original_version_object = original_idf_structure.get_idf_objects_by_type("Version")[0]
-        except:  # pragma no cover
-            raise ManagerProcessingException(
-                "Could not access version object in original idf; this is invalid, aborting.")
-        try:
-            version_value = float(original_version_object.fields[0])
-        except:  # pragma no cover
-            raise ManagerProcessingException("Could not coerce version field into numeric representation; aborting.")
-        if version_value != START_VERSION.version:  # pragma no cover
+        if original_idf_structure.version_float != self.start_version.version:  # pragma no cover
             raise ManagerProcessingException(
                 "Input file version does not match expected.  (expected={};found={})".format(
-                    START_VERSION.version, version_value))
+                    self.start_version.version, original_idf_structure.version_float))
 
         # now read in the rules and create a map based on the upper case version of the IDF object to transition
         # TODO: Read in only the rules for this particular version
         # TODO: Create a nicer rule structure
-        rules = [branch.BranchTransitionRule(), controller_list.ControllerListTransitionRule()]
+        this_version_rule = VersionRule(self.end_version)
+        rules = [this_version_rule]
+        rules.extend([x() for x in self.end_version.transitions])
         rule_map = {}
         for rule in rules:
             rule_map[rule.get_name_of_object_to_transition().upper()] = [rule.get_names_of_dependent_objects(),

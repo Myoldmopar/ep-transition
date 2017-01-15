@@ -14,7 +14,7 @@ class Argument:
 
 valid_args = [
     Argument('usage', 0, ''),
-    Argument('update', 4, '<path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
+    Argument('update', 6, '<original_version> <new_version> <path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
 ]
 
 
@@ -55,7 +55,7 @@ def drive(argv, test_mode=False):
         if not test_mode:  # pragma: no cover
             usage()
     elif argv[1] == valid_args[1].cli_argument:  # update
-        manager = TransitionManager(argv[2], argv[3], argv[4], argv[5])
+        manager = TransitionManager(argv[2], argv[3], argv[4], argv[5], argv[6], argv[7])
         manager.perform_transition()
     return 0
 

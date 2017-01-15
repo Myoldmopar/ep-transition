@@ -56,6 +56,14 @@ last field with space; ! and comment for fun
         with self.assertRaises(MalformedIDFException):
             processor.process_file_via_stream(StringIO.StringIO(idf_object))
 
+    def test_nonnumerc_version(self):
+        idf_object = """
+Version,A.Q;
+"""
+        processor = IDFProcessor()
+        with self.assertRaises(ProcessingException):
+            processor.process_file_via_stream(StringIO.StringIO(idf_object))
+
     def test_missing_comma(self):
         idf_object = """
 Version,1.1;
