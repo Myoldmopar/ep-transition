@@ -33,43 +33,82 @@ class IDFProcessor:
         # phase 0: read in lines of file
         lines = self.input_file_stream.readlines()
 
-        # phases 1 and 2: remove comments and blank lines
-        lines_a = []
+        class Blob:
+            COMMENT = 1
+            OBJECT = 2
+
+            def __init__(self, blob_type, blob_lines=None):
+                self.blob_type = blob_type
+                if blob_lines is None:
+                    blob_lines = []
+                self.lines = blob_lines
+
+        # so let's try keeping the idf in blobs of either comment data or object data
+        current_blob = None
+        initial_blobs = []
         for line in lines:
             line_text = line.strip()
-            this_line = ""
-            if len(line_text) > 0:
-                exclamation = line_text.find("!")
-                if exclamation == -1:
-                    this_line = line_text
-                elif exclamation == 0:
-                    this_line = ""
-                elif exclamation > 0:
-                    this_line = line_text[:exclamation]
-                if not this_line == "":
-                    lines_a.append(this_line.strip())
+            if len(line_text) == 0:
+                continue
+            elif line_text.startswith('!'):
+                if current_blob is None:
+                    current_blob = Blob(Blob.COMMENT)
+                elif current_blob.blob_type == Blob.OBJECT:
+                    initial_blobs.append(current_blob)
+                    current_blob = Blob(Blob.COMMENT)
+                current_blob.lines.append(line_text)
+            else:
+                if current_blob is None:
+                    current_blob = Blob(Blob.OBJECT)
+                elif current_blob.blob_type == Blob.COMMENT:
+                    initial_blobs.append(current_blob)
+                    current_blob = Blob(Blob.OBJECT)
+                current_blob.lines.append(line_text)
+        if current_blob is not None:
+            initial_blobs.append(current_blob)
 
-        # intermediate: check for malformed idf syntax
-        for l in lines_a:
-            if not (l.endswith(',') or l.endswith(';')):
-                raise epexceptions.MalformedIDFException(
-                    "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
-
-        # intermediate: join entire array and re-split by semicolon
-        idf_data_joined = ''.join(lines_a)
-        idf_object_strings = idf_data_joined.split(";")
-
-        # phase 3: inspect each object and its fields
-        object_details = []
+        # next let's go blob by blob and clean up any trailing comments and such
         idf_objects = []
-        for obj in idf_object_strings:
-            tokens = obj.split(",")
-            nice_object = [t.strip() for t in tokens]
-            if len(nice_object) == 1:
-                if nice_object[0] == "":
-                    continue
-            object_details.append(nice_object)
-            idf_objects.append(IDFObject(nice_object))
+        for initial_blob in initial_blobs:
+            if initial_blob.blob_type == Blob.COMMENT:
+                idf_objects.append(IDFObject(initial_blob.lines, True))
+            else:
+                out_lines = []
+                for line in initial_blob.lines:
+                    line_text = line.strip()
+                    this_line = ""
+                    if len(line_text) > 0:
+                        exclamation = line_text.find("!")
+                        if exclamation == -1:
+                            this_line = line_text
+                        elif exclamation > 0:
+                            this_line = line_text[:exclamation]
+                        if not this_line == "":
+                            out_lines.append(this_line.strip())
+                # check these object lines for malformed idf syntax
+                for l in out_lines:
+                    if not (l.endswith(',') or l.endswith(';')):
+                        raise epexceptions.MalformedIDFException(
+                            "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
+                # the last line in an idf object blob should have a semicolon; if it doesn't it might indicate
+                # a comment block in the middle of a single idf object
+                if not out_lines[-1].endswith(';'):
+                    raise epexceptions.MalformedIDFException(
+                        "Encountered a missing semicolon condition; this can indicate comments placed within" +
+                        " a single idf object.  This is valid IDF for EnergyPlus, but this translator does not yet" +
+                        " handle such condition."
+                    )
+                # intermediate: join entire array and re-split by semicolon
+                idf_data_joined = ''.join(out_lines)
+                idf_object_strings = idf_data_joined.split(";")
+                # phase 3: inspect each object and its fields
+                for obj in idf_object_strings:
+                    tokens = obj.split(",")
+                    nice_object = [t.strip() for t in tokens]
+                    if len(nice_object) == 1:
+                        if nice_object[0] == "":
+                            continue
+                    idf_objects.append(IDFObject(nice_object))
 
         self.idf.objects = idf_objects
         return self.idf

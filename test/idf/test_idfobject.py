@@ -150,6 +150,17 @@ MyObject,
         issues = idf_structure.validate(self.idd_structure)
         self.assertEqual(len(issues), 0)
 
+    def test_whole_idf_valid_with_comments(self):
+        idf_string = """
+        MyObject,1,1,1;
+        ! ME COMMENT
+        MyObject,1,1,1;"""
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        issues = idf_structure.validate(self.idd_structure)
+        self.assertEqual(len(issues), 0)
+        s_idf = idf_structure.whole_idf_string(self.idd_structure)
+        self.assertTrue('ME COMMENT' in s_idf)
+
     def test_whole_idf_one_invalid(self):
         idf_string = "MyObject,-1,1,1;MyObject,1,1,1;"
         idf_structure = IDFProcessor().process_file_via_string(idf_string)

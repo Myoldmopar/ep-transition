@@ -39,7 +39,7 @@ ObjectType,
         idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
         self.assertEquals(1, len(idf_structure.objects))
 
-    def test_valid_goofy_idf(self):
+    def test_invalid_goofy_idf(self):
         idf_object = """
 Objecttype,
 object_name,
@@ -50,8 +50,8 @@ something, !- with a comment
 last field with space; ! and comment for fun
 """
         processor = IDFProcessor()
-        idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
-        self.assertEquals(1, len(idf_structure.objects))
+        with self.assertRaises(MalformedIDFException):
+            processor.process_file_via_stream(StringIO.StringIO(idf_object))
 
     def test_missing_comma(self):
         idf_object = """
@@ -81,14 +81,14 @@ class TestIDFProcessingViaFile(unittest.TestCase):
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "1ZoneEvapCooler.idf")
         processor = IDFProcessor()
         idf_structure = processor.process_file_given_file_path(idf_path)
-        self.assertEquals(75, len(idf_structure.objects))
+        self.assertEquals(78, len(idf_structure.objects))
 
     def test_valid_idf_file_complex(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "RefBldgLargeHotelNew2004.idf")
         processor = IDFProcessor()
         idf_structure = processor.process_file_given_file_path(idf_path)
-        self.assertEquals(1078, len(idf_structure.objects))
+        self.assertEquals(1136, len(idf_structure.objects))
 
     def test_missing_idf(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))

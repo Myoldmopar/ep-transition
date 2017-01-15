@@ -9,11 +9,21 @@ class ValidationIssue:
 
 
 class IDFObject(object):
-    def __init__(self, tokens):
-        self.object_name = tokens[0]
-        self.fields = tokens[1:]
+    def __init__(self, tokens, comment_blob=False):
+        self.comment = comment_blob
+        if comment_blob:
+            self.object_name = "COMMENT"
+            self.fields = tokens
+        else:
+            self.object_name = tokens[0]
+            self.fields = tokens[1:]
 
     def object_string(self, idd_object=None):
+        s = ''
+        if self.comment:
+            for comment_line in self.fields:
+                s += comment_line + '\n'
+            return s
         if not idd_object:
             if len(self.fields) == 0:
                 s = self.object_name + ";\n"
@@ -127,15 +137,22 @@ class IDFStructure(object):
     def get_idf_objects_by_type(self, type_to_get):
         return [i for i in self.objects if i.object_name.upper() == type_to_get.upper()]
 
+    def whole_idf_string(self, idd_structure=None):
+        s = ''
+        for idf_obj in self.objects:
+            idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
+            s += idf_obj.object_string(idd_obj) + '\n'
+        return s
+
     def write_idf(self, idf_path, idd_structure=None):
         with open(idf_path, 'w') as f:
-            for idf_obj in self.objects:
-                idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
-                f.write(idf_obj.object_string(idd_obj) + '\n')
+            f.write(self.whole_idf_string(idd_structure))
 
     def validate(self, idd_structure):
         issues = []
         for idf_object in self.objects:
+            if idf_object.comment:
+                continue
             idd_object = idd_structure.get_object_by_type(idf_object.object_name)
             this_object_issues = idf_object.validate(idd_object)
             if this_object_issues:
