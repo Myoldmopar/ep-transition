@@ -175,7 +175,6 @@ MyObject,
 
 
 class TestIDFObjectValidation(TestCase):
-
     def setUp(self):
         idd_string = """
 \group MyGroup
