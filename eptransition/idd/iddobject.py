@@ -39,3 +39,12 @@ class IDDStructure:
                 return o
         # if we haven't returned, fail
         return None
+
+    def get_objects_with_meta_data(self, meta_data):
+        objects = []
+        for g in self.groups:
+            for o in g.objects:
+                if meta_data in o.meta_data:
+                    objects.append(o)
+        return objects
+        # not going to look at single line objects for this
