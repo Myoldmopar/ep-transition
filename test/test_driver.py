@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase, skipIf
 
-from eptransition import settings, driver
+from eptransition import settings, eptransition
 
 
 class TestDriver(TestCase):
@@ -14,16 +14,16 @@ class TestDriver(TestCase):
         idd_path_2 = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+2.idd")
         if os.path.exists('/tmp/new_idf.idf'):
             os.remove('/tmp/new_idf.idf')  # pragma no cover
-        r = driver.drive(['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path, idd_path_2], True)
+        r = eptransition.drive(['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path, idd_path_2], True)
         self.assertEqual(0, r)
         # usage mode
-        r = driver.drive(['program_name', 'usage'], True)
+        r = eptransition.drive(['program_name', 'usage'], True)
         self.assertEqual(0, r)
         # incorrect number of args
-        r = driver.drive(['program_name'], True)
+        r = eptransition.drive(['program_name'], True)
         self.assertEqual(1, r)
-        r = driver.drive(['program_name', 'usage', 'what'], True)
+        r = eptransition.drive(['program_name', 'usage', 'what'], True)
         self.assertEqual(1, r)
         # bad arg mode
-        r = driver.drive(['program_name', 'badarg'], True)
+        r = eptransition.drive(['program_name', 'badarg'], True)
         self.assertEqual(1, r)

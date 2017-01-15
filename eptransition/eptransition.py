@@ -2,7 +2,7 @@
 
 import sys
 
-from manager import TransitionManager
+from eptransition.manager import TransitionManager
 
 
 class Argument:
