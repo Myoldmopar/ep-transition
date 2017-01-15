@@ -1,12 +1,11 @@
 import os
 
-from eptransition.epexceptions import FileAccessException, FileTypeException, ManagerProcessingException
-from eptransition.filetype import TypeEnum
-from eptransition.idd.processidd import IDDProcessor
-from eptransition.idf.idfobject import IDFStructure, IDFObject
-from eptransition.idf.processidf import IDFProcessor
+from eptransition.exceptions import FileAccessException, FileTypeException, ManagerProcessingException
+from eptransition.idd.processor import IDDProcessor
+from eptransition.idf.objects import IDFStructure, IDFObject
+from eptransition.idf.processor import IDFProcessor
 from eptransition.rules import base_rule
-from eptransition.version import VERSIONS
+from eptransition.versions import VERSIONS, TypeEnum
 
 
 class TransitionManager(object):

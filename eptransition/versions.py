@@ -1,5 +1,9 @@
-from eptransition.filetype import TypeEnum
 from eptransition.rules.rules86to87 import controller_list, branch
+
+
+class TypeEnum(object):
+    IDF = "idf"
+    JSON = "json"
 
 
 class VersionInformation(object):
@@ -9,7 +13,6 @@ class VersionInformation(object):
         self.transitions = transitions_to_do
 
 
-# TODO: This should be a start/end for a specific version
 Version86 = VersionInformation(8.6, TypeEnum.IDF, [])
 Version87 = VersionInformation(8.7, TypeEnum.IDF, [
     branch.BranchTransitionRule, controller_list.ControllerListTransitionRule])

@@ -1,8 +1,8 @@
 import StringIO
 import os
 
-from eptransition import epexceptions
-from eptransition.idf.idfobject import IDFObject, IDFStructure
+from eptransition import exceptions
+from eptransition.idf.objects import IDFObject, IDFStructure
 
 
 class IDFProcessor:
@@ -13,7 +13,7 @@ class IDFProcessor:
 
     def process_file_given_file_path(self, file_path):
         if not os.path.exists(file_path):
-            raise epexceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
+            raise exceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
         self.input_file_stream = open(file_path, 'r')
         self.file_path = file_path
         return self.process_file()
@@ -88,12 +88,12 @@ class IDFProcessor:
                 # check these object lines for malformed idf syntax
                 for l in out_lines:
                     if not (l.endswith(',') or l.endswith(';')):
-                        raise epexceptions.MalformedIDFException(
+                        raise exceptions.MalformedIDFException(
                             "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
                 # the last line in an idf object blob should have a semicolon; if it doesn't it might indicate
                 # a comment block in the middle of a single idf object
                 if not out_lines[-1].endswith(';'):
-                    raise epexceptions.MalformedIDFException(
+                    raise exceptions.MalformedIDFException(
                         "Encountered a missing semicolon condition; this can indicate comments placed within" +
                         " a single idf object.  This is valid IDF for EnergyPlus, but this translator does not yet" +
                         " handle such condition."
@@ -115,13 +115,13 @@ class IDFProcessor:
         try:
             self.idf.version_string = self.idf.get_idf_objects_by_type('Version')[0].fields[0]
         except IndexError:
-            raise epexceptions.ProcessingException("Could not get version object in idf!")
+            raise exceptions.ProcessingException("Could not get version object in idf!")
         try:
             version_tokens = self.idf.version_string.split('.')
             tmp_string = '{}.{}'.format(version_tokens[0], version_tokens[1])
             self.idf.version_float = float(tmp_string)
         except ValueError:
-            raise epexceptions.ProcessingException(
+            raise exceptions.ProcessingException(
                 "Found IDF version, but could not coerce into floating point representation")
 
         return self.idf

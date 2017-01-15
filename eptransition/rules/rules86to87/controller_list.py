@@ -1,4 +1,4 @@
-from eptransition.idf.idfobject import IDFObject
+from eptransition.idf.objects import IDFObject
 from eptransition.rules.base_rule import ObjectTypeAndName, TransitionRule, TransitionReturn
 
 
