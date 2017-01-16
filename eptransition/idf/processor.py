@@ -6,29 +6,66 @@ from eptransition.idf.objects import IDFObject, IDFStructure
 
 
 class IDFProcessor:
+    """
+    The core IDF Processor class.  Given an IDF via stream or path, this class has workers to robustly process the IDF
+    into a rich IDFStructure instance.
+
+    The constructor takes no arguments but sets up instance variables. Relevant "public" members are listed here:
+
+    :ivar IDFStructure idf: The resulting IDFStructure instance after processing the IDF file/stream
+    :ivar str file_path: A file path for this IDF, although it may be just a simple descriptor
+    """
     def __init__(self):
         self.idf = None
         self.file_path = None
         self.input_file_stream = None
 
     def process_file_given_file_path(self, file_path):
+        """
+        This worker allows processing of an IDF file at a specific path on disk.
+
+        :param file_path: The path to an IDF file on disk.
+        :return: An IDFStructure instance created from processing the IDF file
+        """
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
         self.input_file_stream = open(file_path, 'r')
         self.file_path = file_path
         return self.process_file()
 
-    def process_file_via_stream(self, input_file_stream):
-        self.input_file_stream = input_file_stream
+    def process_file_via_stream(self, idf_file_stream):
+        """
+        This worker allows processing of an IDF snippet via stream.  Most useful for unit testing, but possibly for
+        other situations.
+
+        :param file-like-object idf_file_stream: An IDF snippet that responds to typical file-like commands such as
+                                                 read().  A common object would be the StringIO object.
+        :return: An IDFStructure instance created from processing the IDF snippet
+        """
+        self.input_file_stream = idf_file_stream
         self.file_path = "/streamed/idf"
         return self.process_file()
 
     def process_file_via_string(self, idf_string):
+        """
+        This worker allows processing of an IDF snippet string.  Most useful for unit testing, but possibly for
+        other situations.
+
+        :param str idf_string: An IDF snippet string
+        :return: An IDFStructure instance created from processing the IDF string
+        """
         self.input_file_stream = StringIO.StringIO(idf_string)
         self.file_path = "/string/idf/snippet"
         return self.process_file()
 
     def process_file(self):
+        """
+        Internal worker function that reads the IDF stream, whether it was constructed from a file path, stream or
+        string.  This processor then processes the file line by line looking for IDF objects and comment blocks, and
+        parsing them into a meaningful structure
+
+        :return: An IDF structure describing the IDF contents
+        """
         self.idf = IDFStructure(self.file_path)
         # phase 0: read in lines of file
         lines = self.input_file_stream.readlines()

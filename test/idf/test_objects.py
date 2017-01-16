@@ -1,10 +1,10 @@
 import StringIO
 import unittest
 
+from eptransition.exceptions import ProcessingException
 from eptransition.idd.processor import IDDProcessor
 from eptransition.idf.objects import IDFObject
 from eptransition.idf.processor import IDFProcessor
-from eptransition.exceptions import ProcessingException
 
 
 class TestIDFObject(unittest.TestCase):
