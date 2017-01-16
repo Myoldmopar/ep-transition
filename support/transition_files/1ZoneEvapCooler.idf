@@ -565,6 +565,11 @@
     For: AllDays,            !- Field 2
     Until: 24:00,20.0;       !- Field 3
 
+  EnergyManagementSystem:Sensor,
+    T1,                      !- Name
+    Perimeter_ZN_1,          !- Output:Variable or Output:Meter Index Key Name
+    Zone Mean Air Temperature;  !- Output:Variable or Output:Meter Name
+
   Output:VariableDictionary,Regular;
 
   Output:Surfaces:Drawing,DXF;
