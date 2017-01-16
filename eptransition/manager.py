@@ -1,6 +1,6 @@
 import os
 
-from eptransition.exceptions import FileAccessException, FileTypeException, ManagerProcessingException
+from eptransition.exceptions import FileAccessException, FileTypeException, ManagerProcessingException, ProcessingException
 from eptransition.idd.processor import IDDProcessor
 from eptransition.idf.objects import IDFStructure, IDFObject
 from eptransition.idf.processor import IDFProcessor
@@ -105,8 +105,8 @@ class TransitionManager(object):
         original_idd_processor = IDDProcessor()
         try:
             original_idd_structure = original_idd_processor.process_file_given_file_path(self.original_idd_file)
-        except:  # pragma no cover
-            raise ManagerProcessingException("Could not process original idd; aborting")
+        except ProcessingException as e:  # pragma no cover
+            raise ManagerProcessingException("Could not process original idd; message = " + str(e))
 
         # and process the new idd file
         new_idd_processor = IDDProcessor()

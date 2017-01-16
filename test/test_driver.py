@@ -9,12 +9,19 @@ class TestDriver(unittest.TestCase):
     def test_driver(self):
         # normal arg mode
         cur_dir = os.path.dirname(os.path.realpath(__file__))
+        idf_path_85 = os.path.join(cur_dir, "..", "support", "transition_files", "PlantLoadProfile.idf")
         idf_path = os.path.join(cur_dir, "..", "support", "transition_files", "1ZoneEvapCooler.idf")
-        idd_path = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+.idd")
-        idd_path_2 = os.path.join(cur_dir, "..", "support", "transition_files", "Energy+2.idd")
+        idd_path_85 = os.path.join(cur_dir, "..", "support", "transition_files", "V8-5-0-Energy+.idd")
+        idd_path_86 = os.path.join(cur_dir, "..", "support", "transition_files", "V8-6-0-Energy+.idd")
+        idd_path_87 = os.path.join(cur_dir, "..", "support", "transition_files", "V8-7-0-Energy+.idd")
+        if os.path.exists('/tmp/new_86_branch.idf'):
+            os.remove('/tmp/new_86_branch.idf')  # pragma no cover
+        r = transition.drive(
+            ['program_name', 'update', '8.5', '8.6', idf_path_85, '/tmp/new_86_branch.idf', idd_path_85, idd_path_86], True)
+        self.assertEqual(0, r)
         if os.path.exists('/tmp/new_idf.idf'):
             os.remove('/tmp/new_idf.idf')  # pragma no cover
-        r = transition.drive(['program_name', 'update', '8.6', '8.7', idf_path, '/tmp/new_idf.idf', idd_path, idd_path_2], True)
+        r = transition.drive(['program_name', 'update', '8.6', '8.7', idf_path, '/tmp/new_idf.idf', idd_path_86, idd_path_87], True)
         self.assertEqual(0, r)
         # usage mode
         r = transition.drive(['program_name', 'usage'], True)
