@@ -15,7 +15,7 @@ class Argument:
 valid_args = [
     Argument('usage', 0, ''),
     Argument('update', 6,
-             '<original_version> <new_version> <path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
+             '<original_version> <new_version> <path/original/idf> <path/new/idf> <path/original/idd> <path/new/idd>')
 ]
 
 
@@ -39,12 +39,7 @@ def drive(argv, test_mode=False):
             print("Error: Invalid command line argument passed in!")
             usage()
         return 1
-    cur_arg = next((a for a in valid_args if a.cli_argument == argv[1]), None)
-    if not cur_arg:  # pragma: no cover
-        if not test_mode:
-            print("Error: Unexpected error in processing command line arguments")
-        usage(test_mode)
-        return 1
+    cur_arg = next(a for a in valid_args if a.cli_argument == argv[1])
     expected_total_argv = 2 + cur_arg.num_additional_args
     if len(argv) != expected_total_argv:
         if not test_mode:  # pragma: no cover

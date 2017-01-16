@@ -1,35 +1,28 @@
-from eptransition.idf.objects import IDFObject
-from eptransition.rules.base_rule import TransitionReturn
+from eptransition.rules.base_rule import OutputVariableTransitionRule
 
 
-class OutputVariableTransitionRule:
+class Rule(OutputVariableTransitionRule):
+
     def get_output_objects(self):
-        return ["OUTPUT:VARIABLE", 'OUTPUT:METER', 'OUTPUT:METER:METERFILEONLY', 'OUTPUT:METER:CUMULATIVE',
-                'OUTPUT:METER:CUMULATIVE:METERFILEONLY', 'OUTPUT:TABLE:TIMEBINS',
-                'EXTERNALINTERFACE:FUNCTIONALMOCKUPUNITIMPORT:FROM:VARIABLE',
-                'EXTERNALINTERFACE:FUNCTIONALMOCKUPUNITEXPORT:FROM:VARIABLE',
-                'ENERGYMANAGEMENTSYSTEM:SENSOR', 'OUTPUT:TABLE:MONTHLY', 'METER:CUSTOM', 'METER:CUSTOMDECREMENT']
+        return self.original_full_variable_type_list()
 
-    def get_indeces_from_object(self, object_name):
-        if object_name in ['OUTPUT:METER', 'OUTPUT:METER:METERFILEONLY', 'OUTPUT:METER:CUMULATIVE',
-                           'OUTPUT:METER:CUMULATIVE:METERFILEONLY']:
-            return [0]
-        elif object_name in ['OUTPUT:VARIABLE', 'OUTPUT:TABLE:TIMEBINS',
-                             'EXTERNALINTERFACE:FUNCTIONALMOCKUPUNITIMPORT:FROM:VARIABLE',
-                             'EXTERNALINTERFACE:FUNCTIONALMOCKUPUNITEXPORT:FROM:VARIABLE']:
-            return [1]
-        elif object_name in ['ENERGYMANAGEMENTSYSTEM:SENSOR']:
-            return [2]
+    def get_standard_indexes_from_object(self, object_name):
+        return self.original_standard_indexes_from_object(object_name)
 
-    def get_new_output_variable(self, variable_name):
-        if variable_name == 'SITE OUTDOOR AIR DRYBULB TEMPERATURE':
-            return 'THAT THERE OUTSIDE HOTNESS RIGHT'
+    def get_complex_operation_types(self):
+        return [self.OM]
 
-    def transition(self, core_object):
-        original_idf_fields = core_object.fields
-        new_idf_fields = original_idf_fields
-        indeces = self.get_indeces_from_object(core_object.object_name.upper())
-        for i in indeces:
-            new_idf_fields[i] = self.get_new_output_variable(original_idf_fields[i].upper())
-        new_variable_object = IDFObject([core_object.object_name] + new_idf_fields)
-        return TransitionReturn([new_variable_object])
+    def get_simple_swaps(self):
+        return {
+            'SITE OUTDOOR AIR DRYBULB TEMPERATURE': 'THAT THERE OUTSIDE HOTNESS RIGHT',
+        }
+
+    def complex_output_operation(self, full_object):
+        if full_object.object_name.upper() == self.OM:
+            # make up a fake output meter operation
+            new_object = full_object
+            new_object.object_name = "MAGICALOUTPUTDRAGON"
+            return [new_object]
+        else:  # pragma no cover
+            # this section really isn't needed as this function is only called for registered types anyway
+            return None

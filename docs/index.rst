@@ -11,6 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   eptransition_manager
+   eptransition_exceptions
+   eptransition_rules_baserule
+
 
 
 Indices and tables

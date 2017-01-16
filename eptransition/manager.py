@@ -11,6 +11,18 @@ from eptransition.versions import VERSIONS, TypeEnum
 
 
 class TransitionManager(object):
+    """
+    This class is the main manager for performing a single transition of an input file from one version to another.
+
+    :param float start_version: A floating point representation of the major.minor version number of the
+                                starting EnergyPlus version for this transition
+    :param float end_version: A floating point representation of the major.minor version number of the
+                              ending EnergyPlus version for this transition
+    :param str original_input_file: Full path to the original idf to transition
+    :param str new_input_file: Full path to the final (transitioned) idf
+    :param str original_idd_file: Full path to the idd file for the original, starting, EnergyPlus version
+    :param str new_idd_file: Full path to the idd file for the final, ending, EnergyPlus version
+    """
     def __init__(self, start_version, end_version, original_input_file,
                  new_input_file, original_idd_file, new_idd_file):
         self.start_version = VERSIONS[start_version]
@@ -21,7 +33,12 @@ class TransitionManager(object):
         self.new_idd_file = new_idd_file
 
     def perform_transition(self):
+        """
+        This function manages the transition from one version to another by opening, validating, and writing files
 
+        :return: SHOULD RETURN SOMETHING
+        """
+        # TODO: Return something
         # Validate file path things
         if not os.path.exists(self.original_input_file):  # pragma no cover
             raise FileAccessException(
@@ -68,12 +85,14 @@ class TransitionManager(object):
             raise FileTypeException("New input dictionary path has unexpected extension, should be .idd or .jdd")
 
         # now validate the file types
-        if original_idf_file_type == self.start_version.file_type and original_idd_file_type == self.start_version.file_type:
+        start_type = self.start_version.file_type
+        if original_idf_file_type == start_type and original_idd_file_type == start_type:
             pass  # that's a good thing
         else:  # pragma no cover
             raise FileTypeException("Original files don't match expected version file type; expected: " +
                                     self.start_version.file_type)
-        if new_idf_file_type == self.end_version.file_type and new_idd_file_type == self.end_version.file_type:
+        end_type = self.end_version.file_type
+        if new_idf_file_type == end_type and new_idd_file_type == end_type:
             pass  # that's a good thing
         else:  # pragma no cover
             raise FileTypeException("Updated files don't match expected version file type; expected: " +
@@ -113,15 +132,18 @@ class TransitionManager(object):
                 "Input file version does not match expected.  (expected={};found={})".format(
                     self.start_version.version, original_idf_structure.version_float))
 
+        class LocalRuleInformation:
+            def __init__(self, local_rule):
+                self.dependent_names = local_rule.get_names_of_dependent_objects()
+                self.transition_function = local_rule.transition
+
         # now read in the rules and create a map based on the upper case version of the IDF object to transition
-        # TODO: Create a nicer rule structure
         this_version_rule = VersionRule(self.end_version)
         rules = [this_version_rule]
         rules.extend([x() for x in self.end_version.transitions])
         rule_map = {}
         for rule in rules:
-            rule_map[rule.get_name_of_object_to_transition().upper()] = [rule.get_names_of_dependent_objects(),
-                                                                         rule.transition]
+            rule_map[rule.get_name_of_object_to_transition().upper()] = LocalRuleInformation(rule)
 
         if self.end_version.output_variable_transition is None:
             output_rule = None
@@ -150,11 +172,10 @@ class TransitionManager(object):
                 # create a map of dependents; where the key is the upper case object type and the value is
                 # the list of all the objects found in the original idf
                 dependents = {}
-                # TODO: rule should not be an array
-                for dep_idf_type in this_rule[0]:
+                for dep_idf_type in this_rule.dependent_names:
                     dependents[dep_idf_type.upper()] = original_idf_structure.get_idf_objects_by_type(dep_idf_type)
                 # call transition to actually perform object changes
-                transition_response = this_rule[1](original_idf_object, dependents)
+                transition_response = this_rule.transition_function(original_idf_object, dependents)
                 # extend the intermediate list objects with changed things and the delete list with things to delete
                 intermediate_idf_objects.extend(transition_response.to_write)
                 objects_to_delete.extend(transition_response.to_delete)

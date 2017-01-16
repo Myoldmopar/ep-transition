@@ -1,5 +1,15 @@
-from eptransition.rules.rules85to86 import branch as branch86
-from eptransition.rules.rules86to87 import controller_list, branch as branch87, output_variables as output87
+from eptransition.rules.rules85to86 import (
+    branch as branch86,
+    airterminal_singleduct_inletsidemixer as inletmixer86,
+    airterminal_singleduct_supplysidemixer as supplymixer86,
+    otherequipment as otherequipment86,
+    zonehvac_airdistributionunit as zonehvac_adu86
+)
+from eptransition.rules.rules86to87 import (
+    controller_list as controller_list87,
+    branch as branch87,
+    output_variables as output87
+)
 
 
 class TypeEnum(object):
@@ -21,14 +31,18 @@ Version85 = VersionInformation(8.5, TypeEnum.IDF,
                                outputs=None)
 Version86 = VersionInformation(8.6, TypeEnum.IDF,
                                transitions=[
-                                   branch86.BranchTransitionRule
+                                   branch86.Rule,
+                                   inletmixer86.Rule,
+                                   supplymixer86.Rule,
+                                   otherequipment86.Rule,
+                                   zonehvac_adu86.Rule
                                ],
                                outputs=None)
 Version87 = VersionInformation(8.7, TypeEnum.IDF,
                                transitions=[
-                                   branch87.BranchTransitionRule,
-                                   controller_list.ControllerListTransitionRule,
+                                   branch87.Rule,
+                                   controller_list87.Rule,
                                ],
-                               outputs=output87.OutputVariableTransitionRule)
+                               outputs=output87.Rule)
 
 VERSIONS = {'8.5': Version85, '8.6': Version86, '8.7': Version87}

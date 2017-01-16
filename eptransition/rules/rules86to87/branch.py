@@ -2,7 +2,7 @@ from eptransition.idf.objects import IDFObject
 from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
 
-class BranchTransitionRule(TransitionRule):
+class Rule(TransitionRule):
     def get_name_of_object_to_transition(self):
         return "Branch"
 

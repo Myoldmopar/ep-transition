@@ -94,7 +94,7 @@ class TestIDFProcessingViaFile(unittest.TestCase):
         idf_path = os.path.join(cur_dir, "..", "..", "support", "transition_files", "1ZoneEvapCooler.idf")
         processor = IDFProcessor()
         idf_structure = processor.process_file_given_file_path(idf_path)
-        self.assertEquals(79, len(idf_structure.objects))
+        self.assertEquals(80, len(idf_structure.objects))
 
     def test_valid_idf_file_complex(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
