@@ -13,15 +13,30 @@ from eptransition.rules.rules86to87 import (
 
 
 class TypeEnum(object):
+    """
+    Simple enumeration style class laying out the possible file types available
+    """
     IDF = "idf"
     JSON = "json"
 
 
 class VersionInformation(object):
+    """
+    Internal init only version information class
+
+    :param float version_float: The major.minor floating point version identifier for this version
+    :param str file_type: The file type for this version, from the TypeEnum class
+    :param [TransitionRule] transitions: A list of class names that derive from TransitionRule as implemented for this
+                                         version
+    :param OutputVariableTransitionRule outputs: Name of a class that derives from OutputVariableTransitionRule, as
+                                                 implemented for this version
+    """
     def __init__(self, version_float, file_type, transitions, outputs):
         self.version = version_float
         self.file_type = file_type
+        # TODO: Validate all transitions derive from TransitionRule
         self.transitions = transitions
+        # TODO: Validate output transition derives from OutputVariableTransitionRule
         self.output_variable_transition = outputs
 
 

@@ -1,5 +1,12 @@
+Ai
+argv
+codebase
 idd
 idf
 Indices
 init
+ish
+metadata
 param
+stdout
+workflow

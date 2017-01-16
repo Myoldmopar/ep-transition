@@ -5,8 +5,10 @@ from eptransition.idf.objects import IDFObject
 class ObjectTypeAndName:
     """
     This is a simple init only class for defining an object type/name combination
-    """
 
+    :param str object_type: The object type
+    :param str object_name: The name of the object (usually field[0]
+    """
     def __init__(self, object_type, object_name):
         self.type = object_type
         self.name = object_name
@@ -15,8 +17,11 @@ class ObjectTypeAndName:
 class TransitionReturn:
     """
     This is a simple init only class for capturing the response from a transition call
-    """
 
+    :param [IDFObject] objects_to_write: The list of IDFObject instances to be written as a result of this transition
+    :param [ObjectTypeAndName] objects_to_delete: The list of idf object type/name combinations to be deleted as a
+                                                 result of this transition
+    """
     def __init__(self, objects_to_write, objects_to_delete=None):
         self.to_write = objects_to_write
         if not objects_to_delete:
@@ -28,7 +33,6 @@ class TransitionRule:
     """
     This class is a must-override base class for defining transition rules for idf objects
     """
-
     def __init__(self):
         pass
 

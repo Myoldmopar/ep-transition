@@ -25,6 +25,7 @@ class TransitionManager(object):
     """
     def __init__(self, start_version, end_version, original_input_file,
                  new_input_file, original_idd_file, new_idd_file):
+        # TODO: Trap for bad start/end version arguments
         self.start_version = VERSIONS[start_version]
         self.end_version = VERSIONS[end_version]
         self.original_input_file = original_input_file

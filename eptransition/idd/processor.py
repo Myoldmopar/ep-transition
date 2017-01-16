@@ -6,6 +6,9 @@ from eptransition.idd.objects import IDDField, IDDObject, IDDStructure, IDDGroup
 
 
 class CurrentReadType:
+    """
+    Internal class containing constants for the different states of the actual IDD Processor engine
+    """
     EncounteredComment_ReadToCR = 0
     ReadAnything = 1
     ReadingGroupDeclaration = 2
@@ -21,6 +24,15 @@ class CurrentReadType:
 
 
 class IDDProcessor:
+    """
+    The core IDD Processor class.  Given an IDD via stream or path, this class has workers to robustly process the IDD
+    into a rich IDDStructure instance.
+
+    The constructor takes no arguments but sets up instance variables. Relevant "public" members are listed here:
+
+    :ivar IDDStructure idd: The resulting IDDStructure instance after processing the IDD file/stream
+    :ivar str file_path: A file path for this IDD, although it may be just a simple descriptor
+    """
     def __init__(self):
         self.idd = None
         self.idd_file_stream = None
@@ -34,6 +46,12 @@ class IDDProcessor:
                             "\\key", "\\object-list", "\\reference", "\\external-list"]
 
     def process_file_given_file_path(self, file_path):
+        """
+        This worker allows processing of an IDD file at a specific path on disk.
+
+        :param file_path: The path to an IDD file on disk.
+        :return: An IDDStructure instance created from processing the IDD file
+        """
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input IDD file not found=\"" + file_path + "\"")  # pragma: no cover
         self.idd_file_stream = open(file_path, 'r')
@@ -41,16 +59,37 @@ class IDDProcessor:
         return self.process_file()
 
     def process_file_via_stream(self, idd_file_stream):
+        """
+        This worker allows processing of an IDD snippet via stream.  Most useful for unit testing, but possibly for
+        other situations.
+
+        :param file-like-object idd_file_stream: An IDD snippet that responds to typical file-like commands such as
+                                                 read().  A common object would be the StringIO object.
+        :return: An IDDStructure instance created from processing the IDD snippet
+        """
         self.idd_file_stream = idd_file_stream
         self.file_path = "/streamed/idd"
         return self.process_file()
 
     def process_file_via_string(self, idd_string):
+        """
+        This worker allows processing of an IDD snippet string.  Most useful for unit testing, but possibly for
+        other situations.
+
+        :param str idd_string: An IDD snippet string
+        :return: An IDDStructure instance created from processing the IDD string
+        """
         self.idd_file_stream = StringIO.StringIO(idd_string)
         self.file_path = "/string/idd/snippet"
         return self.process_file()
 
     def peek_one_char(self):
+        """
+        Internal worker function that reads a single character from the internal IDD stream but resets the stream to
+        the former position
+
+        :return: A single character, the one immediately following the cursor, or None if it can't peek ahead.
+        """
         pos = self.idd_file_stream.tell()
         c = self.idd_file_stream.read(1)
         if c == '':
@@ -59,13 +98,24 @@ class IDDProcessor:
         return c
 
     def read_one_char(self):
+        """
+        Internal worker function that reads a single character from the internal IDD stream, advancing the cursor.
+
+        :return: A single character, the one immediately following the cursor, or None if it can't read.
+        """
         c = self.idd_file_stream.read(1)
         if c == '':
             c = None
         return c
 
     def process_file(self):
+        """
+        Internal worker function that reads the IDD stream, whether it was constructed from a file path, stream or
+        string.  This state machine worker moves character by character reading tokens and processing them into
+        a meaningful IDD structure.
 
+        :return: An IDD structure describing the IDD contents
+        """
         # flags and miscellaneous variables
         line_index = 1  # 1-based counter for the current line of the file
         last_field_for_object = False  # this will be the last field if a semicolon is encountered
