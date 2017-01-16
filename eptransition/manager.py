@@ -1,10 +1,12 @@
 import os
 
-from eptransition.exceptions import FileAccessException, FileTypeException, ManagerProcessingException, ProcessingException
+from eptransition.exceptions import (
+    FileAccessException, FileTypeException, ManagerProcessingException, ProcessingException
+)
 from eptransition.idd.processor import IDDProcessor
-from eptransition.idf.objects import IDFStructure, IDFObject
+from eptransition.idf.objects import IDFStructure
 from eptransition.idf.processor import IDFProcessor
-from eptransition.rules import base_rule
+from eptransition.rules.version_rule import VersionRule
 from eptransition.versions import VERSIONS, TypeEnum
 
 
@@ -19,23 +21,6 @@ class TransitionManager(object):
         self.new_idd_file = new_idd_file
 
     def perform_transition(self):
-
-        class VersionRule(base_rule.TransitionRule):
-
-            def __init__(self, end_version):
-                base_rule.TransitionRule.__init__(self)
-                self.end_version_id = end_version.version
-
-            def get_name_of_object_to_transition(self):
-                return "Version"
-
-            def get_names_of_dependent_objects(self):
-                return []
-
-            def transition(self, core_object, dependent_objects):
-                new_idf_fields = [self.end_version_id]
-                new_version_object = IDFObject([core_object.object_name] + new_idf_fields)
-                return base_rule.TransitionReturn([new_version_object])
 
         # Validate file path things
         if not os.path.exists(self.original_input_file):  # pragma no cover
@@ -129,7 +114,6 @@ class TransitionManager(object):
                     self.start_version.version, original_idf_structure.version_float))
 
         # now read in the rules and create a map based on the upper case version of the IDF object to transition
-        # TODO: Read in only the rules for this particular version
         # TODO: Create a nicer rule structure
         this_version_rule = VersionRule(self.end_version)
         rules = [this_version_rule]
@@ -138,6 +122,13 @@ class TransitionManager(object):
         for rule in rules:
             rule_map[rule.get_name_of_object_to_transition().upper()] = [rule.get_names_of_dependent_objects(),
                                                                          rule.transition]
+
+        if self.end_version.output_variable_transition is None:
+            output_rule = None
+            output_names = []
+        else:
+            output_rule = self.end_version.output_variable_transition()
+            output_names = output_rule.get_output_objects()
 
         # create a list of objects to be deleted (which is a list of Type/Name, or more accurately Type/Field0
         objects_to_delete = []
@@ -167,6 +158,9 @@ class TransitionManager(object):
                 # extend the intermediate list objects with changed things and the delete list with things to delete
                 intermediate_idf_objects.extend(transition_response.to_write)
                 objects_to_delete.extend(transition_response.to_delete)
+            elif idf_object_type_upper in output_names:
+                transition_response = output_rule.transition(original_idf_object)
+                intermediate_idf_objects.extend(transition_response.to_write)
             else:
                 # if there was no rule, just keep the object as it is
                 intermediate_idf_objects.append(original_idf_object)

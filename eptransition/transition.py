@@ -14,7 +14,8 @@ class Argument:
 
 valid_args = [
     Argument('usage', 0, ''),
-    Argument('update', 6, '<original_version> <new_version> <path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
+    Argument('update', 6,
+             '<original_version> <new_version> <path/to/original/idf> <path/to/new/idf> <path/to/original/idd> <path/to/new/idd>')
 ]
 
 
