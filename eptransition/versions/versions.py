@@ -11,6 +11,7 @@ from eptransition.rules.rules86to87 import (
     branch as branch87,
     output_variables as output87
 )
+from eptransition.exceptions import ManagerProcessingException
 
 
 class TypeEnum(object):
@@ -32,23 +33,25 @@ class SingleTransition(object):
                                          version
     :param OutputVariableTransitionRule_or_None outputs: Name of a class that derives from OutputVariableTransitionRule,
                                                          as implemented for this version
-    :raises Exception: For invalid inputs; NEEDS MORE WORK
+    :raises ManagerProcessingException: for any invalid inputs
     """
     def __init__(self, start_version, end_version, transitions, outputs):
         # error handling first
         try:
             start_version = float(start_version)
-        except:  # pragma no cover
-            raise Exception()
+        except ValueError:  # pragma no cover
+            raise ManagerProcessingException("Error in SingleTransition construction; non-float start version")
         try:
             end_version = float(end_version)
-        except:  # pragma no cover
-            raise Exception()
+        except ValueError:  # pragma no cover
+            raise ManagerProcessingException("Error in SingleTransition construction; non-float end version")
         if not all([issubclass(x, TransitionRule) for x in transitions]):  # pragma no cover
-            raise Exception()
+            raise ManagerProcessingException("Error in SingleTransition construction; all transition rules must " +
+                                             "derive from TransitionRule")
         if outputs is not None:
             if not issubclass(outputs, OutputVariableTransitionRule):  # pragma no cover
-                raise Exception()
+                raise ManagerProcessingException("Error in SingleTransition construction; output transition must " +
+                                                 "derive from OutputVariableTransitionRule")
         # then assign class variables
         self.start_version = start_version
         self.end_version = end_version
