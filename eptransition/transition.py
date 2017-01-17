@@ -4,6 +4,7 @@ import argparse
 import sys
 
 from eptransition.manager import TransitionManager
+from eptransition import __version__
 
 
 def main(args=None):
@@ -23,6 +24,7 @@ def main(args=None):
     parser.add_argument("-o", "--output", help="Path to write the transitioned input file", action="store")
     parser.add_argument("-p", "--previdd", help="Path to an original IDD", action="store")
     parser.add_argument("-n", "--newidd", help="Path to a new IDD", action="store")
+    parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args(args=args)
     manager = TransitionManager(args.original_input[0], args.output, args.previdd, args.newidd)
     manager.perform_transition()
