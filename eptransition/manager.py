@@ -21,7 +21,13 @@ class TransitionManager(object):
     """
     def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
-        self.new_input_file = new_input_file
+        if new_input_file is None:
+            self.new_input_file = self.original_input_file[:-4] + "_updated" + self.original_input_file[-4:]
+        else:
+            self.new_input_file = new_input_file
+        if os.path.exists(self.new_input_file):
+            os.remove(self.new_input_file)
+        # keep these as possibly None for now.
         self.original_idd_file = original_idd_file
         self.new_idd_file = new_idd_file
 
@@ -34,16 +40,10 @@ class TransitionManager(object):
         :raises FileTypeException: if a specified file type does not match the expected condition
         :raises ManagerProcessingException: if there is a problem processing the contents of the files
         """
-        # Validate file path things
+        # Validate input file related things
         if not os.path.exists(self.original_input_file):  # pragma no cover
             raise FileAccessException(
                 "Could not access original input file at path = \"" + self.original_input_file + "\"")
-        if not os.path.exists(self.original_idd_file):  # pragma no cover
-            raise FileAccessException(
-                "Could not access original IDD file at path = \"" + self.original_idd_file + "\"")
-        if not os.path.exists(self.new_idd_file):  # pragma no cover
-            raise FileAccessException(
-                "Could not access updated IDD file at path = \"" + self.new_idd_file + "\"")
         if os.path.exists(self.new_input_file):  # pragma no cover
             raise FileAccessException(
                 "Updated input file already exists at = \"" + self.new_input_file + "\"; remove before running!")
@@ -52,8 +52,6 @@ class TransitionManager(object):
         except:  # pragma no cover
             raise FileAccessException(
                 "Could not write to updated file name at = \"" + self.new_input_file + "\"; aborting!")
-
-        # Check file types
         if self.original_input_file.endswith('.idf'):
             original_idf_file_type = TypeEnum.IDF
         elif self.original_input_file.endswith('.jdf'):  # pragma no cover
@@ -66,6 +64,43 @@ class TransitionManager(object):
             new_idf_file_type = TypeEnum.JSON
         else:  # pragma no cover
             raise FileTypeException("New input file path has unexpected extension, should be .idf or .jdf")
+
+        # At this point we now need to know the version of the idf, before we even try to read the idd really
+        original_idf_processor = IDFProcessor()
+        try:
+            # this call _will_ process the version into IDFObject.version_float or raise an exception if it fails
+            original_idf_structure = original_idf_processor.process_file_given_file_path(self.original_input_file)
+        except:  # pragma no cover
+            raise ManagerProcessingException("Could not process original idf; aborting")
+
+        # so we get the original idf version now
+        original_idf_version = original_idf_structure.version_float
+
+        # then we know which VERSION item we're working on:
+        if original_idf_version in TRANSITIONS:
+            this_transition = TRANSITIONS[original_idf_version]
+            end_version = this_transition.end_version
+        else:  # pragma no cover
+            raise ManagerProcessingException(
+                "IDF Version ({}) not found in available transitions".format(original_idf_version))
+
+        # if the IDD files are "None", then try to match them up
+        if self.original_idd_file is None:
+            cur_dir = os.path.dirname(os.path.realpath(__file__))
+            self.original_idd_file = os.path.join(cur_dir, "versions",
+                                                  str(this_transition.start_version), "Energy+.idd")
+        if self.new_idd_file is None:
+            cur_dir = os.path.dirname(os.path.realpath(__file__))
+            self.new_idd_file = os.path.join(cur_dir, "versions",
+                                             str(this_transition.end_version), "Energy+.idd")
+
+        # Validate dictionary file things
+        if not os.path.exists(self.original_idd_file):  # pragma no cover
+            raise FileAccessException(
+                "Could not access original IDD file at path = \"" + self.original_idd_file + "\"")
+        if not os.path.exists(self.new_idd_file):  # pragma no cover
+            raise FileAccessException(
+                "Could not access updated IDD file at path = \"" + self.new_idd_file + "\"")
         if self.original_idd_file.endswith('.idd'):
             original_idd_file_type = TypeEnum.IDF
         elif self.original_idd_file.endswith('.jdd'):  # pragma no cover
@@ -86,25 +121,6 @@ class TransitionManager(object):
             raise FileTypeException(
                 "Original file types don't match; input file={}; dictionary={}".format(
                     original_idf_file_type, original_idd_file_type))
-
-        # at this point we now need to know the version of the idf, before we even try to read the idd really
-        original_idf_processor = IDFProcessor()
-        try:
-            # this call _will_ process the version into IDFObject.version_float or raise an exception if it fails
-            original_idf_structure = original_idf_processor.process_file_given_file_path(self.original_input_file)
-        except:  # pragma no cover
-            raise ManagerProcessingException("Could not process original idf; aborting")
-
-        # so we get the original idf version now
-        original_idf_version = original_idf_structure.version_float
-
-        # then we know which VERSION item we're working on:
-        if original_idf_version in TRANSITIONS:
-            this_transition = TRANSITIONS[original_idf_version]
-            end_version = this_transition.end_version
-        else:  # pragma no cover
-            raise ManagerProcessingException(
-                "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
         end_type = FILE_TYPES[end_version]
         if new_idf_file_type == end_type and new_idd_file_type == end_type:
