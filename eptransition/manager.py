@@ -21,9 +21,7 @@ class TransitionManager(object):
     """
     def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
-        # TODO: allow creating our own output file name if not overridden
         self.new_input_file = new_input_file
-        # TODO: allow grabbing IDD from local stucture if not overridden
         self.original_idd_file = original_idd_file
         self.new_idd_file = new_idd_file
 
@@ -33,7 +31,6 @@ class TransitionManager(object):
 
         :return: SHOULD RETURN SOMETHING
         """
-        # TODO: Return something
         # Validate file path things
         if not os.path.exists(self.original_input_file):  # pragma no cover
             raise FileAccessException(
@@ -88,7 +85,6 @@ class TransitionManager(object):
                     original_idf_file_type, original_idd_file_type))
 
         # at this point we now need to know the version of the idf, before we even try to read the idd really
-        # TODO: Add JSON switch in here...
         original_idf_processor = IDFProcessor()
         try:
             # this call _will_ process the version into IDFObject.version_float or raise an exception if it fails
@@ -108,7 +104,6 @@ class TransitionManager(object):
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
         end_type = FILE_TYPES[end_version]
-        # TODO: These next 5 lines probably vanish...
         if new_idf_file_type == end_type and new_idd_file_type == end_type:
             pass  # that's a good thing
         else:  # pragma no cover
@@ -132,7 +127,6 @@ class TransitionManager(object):
         issues = original_idf_structure.validate(original_idd_structure)
         if len(issues) > 0:  # pragma no cover
             pass
-            # TODO: Once issues have severities, just check for fatal errors
             # raise ManagerProcessingException(
             #    "Issues found in validating of original idf against original idd; aborting", issues)
 

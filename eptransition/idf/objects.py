@@ -100,9 +100,6 @@ class IDFObject(object):
         :return: A list of ValidationIssue instances, each describing an issue encountered
         """
         issues = []
-        # TODO: first check min-fields
-        # TODO: check \default for each field to fill it first if it is blank
-        # TODO: check \type choice and \keys
         for idf, idd in zip(self.fields, idd_object.fields):
             if '\\required-field' in idd.meta_data:
                 if idf == '':
@@ -169,7 +166,6 @@ class IDFObject(object):
         :param file_object: A file-type object that responds to a write command
         :return: Nothing
         """
-        # TODO: Return with something meaningful, use a try block
         file_object.write(self.object_string())
 
 
@@ -227,7 +223,6 @@ class IDFStructure(object):
         :param IDDStructure idd_structure: An optional IDDStructure instance representing an entire IDD file
         :return: Nothing
         """
-        # TODO: use try/except, add proper return type
         with open(idf_path, 'w') as f:
             f.write(self.whole_idf_string(idd_structure))
 
