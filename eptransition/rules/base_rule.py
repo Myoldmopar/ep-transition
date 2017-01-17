@@ -113,6 +113,8 @@ class OutputVariableTransitionRule:
             return [1]
         elif object_name in [self.EMS]:
             return [2]
+        elif object_name in [self.OTM]:
+            return range(2, 100, 2)
 
     def get_output_objects(self):
         """
@@ -204,6 +206,8 @@ class OutputVariableTransitionRule:
         # then go through and do simple renames of the variables in the expected locations
         indexes = self.get_standard_indexes_from_object(obj_name_upper)
         for i in indexes:
+            if i not in original_idf_fields:
+                break
             maybe_new_name = self.simple_name_swap(original_idf_fields[i].upper())
             if maybe_new_name:
                 new_idf_fields[i] = maybe_new_name

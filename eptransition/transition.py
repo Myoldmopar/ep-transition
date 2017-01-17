@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from eptransition.exceptions import ManagerProcessingException
 from eptransition.manager import TransitionManager
 from eptransition import __version__
 
@@ -26,8 +27,16 @@ def main(args=None):
     parser.add_argument("-n", "--newidd", help="Path to a new IDD", action="store")
     parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args(args=args)
-    manager = TransitionManager(args.original_input[0], args.output, args.previdd, args.newidd)
-    manager.perform_transition()
+    try:
+        manager = TransitionManager(args.original_input[0], args.output, args.previdd, args.newidd)
+    except Exception as e:
+        print("Could not instantiate manager from command line args...")
+        return 1
+    try:
+        manager.perform_transition()
+    except ManagerProcessingException as e:
+        print str(e)
+        return 1
     return 0
 
 if __name__ == "__main__":
