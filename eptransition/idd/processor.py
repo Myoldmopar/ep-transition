@@ -23,6 +23,11 @@ class CurrentReadType:
     LookingForFieldMetaDataOrNextField = 11
 
 
+# keep a global dictionary of read IDD structures, could eventually move into the class, but right now we instantiate
+# the class over and over so that wouldn't work
+IDD_CACHE = {}
+
+
 class IDDProcessor:
     """
     The core IDD Processor class.  Given an IDD via stream or path, this class has workers to robustly process the IDD
@@ -119,6 +124,7 @@ class IDDProcessor:
         # flags and miscellaneous variables
         line_index = 1  # 1-based counter for the current line of the file
         last_field_for_object = False  # this will be the last field if a semicolon is encountered
+        magic_cache_key = None
 
         # variables used as we are building the input structure
         self.idd = IDDStructure(self.file_path)  # empty overall IDD structure
@@ -412,6 +418,10 @@ class IDDProcessor:
                                 "Found IDD version, but could not coerce into floating point representation")
                     elif 'IDD_BUILD' in token_builder:
                         self.idd.build_string = token_builder.strip().split(' ')[1].strip()
+                        magic_cache_key = "{}__{}".format(self.idd.version_string, self.idd.build_string)
+                        if magic_cache_key in IDD_CACHE:
+                            self.idd = IDD_CACHE[magic_cache_key]
+                            return self.idd
                     token_builder = ''
 
         # end the file here, but should watch for end-of-file in other CASEs also
@@ -421,4 +431,9 @@ class IDDProcessor:
         if (not self.idd.version_float) or (not self.idd.build_string):
             raise exceptions.ProcessingException("IDD did not appear to include standard version headers")
 
+        # save this idd structure in the cache
+        if magic_cache_key:
+            IDD_CACHE[magic_cache_key] = self.idd
+
+        # and return the magically useful IDDStructure instance
         return self.idd

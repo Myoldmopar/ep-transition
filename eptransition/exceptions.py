@@ -32,8 +32,17 @@ class ManagerProcessingException(Exception):
     """
     This exception occurs when the transition tool encounters an unexpected issue when doing the transition.
     """
+    def __init__(self, msg, issues=None):
+        self.message = msg
+        self.issues = issues
+
     def __str__(self):
-        return self.message  # pragma no cover
+        msg = ''
+        if self.issues:
+            for i in self.issues:
+                msg += str(i) + '\n'
+        msg += self.message
+        return msg
 
 
 class ProcessingException(Exception):

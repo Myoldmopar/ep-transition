@@ -41,7 +41,7 @@ setuptools.setup(
     },
     entry_points={
         'console_scripts': [
-            'eptransition=eptransition.transition:drive_from_cmdline',
+            'eptransition=eptransition.transition:main',
         ],
     }
 )

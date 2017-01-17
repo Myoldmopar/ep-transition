@@ -42,7 +42,7 @@ class TestSingleLineIDFValidation(unittest.TestCase):
     def test_valid_single_token_object_with_idd(self):
         idd_string = """
         !IDD_Version 1.2.0
-        !IDD_BUILD abcdef1234
+        !IDD_BUILD abcdef1001
         \group MyGroup
         SingleLineObject;"""
         idd_object = IDDProcessor().process_file_via_string(idd_string).get_object_by_type('SingleLineObject')
@@ -58,7 +58,7 @@ class TestIDFFieldValidation(unittest.TestCase):
     def setUp(self):
         idd_string = """
 !IDD_Version 12.9.0
-!IDD_BUILD abcdef1234
+!IDD_BUILD abcdef1010
 \group MyGroup
 Version,
   A1;  \\field VersionID
@@ -192,7 +192,7 @@ class TestIDFObjectValidation(unittest.TestCase):
     def setUp(self):
         idd_string = """
 !IDD_Version 8.1.0
-!IDD_BUILD abcdef1234
+!IDD_BUILD abcdef1011
 \group MyGroup
 Version,
   A1;  \\field VersionID
