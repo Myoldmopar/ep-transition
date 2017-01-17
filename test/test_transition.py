@@ -16,23 +16,9 @@ class TestDriver(unittest.TestCase):
         idd_path_87 = os.path.join(cur_dir, "..", "eptransition", "versions", "8.7", "V8-7-0-Energy+.idd")
         if os.path.exists('/tmp/new_86_branch.idf'):
             os.remove('/tmp/new_86_branch.idf')  # pragma no cover
-        r = transition.drive(
-            ['program_name', 'update', idf_path_85, '/tmp/new_86_branch.idf', idd_path_85, idd_path_86],
-            True)
+        r = transition.main(['-o', '/tmp/new_86_branch.idf', '-p', idd_path_85, '-n', idd_path_86, idf_path_85])
         self.assertEqual(0, r)
         if os.path.exists('/tmp/new_idf.idf'):
             os.remove('/tmp/new_idf.idf')  # pragma no cover
-        r = transition.drive(
-            ['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path_86, idd_path_87], True)
+        r = transition.main(['-o', '/tmp/new_idf.idf', '-p', idd_path_86, '-n', idd_path_87, idf_path])
         self.assertEqual(0, r)
-        # usage mode
-        r = transition.drive(['program_name', 'usage'], True)
-        self.assertEqual(0, r)
-        # incorrect number of args
-        r = transition.drive(['program_name'], True)
-        self.assertEqual(1, r)
-        r = transition.drive(['program_name', 'usage', 'what'], True)
-        self.assertEqual(1, r)
-        # bad arg mode
-        r = transition.drive(['program_name', 'badarg'], True)
-        self.assertEqual(1, r)

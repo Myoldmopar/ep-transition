@@ -14,13 +14,12 @@ class TransitionManager(object):
     """
     This class is the main manager for performing a single transition of an input file from one version to another.
 
-    :param str original_input_file: Full path to the original idf to transition
-    :param str new_input_file: Full path to the final (transitioned) idf
-    :param str original_idd_file: Full path to the idd file for the original, starting, EnergyPlus version
-    :param str new_idd_file: Full path to the idd file for the final, ending, EnergyPlus version
+    :param str_or_None original_input_file: Full path to the original idf to transition
+    :param str_or_None new_input_file: Full path to the final (transitioned) idf
+    :param str_or_None original_idd_file: Full path to the idd file for the original, starting, EnergyPlus version
+    :param str_or_None new_idd_file: Full path to the idd file for the final, ending, EnergyPlus version
     """
-    def __init__(self, original_input_file,
-                 new_input_file, original_idd_file, new_idd_file):
+    def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
         # TODO: allow creating our own output file name if not overridden
         self.new_input_file = new_input_file
