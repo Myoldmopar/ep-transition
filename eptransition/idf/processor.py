@@ -66,7 +66,7 @@ class IDFProcessor:
         parsing them into a meaningful structure
 
         :return: An IDF structure describing the IDF contents
-        :raises ProcessingException: for any issues encountered during the processign of the idf
+        :raises ProcessingException: for any issues encountered during the processing of the idf
         """
         self.idf = IDFStructure(self.file_path)
         # phase 0: read in lines of file
