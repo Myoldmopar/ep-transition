@@ -29,7 +29,7 @@ class TransitionManager(object):
         """
         This function manages the transition from one version to another by opening, validating, and writing files
 
-        :return: SHOULD RETURN SOMETHING
+        :return: 0 for success, raises exception for failures
         :raises FileAccessException: if a specified file does not access
         :raises FileTypeException: if a specified file type does not match the expected condition
         :raises ManagerProcessingException: if there is a problem processing the contents of the files
@@ -210,3 +210,6 @@ class TransitionManager(object):
                 final_idf_objects.append(intermediate_idf_object)
         final_idf_structure.objects = final_idf_objects
         final_idf_structure.write_idf(self.new_input_file, new_idd_structure)
+
+        # done
+        return 0
