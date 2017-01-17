@@ -2,7 +2,7 @@ import StringIO
 import os
 import unittest
 
-from eptransition.exceptions import MalformedIDFException, ProcessingException
+from eptransition.exceptions import ProcessingException
 from eptransition.idf.processor import IDFProcessor
 
 
@@ -53,7 +53,7 @@ something, !- with a comment
 last field with space; ! and comment for fun
 """
         processor = IDFProcessor()
-        with self.assertRaises(MalformedIDFException):
+        with self.assertRaises(ProcessingException):
             processor.process_file_via_stream(StringIO.StringIO(idf_object))
 
     def test_nonnumerc_version(self):
@@ -73,7 +73,7 @@ a line without a comma
 something, !- with a comment
 """
         processor = IDFProcessor()
-        with self.assertRaises(MalformedIDFException):
+        with self.assertRaises(ProcessingException):
             processor.process_file_via_stream(StringIO.StringIO(idf_object))
 
     def test_missing_semicolon(self):
@@ -84,7 +84,7 @@ object_name,
 something without a semicolon !- with a comment
 """
         processor = IDFProcessor()
-        with self.assertRaises(MalformedIDFException):
+        with self.assertRaises(ProcessingException):
             processor.process_file_via_stream(StringIO.StringIO(idf_object))
 
 
