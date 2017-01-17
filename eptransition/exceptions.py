@@ -6,14 +6,6 @@ class UnimplementedMethodException(Exception):
     pass
 
 
-class MalformedIDFException(Exception):
-    """
-    This exception occurs when an invalid syntax is detected when processing an IDF.  This is likely a problem
-    with the idf itself.
-    """
-    pass
-
-
 class FileAccessException(Exception):
     """
     This exception occurs when the transition tool encounters a problem accessing a prescribed input or output file.

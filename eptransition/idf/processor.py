@@ -26,6 +26,7 @@ class IDFProcessor:
 
         :param file_path: The path to an IDF file on disk.
         :return: An IDFStructure instance created from processing the IDF file
+        :raises ProcessingException: if the specified file does not exist
         """
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
@@ -65,6 +66,7 @@ class IDFProcessor:
         parsing them into a meaningful structure
 
         :return: An IDF structure describing the IDF contents
+        :raises ProcessingException: for any issues encountered during the processign of the idf
         """
         self.idf = IDFStructure(self.file_path)
         # phase 0: read in lines of file
@@ -125,12 +127,12 @@ class IDFProcessor:
                 # check these object lines for malformed idf syntax
                 for l in out_lines:
                     if not (l.endswith(',') or l.endswith(';')):
-                        raise exceptions.MalformedIDFException(
+                        raise exceptions.ProcessingException(
                             "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
                 # the last line in an idf object blob should have a semicolon; if it doesn't it might indicate
                 # a comment block in the middle of a single idf object
                 if not out_lines[-1].endswith(';'):
-                    raise exceptions.MalformedIDFException(
+                    raise exceptions.ProcessingException(
                         "Encountered a missing semicolon condition; this can indicate comments placed within" +
                         " a single idf object.  This is valid IDF for EnergyPlus, but this translator does not yet" +
                         " handle such condition."

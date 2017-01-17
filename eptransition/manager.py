@@ -30,6 +30,9 @@ class TransitionManager(object):
         This function manages the transition from one version to another by opening, validating, and writing files
 
         :return: SHOULD RETURN SOMETHING
+        :raises FileAccessException: if a specified file does not access
+        :raises FileTypeException: if a specified file type does not match the expected condition
+        :raises ManagerProcessingException: if there is a problem processing the contents of the files
         """
         # Validate file path things
         if not os.path.exists(self.original_input_file):  # pragma no cover
@@ -127,8 +130,8 @@ class TransitionManager(object):
         issues = original_idf_structure.validate(original_idd_structure)
         if len(issues) > 0:  # pragma no cover
             pass
-            # raise ManagerProcessingException(
-            #    "Issues found in validating of original idf against original idd; aborting", issues)
+        # raise ManagerProcessingException(  This will be uncommented once we have severity rules
+        #     "Issues found in validating of original idf against original idd; aborting", issues)
 
         class LocalRuleInformation:
             def __init__(self, local_rule):
