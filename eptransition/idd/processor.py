@@ -56,6 +56,7 @@ class IDDProcessor:
 
         :param file_path: The path to an IDD file on disk.
         :return: An IDDStructure instance created from processing the IDD file
+        :raises ProcessingException: if the specified file does not exist
         """
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input IDD file not found=\"" + file_path + "\"")  # pragma: no cover
@@ -120,6 +121,7 @@ class IDDProcessor:
         a meaningful IDD structure.
 
         :return: An IDD structure describing the IDD contents
+        :raises ProcessingException: for any erroneous conditions encountered during processing
         """
         # flags and miscellaneous variables
         line_index = 1  # 1-based counter for the current line of the file

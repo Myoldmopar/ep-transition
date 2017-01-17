@@ -42,6 +42,7 @@ class TransitionRule:
         the transition for.
 
         :return: A string name of an object to transition
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "TransitionRule derived classes should override get_name_of_object_to_transition() method")
@@ -52,6 +53,7 @@ class TransitionRule:
         transition implementation is dependent upon.
 
         :return: A list of string object names
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "TransitionRule derived classes should override get_names_of_dependent_objects() method")
@@ -66,6 +68,7 @@ class TransitionRule:
                                   `get_names_of_dependent_objects` method.  Each key in this argument is a string
                                   object name, and each value is a list of all the idf objects in the file of that type.
         :return: A list of new IDFObject instances, typically just one though
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "TransitionRule derived classes should override transition() method")
@@ -123,6 +126,7 @@ class OutputVariableTransitionRule:
         and if an object name changes, the derived class can change that name as needed in the return array.
 
         :return: A list of strings, each representing an output object type name
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "OutputVariableTransitionRule derived classes should override get_output_objects() method")
@@ -136,6 +140,7 @@ class OutputVariableTransitionRule:
 
         :param object_name: The name of the object being inspected
         :return: A list of zero-based indexes, each representing a field containing an output variable name
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "OutputVariableTransitionRule derived classes should override get_standard_indexes_from_object() method")
@@ -146,6 +151,7 @@ class OutputVariableTransitionRule:
         complex transition operations than a simple variable name swap
 
         :return: A list of strings, each representing an object name that requires complex transition operations
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "OutputVariableTransitionRule derived classes should override get_complex_operation_types() method")
@@ -157,6 +163,7 @@ class OutputVariableTransitionRule:
         simple variable name swaps.
 
         :return: A dictionary of <old_variable_name, new_variable_name>
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "OutputVariableTransitionRule derived classes should override get_simple_swaps() method")
@@ -184,6 +191,7 @@ class OutputVariableTransitionRule:
 
         :param full_object: The original object to be replaced.
         :return: A list of new IDFObject instances, typically just one though
+        :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException(
             "OutputVariableTransitionRule derived classes should override complex_output_operation() method")
