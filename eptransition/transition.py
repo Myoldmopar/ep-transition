@@ -5,6 +5,25 @@ import sys
 from eptransition.manager import TransitionManager
 
 
+import argparse
+
+# available_versions = [8.5, 8.6, 8.7]
+# parser = argparse.ArgumentParser(description='Transition an EnergyPlus Input File')
+# parser.add_argument('original_input',
+#                     action='store',
+#                     nargs=1,
+#                     required=True,
+#                     help="The original input file to transition")
+# parser.add_argument('original_version',
+#                     action='store',
+#                     nargs=1,
+#                     choices=available_versions[:-1],
+#                     required=True,
+#                     help="The original version of the idf to transition from")
+# parser.add_argument('integers', metavar='N', type=int, nargs='+',
+#                     help='an integer for the accumulator')
+#
+
 class Argument:
     """
     Internal class used for establishing the possible action command line arguments for this tool
@@ -17,8 +36,8 @@ class Argument:
 
 VALID_ARGS = [
     Argument('usage', 0, ''),
-    Argument('update', 6,
-             '<original_version> <new_version> <path/original/idf> <path/new/idf> <path/original/idd> <path/new/idd>')
+    Argument('update', 4,
+             '<path/original/idf> <path/new/idf> <path/original/idd> <path/new/idd>')
 ]
 
 
@@ -69,12 +88,12 @@ def drive(argv, test_mode=False):
         if not test_mode:  # pragma: no cover
             usage()
     elif argv[1] == VALID_ARGS[1].cli_argument:  # update
-        manager = TransitionManager(argv[2], argv[3], argv[4], argv[5], argv[6], argv[7])
+        manager = TransitionManager(argv[2], argv[3], argv[4], argv[5])
         manager.perform_transition()
     return 0
 
 
-def drive_from_cmdline():  # pragma no cover
+def main():  # pragma no cover
     """
     This function allows the transition tool to be called from the command line.  This function packages up sys.argv
     and passes them to the main drive function.  This function is exposed during installation via pip as the main
@@ -82,7 +101,3 @@ def drive_from_cmdline():  # pragma no cover
     :return: Calls sys.exit upon completion with the return value from drive(), so 0 for success, 1 for failure.
     """
     sys.exit(drive(sys.argv))
-
-
-if __name__ == "__main__":  # pragma no cover
-    drive_from_cmdline()

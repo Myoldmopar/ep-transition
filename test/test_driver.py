@@ -17,13 +17,13 @@ class TestDriver(unittest.TestCase):
         if os.path.exists('/tmp/new_86_branch.idf'):
             os.remove('/tmp/new_86_branch.idf')  # pragma no cover
         r = transition.drive(
-            ['program_name', 'update', '8.5', '8.6', idf_path_85, '/tmp/new_86_branch.idf', idd_path_85, idd_path_86],
+            ['program_name', 'update', idf_path_85, '/tmp/new_86_branch.idf', idd_path_85, idd_path_86],
             True)
         self.assertEqual(0, r)
         if os.path.exists('/tmp/new_idf.idf'):
             os.remove('/tmp/new_idf.idf')  # pragma no cover
         r = transition.drive(
-            ['program_name', 'update', '8.6', '8.7', idf_path, '/tmp/new_idf.idf', idd_path_86, idd_path_87], True)
+            ['program_name', 'update', idf_path, '/tmp/new_idf.idf', idd_path_86, idd_path_87], True)
         self.assertEqual(0, r)
         # usage mode
         r = transition.drive(['program_name', 'usage'], True)

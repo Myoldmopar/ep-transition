@@ -11,7 +11,7 @@ class VersionRule(base_rule.TransitionRule):
     """
     def __init__(self, end_version):
         base_rule.TransitionRule.__init__(self)
-        self.end_version_id = end_version.version
+        self.end_version_id = end_version
 
     def get_name_of_object_to_transition(self):
         return "Version"

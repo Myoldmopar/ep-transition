@@ -7,29 +7,24 @@ from eptransition.idd.processor import IDDProcessor
 from eptransition.idf.objects import IDFStructure
 from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
-from eptransition.versions.versions import VERSIONS, TypeEnum
+from eptransition.versions.versions import TRANSITIONS, TypeEnum, FILE_TYPES
 
 
 class TransitionManager(object):
     """
     This class is the main manager for performing a single transition of an input file from one version to another.
 
-    :param float start_version: A floating point representation of the major.minor version number of the
-                                starting EnergyPlus version for this transition
-    :param float end_version: A floating point representation of the major.minor version number of the
-                              ending EnergyPlus version for this transition
     :param str original_input_file: Full path to the original idf to transition
     :param str new_input_file: Full path to the final (transitioned) idf
     :param str original_idd_file: Full path to the idd file for the original, starting, EnergyPlus version
     :param str new_idd_file: Full path to the idd file for the final, ending, EnergyPlus version
     """
-    def __init__(self, start_version, end_version, original_input_file,
+    def __init__(self, original_input_file,
                  new_input_file, original_idd_file, new_idd_file):
-        # TODO: Trap for bad start/end version arguments
-        self.start_version = VERSIONS[start_version]
-        self.end_version = VERSIONS[end_version]
         self.original_input_file = original_input_file
+        # TODO: allow creating our own output file name if not overridden
         self.new_input_file = new_input_file
+        # TODO: allow grabbing IDD from local stucture if not overridden
         self.original_idd_file = original_idd_file
         self.new_idd_file = new_idd_file
 
@@ -85,26 +80,40 @@ class TransitionManager(object):
         else:  # pragma no cover
             raise FileTypeException("New input dictionary path has unexpected extension, should be .idd or .jdd")
 
-        # now validate the file types
-        start_type = self.start_version.file_type
-        if original_idf_file_type == start_type and original_idd_file_type == start_type:
+        # now validate the file types match each other
+        if original_idf_file_type == original_idd_file_type:
             pass  # that's a good thing
         else:  # pragma no cover
-            raise FileTypeException("Original files don't match expected version file type; expected: " +
-                                    self.start_version.file_type)
-        end_type = self.end_version.file_type
-        if new_idf_file_type == end_type and new_idd_file_type == end_type:
-            pass  # that's a good thing
-        else:  # pragma no cover
-            raise FileTypeException("Updated files don't match expected version file type; expected: " +
-                                    self.end_version.file_type)
+            raise FileTypeException(
+                "Original file types don't match; input file={}; dictionary={}".format(
+                    original_idf_file_type, original_idd_file_type))
 
-        # process the original input file
+        # at this point we now need to know the version of the idf, before we even try to read the idd really
+        # TODO: Add JSON switch in here...
         original_idf_processor = IDFProcessor()
         try:
+            # this call _will_ process the version into IDFObject.version_float or raise an exception if it fails
             original_idf_structure = original_idf_processor.process_file_given_file_path(self.original_input_file)
         except:  # pragma no cover
             raise ManagerProcessingException("Could not process original idf; aborting")
+
+        # so we get the original idf version now
+        original_idf_version = original_idf_structure.version_float
+
+        # then we know which VERSION item we're working on:
+        if original_idf_version in TRANSITIONS:
+            this_transition = TRANSITIONS[original_idf_version]
+            end_version = this_transition.end_version
+        else:
+            raise ManagerProcessingException(
+                "IDF Version ({}) not found in available transitions".format(original_idf_version))
+
+        end_type = FILE_TYPES[end_version]
+        # TODO: These next 5 lines probably vanish...
+        if new_idf_file_type == end_type and new_idd_file_type == end_type:
+            pass  # that's a good thing
+        else:  # pragma no cover
+            raise FileTypeException("Updated files don't match expected version file type; expected: " + end_type)
 
         # and process the original idd file
         original_idd_processor = IDDProcessor()
@@ -127,30 +136,24 @@ class TransitionManager(object):
             raise ManagerProcessingException(
                 "Issues found in validating of original idf against original idd; aborting")
 
-        # check the version of the original idf
-        if original_idf_structure.version_float != self.start_version.version:  # pragma no cover
-            raise ManagerProcessingException(
-                "Input file version does not match expected.  (expected={};found={})".format(
-                    self.start_version.version, original_idf_structure.version_float))
-
         class LocalRuleInformation:
             def __init__(self, local_rule):
                 self.dependent_names = local_rule.get_names_of_dependent_objects()
                 self.transition_function = local_rule.transition
 
         # now read in the rules and create a map based on the upper case version of the IDF object to transition
-        this_version_rule = VersionRule(self.end_version)
+        this_version_rule = VersionRule(end_version)
         rules = [this_version_rule]
-        rules.extend([x() for x in self.end_version.transitions])
+        rules.extend([x() for x in this_transition.transitions])
         rule_map = {}
         for rule in rules:
             rule_map[rule.get_name_of_object_to_transition().upper()] = LocalRuleInformation(rule)
 
-        if self.end_version.output_variable_transition is None:
+        if this_transition.output_variable_transition is None:
             output_rule = None
             output_names = []
         else:
-            output_rule = self.end_version.output_variable_transition()
+            output_rule = this_transition.output_variable_transition()
             output_names = output_rule.get_output_objects()
 
         # create a list of objects to be deleted (which is a list of Type/Name, or more accurately Type/Field0

@@ -1,3 +1,4 @@
+from eptransition.rules.base_rule import TransitionRule, OutputVariableTransitionRule
 from eptransition.rules.rules85to86 import (
     branch as branch86,
     airterminal_singleduct_inletsidemixer as inletmixer86,
@@ -20,44 +21,59 @@ class TypeEnum(object):
     JSON = "json"
 
 
-class VersionInformation(object):
+class SingleTransition(object):
     """
     Internal init only version information class
 
-    :param float version_float: The major.minor floating point version identifier for this version
-    :param str file_type: The file type for this version, from the TypeEnum class
+    :param float start_version: The major.minor floating point version identifier for the start version of this
+                                transition
+    :param float end_version: The major.minor floating point version identifier for the end version of this transition
     :param [TransitionRule] transitions: A list of class names that derive from TransitionRule as implemented for this
                                          version
-    :param OutputVariableTransitionRule outputs: Name of a class that derives from OutputVariableTransitionRule, as
+    :param OutputVariableTransitionRule_or_None outputs: Name of a class that derives from OutputVariableTransitionRule, as
                                                  implemented for this version
     """
-    def __init__(self, version_float, file_type, transitions, outputs):
-        self.version = version_float
-        self.file_type = file_type
-        # TODO: Validate all transitions derive from TransitionRule
+    def __init__(self, start_version, end_version, transitions, outputs):
+        # error handling first
+        try:
+            start_version = float(start_version)
+        except:
+            raise Exception()
+        try:
+            end_version = float(end_version)
+        except:
+            raise Exception()
+        if not all([issubclass(x, TransitionRule) for x in transitions]):
+            raise Exception()
+        if outputs is not None:
+            if not issubclass(outputs, OutputVariableTransitionRule):
+                raise Exception()
+        # then assign class variables
+        self.start_version = start_version
+        self.end_version = end_version
         self.transitions = transitions
-        # TODO: Validate output transition derives from OutputVariableTransitionRule
         self.output_variable_transition = outputs
 
 
 # We need to have the very first baseline in here even if it isn't ever a target transition
-Version85 = VersionInformation(8.5, TypeEnum.IDF,
-                               transitions=[],
-                               outputs=None)
-Version86 = VersionInformation(8.6, TypeEnum.IDF,
-                               transitions=[
-                                   branch86.Rule,
-                                   inletmixer86.Rule,
-                                   supplymixer86.Rule,
-                                   otherequipment86.Rule,
-                                   zonehvac_adu86.Rule
-                               ],
-                               outputs=None)
-Version87 = VersionInformation(8.7, TypeEnum.IDF,
-                               transitions=[
-                                   branch87.Rule,
-                                   controller_list87.Rule,
-                               ],
-                               outputs=output87.Rule)
+Transition84_85 = SingleTransition(8.4, 8.5,
+                                   transitions=[],
+                                   outputs=None)
+Transition85_86 = SingleTransition(8.5, 8.6,
+                                   transitions=[
+                                       branch86.Rule,
+                                       inletmixer86.Rule,
+                                       supplymixer86.Rule,
+                                       otherequipment86.Rule,
+                                       zonehvac_adu86.Rule
+                                   ],
+                                   outputs=None)
+Transition86_87 = SingleTransition(8.6, 8.7,
+                                   transitions=[
+                                       branch87.Rule,
+                                       controller_list87.Rule,
+                                   ],
+                                   outputs=output87.Rule)
 
-VERSIONS = {'8.5': Version85, '8.6': Version86, '8.7': Version87}
+FILE_TYPES = {8.4: TypeEnum.IDF, 8.5: TypeEnum.IDF, 8.6: TypeEnum.IDF, 8.7: TypeEnum.IDF}
+TRANSITIONS = {8.4: Transition84_85, 8.5: Transition85_86, 8.6: Transition86_87}  # key is start version

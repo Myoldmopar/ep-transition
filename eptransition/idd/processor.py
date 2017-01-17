@@ -23,6 +23,11 @@ class CurrentReadType:
     LookingForFieldMetaDataOrNextField = 11
 
 
+# keep a global dictionary of read IDD structures, could eventually move into the class, but right now we instantiate
+# the class over and over so that wouldn't work
+IDD_CACHE = {}
+
+
 class IDDProcessor:
     """
     The core IDD Processor class.  Given an IDD via stream or path, this class has workers to robustly process the IDD
@@ -412,6 +417,10 @@ class IDDProcessor:
                                 "Found IDD version, but could not coerce into floating point representation")
                     elif 'IDD_BUILD' in token_builder:
                         self.idd.build_string = token_builder.strip().split(' ')[1].strip()
+                        magic_cache_key = "{}__{}".format(self.idd.version_string, self.idd.build_string)
+                        if magic_cache_key in IDD_CACHE:
+                            self.idd = IDD_CACHE[magic_cache_key]
+                            return self.idd
                     token_builder = ''
 
         # end the file here, but should watch for end-of-file in other CASEs also
