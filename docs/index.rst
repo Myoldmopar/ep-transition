@@ -24,7 +24,7 @@ Contents:
    eptransition_transition
    eptransition_manager
    eptransition_exceptions
-   eptransition_versions
+   eptransition_versions_versions
    eptransition_idd_objects
    eptransition_idd_processor
    eptransition_idf_objects
