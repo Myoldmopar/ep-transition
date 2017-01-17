@@ -7,7 +7,7 @@ from eptransition.idd.processor import IDDProcessor
 from eptransition.idf.objects import IDFStructure
 from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
-from eptransition.versions import VERSIONS, TypeEnum
+from eptransition.versions.versions import VERSIONS, TypeEnum
 
 
 class TransitionManager(object):

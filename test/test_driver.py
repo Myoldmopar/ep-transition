@@ -9,11 +9,11 @@ class TestDriver(unittest.TestCase):
     def test_driver(self):
         # normal arg mode
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path_85 = os.path.join(cur_dir, "..", "support", "transition_files", "PlantLoadProfile.idf")
-        idf_path = os.path.join(cur_dir, "..", "support", "transition_files", "1ZoneEvapCooler.idf")
-        idd_path_85 = os.path.join(cur_dir, "..", "support", "transition_files", "V8-5-0-Energy+.idd")
-        idd_path_86 = os.path.join(cur_dir, "..", "support", "transition_files", "V8-6-0-Energy+.idd")
-        idd_path_87 = os.path.join(cur_dir, "..", "support", "transition_files", "V8-7-0-Energy+.idd")
+        idf_path_85 = os.path.join(cur_dir, "..", "eptransition", "versions", "8.5", "PlantLoadProfile.idf")
+        idf_path = os.path.join(cur_dir, "..", "eptransition", "versions", "8.6", "1ZoneEvapCooler.idf")
+        idd_path_85 = os.path.join(cur_dir, "..", "eptransition", "versions", "8.5", "V8-5-0-Energy+.idd")
+        idd_path_86 = os.path.join(cur_dir, "..", "eptransition", "versions", "8.6", "V8-6-0-Energy+.idd")
+        idd_path_87 = os.path.join(cur_dir, "..", "eptransition", "versions", "8.7", "V8-7-0-Energy+.idd")
         if os.path.exists('/tmp/new_86_branch.idf'):
             os.remove('/tmp/new_86_branch.idf')  # pragma no cover
         r = transition.drive(
