@@ -30,8 +30,9 @@ class SingleTransition(object):
     :param float end_version: The major.minor floating point version identifier for the end version of this transition
     :param [TransitionRule] transitions: A list of class names that derive from TransitionRule as implemented for this
                                          version
-    :param OutputVariableTransitionRule_or_None outputs: Name of a class that derives from OutputVariableTransitionRule, as
-                                                 implemented for this version
+    :param OutputVariableTransitionRule_or_None outputs: Name of a class that derives from OutputVariableTransitionRule,
+                                                         as implemented for this version
+    :raises Exception: For invalid inputs; NEEDS MORE WORK
     """
     def __init__(self, start_version, end_version, transitions, outputs):
         # error handling first
