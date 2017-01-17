@@ -18,7 +18,7 @@ def main(args=None):
                  followed by real arguments.  If this is not passed in, sys.argv is assumed.
     :return: 0 for success, 1 for failure
     """
-    if args is None:
+    if args is None:  # pragma no cover
         args = sys.argv[1:]
     parser = argparse.ArgumentParser(description="Transition an EnergyPlus Input File")
     parser.add_argument("original_input", help="The original input file to transition", nargs=1)
@@ -29,15 +29,16 @@ def main(args=None):
     args = parser.parse_args(args=args)
     try:
         manager = TransitionManager(args.original_input[0], args.output, args.previdd, args.newidd)
-    except Exception as e:
+    except Exception as e:  # pragma no cover
         print("Could not instantiate manager from command line args...")
         return 1
     try:
         manager.perform_transition()
-    except ManagerProcessingException as e:
+    except ManagerProcessingException as e:  # pragma no cover
         print str(e)
         return 1
     return 0
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":  # pragma no cover
     sys.exit(main())

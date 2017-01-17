@@ -113,7 +113,7 @@ class OutputVariableTransitionRule:
             return [1]
         elif object_name in [self.EMS]:
             return [2]
-        elif object_name in [self.OTM]:
+        elif object_name in [self.OTM]:  # pragma no cover   -- will add back in once we test an idf that has OTM
             return range(2, 100, 2)
 
     def get_output_objects(self):
@@ -206,7 +206,9 @@ class OutputVariableTransitionRule:
         # then go through and do simple renames of the variables in the expected locations
         indexes = self.get_standard_indexes_from_object(obj_name_upper)
         for i in indexes:
-            if i not in original_idf_fields:
+            try:
+                original_idf_fields[i]
+            except IndexError:  # pragma no cover   this could be covered if the idf tests were larger
                 break
             maybe_new_name = self.simple_name_swap(original_idf_fields[i].upper())
             if maybe_new_name:

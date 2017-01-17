@@ -37,16 +37,16 @@ class SingleTransition(object):
         # error handling first
         try:
             start_version = float(start_version)
-        except:
+        except:  # pragma no cover
             raise Exception()
         try:
             end_version = float(end_version)
-        except:
+        except:  # pragma no cover
             raise Exception()
-        if not all([issubclass(x, TransitionRule) for x in transitions]):
+        if not all([issubclass(x, TransitionRule) for x in transitions]):  # pragma no cover
             raise Exception()
         if outputs is not None:
-            if not issubclass(outputs, OutputVariableTransitionRule):
+            if not issubclass(outputs, OutputVariableTransitionRule):  # pragma no cover
                 raise Exception()
         # then assign class variables
         self.start_version = start_version

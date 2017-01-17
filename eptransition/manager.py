@@ -103,7 +103,7 @@ class TransitionManager(object):
         if original_idf_version in TRANSITIONS:
             this_transition = TRANSITIONS[original_idf_version]
             end_version = this_transition.end_version
-        else:
+        else:  # pragma no cover
             raise ManagerProcessingException(
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
@@ -133,7 +133,7 @@ class TransitionManager(object):
         if len(issues) > 0:  # pragma no cover
             pass
             # TODO: Once issues have severities, just check for fatal errors
-            #raise ManagerProcessingException(
+            # raise ManagerProcessingException(
             #    "Issues found in validating of original idf against original idd; aborting", issues)
 
         class LocalRuleInformation:
