@@ -11,7 +11,7 @@ class TestIDDProcessingViaStream(TestCase):
     def test_proper_idd(self):
         idd_object = """
 !IDD_Version 1.2.0
-!IDD_BUILD abcdef1234
+!IDD_BUILD abcdef0000
 \\group Simulation Parameters
 
 Version,
@@ -30,7 +30,7 @@ Version,
     def test_proper_idd_indented(self):
         idd_object = """
     !IDD_Version 1.2.0
-    !IDD_BUILD abcdef1234
+    !IDD_BUILD abcdef0001
     \\group Simulation Parameters
 
     Version,
@@ -48,7 +48,7 @@ Version,
     def test_repeated_object_meta_idd(self):
         idd_object = """
 !IDD_Version 0.1.0
-!IDD_BUILD abcdef1234
+!IDD_BUILD abcdef0010
 \\group Simulation Parameters
 
 Version,
@@ -70,7 +70,7 @@ Version,
     def test_single_line_obj_lookup(self):
         idd_object = """
 !IDD_Version 1.2.0
-!IDD_BUILD abcdef1234
+!IDD_BUILD abcdef0011
 Simulation Input;
 \\group Stuff
 Version,A1;
@@ -83,7 +83,7 @@ Version,A1;
     def test_invalid_idd_obj_lookup(self):
         idd_object = """
 !IDD_Version 1.2.0
-!IDD_BUILD abcdef1234
+!IDD_BUILD abcdef0100
 \\group Stuff
 Version,A1;
 """
@@ -95,7 +95,7 @@ Version,A1;
     def test_invalid_idd_metadata_no_space(self):
         idd_string = """
         !IDD_Version 1.2.0
-        !IDD_BUILD abcdef1234
+        !IDD_BUILD abcdef0101
         \group MyGroup
         MyObject,
           N1,  \\field NumericFieldA
@@ -108,7 +108,7 @@ Version,A1;
     def test_invalid_idd_metadata(self):
         idd_string = """
         !IDD_Version 1.2.0
-        !IDD_BUILD abcdef1234
+        !IDD_BUILD abcdef0110
         \group MyGroup
         MyObject,
           N1,  \\field NumericFieldA
@@ -120,7 +120,7 @@ Version,A1;
 
     def test_missing_version(self):
         idd_string = """
-        !IDD_BUILD abcdef1234
+        !IDD_BUILD abcdef0111
         \group MyGroup
         MyObject,
           N1;  \\field NumericFieldA
@@ -141,7 +141,7 @@ Version,A1;
     def test_nonnumeric_version(self):
         idd_string = """
         !IDD_Version X.Y.Z
-        !IDD_BUILD abcdef1234
+        !IDD_BUILD abcdef1000
         \group MyGroup
         MyObject,
           N1;  \\field NumericFieldA

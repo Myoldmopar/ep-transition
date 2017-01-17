@@ -124,6 +124,7 @@ class IDDProcessor:
         # flags and miscellaneous variables
         line_index = 1  # 1-based counter for the current line of the file
         last_field_for_object = False  # this will be the last field if a semicolon is encountered
+        magic_cache_key = None
 
         # variables used as we are building the input structure
         self.idd = IDDStructure(self.file_path)  # empty overall IDD structure
@@ -430,4 +431,9 @@ class IDDProcessor:
         if (not self.idd.version_float) or (not self.idd.build_string):
             raise exceptions.ProcessingException("IDD did not appear to include standard version headers")
 
+        # save this idd structure in the cache
+        if magic_cache_key:
+            IDD_CACHE[magic_cache_key] = self.idd
+
+        # and return the magically useful IDDStructure instance
         return self.idd
