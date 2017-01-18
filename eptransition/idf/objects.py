@@ -4,22 +4,41 @@ class ValidationIssue:
 
     :param str object_name: The object type that was being validated when this issue arose
     :param int severity: The severity of this issue, from the class enum constants
-    :param str field_name: The field name that was being validated when this issue arose, if available.
     :param str message: A descriptive message for this issue
+    :param str field_name: The field name that was being validated when this issue arose, if available.
     """
 
     INFORMATION = 0
     WARNING = 1
     ERROR = 2
 
-    def __init__(self, severity, object_name, field_name=None, message=None):
+    def __init__(self, object_name, severity, message, field_name=None):
         self.object_name = object_name
         self.severity = severity
-        self.field_name = field_name
         self.message = message
+        self.field_name = field_name
+
+    @staticmethod
+    def severity_string(severity_integer):  # pragma no cover
+        """
+        Returns a string version of the severity of this issue
+
+        :param int severity_integer: One of the enum values defined in this class (INFORMATION, etc.)
+        :return: A string representation of the severity
+        """
+        if severity_integer == ValidationIssue.INFORMATION:
+            return "INFORMATION"
+        elif severity_integer == ValidationIssue.WARNING:
+            return "*WARNING*"
+        elif severity_integer == ValidationIssue.ERROR:
+            return "**ERROR**"
 
     def __str__(self):  # pragma no cover
-        return "Issue found: object {}; field {}; message: {}".format(self.object_name, self.field_name, self.message)
+        msg = ' * Issue Found; severity = ' + ValidationIssue.severity_string(self.severity) + '\n'
+        msg += '  Object Name = ' + self.object_name + '\n'
+        if self.field_name is not None:
+            msg += '  Field Name = ' + self.field_name + '\n'
+        return msg
 
 
 class IDFObject(object):
@@ -39,6 +58,7 @@ class IDFObject(object):
     :param bool comment_blob: A signal that this list is comment data, and not an actual IDF object; default is False.
                               indicating it is meaningful IDF data.
     """
+
     def __init__(self, tokens, comment_blob=False):
         self.comment = comment_blob
         if comment_blob:
@@ -110,8 +130,8 @@ class IDFObject(object):
         for idf, idd in zip(self.fields, idd_object.fields):
             if '\\required-field' in idd.meta_data:
                 if idf == '':
-                    issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                                  'Blank required field found'))
+                    issues.append(ValidationIssue(idd_object.name, ValidationIssue.WARNING,
+                                                  'Blank required field found', idd.field_name))
                     continue
             an_code = idd.field_an_index
             if an_code[0] == 'N':
@@ -124,46 +144,50 @@ class IDFObject(object):
                                 max_val = float(max_constraint_string[1:])
                                 if number >= max_val:
                                     issues.append(ValidationIssue(
-                                        idd_object.name, idd.field_name,
+                                        idd_object.name, ValidationIssue.WARNING,
                                         'Field value higher than idd-specified maximum>; actual={}, max={}'.format(
-                                            number, max_val)))
+                                            number, max_val), idd.field_name))
                             else:
                                 max_val = float(max_constraint_string)
                                 if number > max_val:
                                     issues.append(ValidationIssue(
-                                        idd_object.name, idd.field_name,
+                                        idd_object.name, ValidationIssue.WARNING,
                                         'Field value higher than idd-specified maximum; actual={}, max={}'.format(
-                                            number, max_val)))
+                                            number, max_val), idd.field_name))
                         if '\\minimum' in idd.meta_data:
                             min_constraint_string = idd.meta_data['\\minimum'][0]
                             if min_constraint_string[0] == ">":
                                 min_val = float(min_constraint_string[1:])
                                 if number <= min_val:
                                     issues.append(ValidationIssue(
-                                        idd_object.name, idd.field_name,
+                                        idd_object.name, ValidationIssue.WARNING,
                                         'Field value lower than idd-specified minimum<; actual={}, max={}'.format(
-                                            number, max_val)))
+                                            number, max_val), idd.field_name))
                             else:
                                 min_val = float(min_constraint_string)
                                 if number < min_val:
                                     issues.append(ValidationIssue(
-                                        idd_object.name, idd.field_name,
+                                        idd_object.name, ValidationIssue.WARNING,
                                         'Field value lower than idd-specified minimum; actual={}, max={}'.format(
-                                            number, max_val)))
+                                            number, max_val), idd.field_name))
                     except ValueError:
                         if '\\autosizable' in idd.meta_data and idf.upper() == 'AUTOSIZE':
                             pass  # everything is ok
                         elif idf.upper() == 'AUTOSIZE':
-                            issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                                          'Autosize detected in numeric field that is _not_ listed autosizable'))
+                            issues.append(ValidationIssue(
+                                idd_object.name, ValidationIssue.WARNING,
+                                'Autosize detected in numeric field that is _not_ listed autosizable', idd.field_name))
                         elif '\\autocalculatable' in idd.meta_data and idf.upper() == 'AUTOCALCULATE':
                             pass  # everything is ok
                         elif idf.upper() == 'AUTOCALCULATE':
-                            issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                                          'Autocalculate detected in numeric field that is _not_ listed autocalculatable'))
+                            issues.append(ValidationIssue(
+                                idd_object.name, ValidationIssue.WARNING,
+                                'Autocalculate detected in numeric field that is _not_ listed autocalculatable',
+                                idd.field_name))
                         else:
-                            issues.append(ValidationIssue(idd_object.name, idd.field_name,
-                                                          'Non-numeric value in idd-specified numeric field'))
+                            issues.append(ValidationIssue(
+                                idd_object.name, ValidationIssue.WARNING,
+                                'Non-numeric value in idd-specified numeric field', idd.field_name))
         return issues
 
     def write_object(self, file_object):
@@ -192,6 +216,7 @@ class IDFStructure(object):
     :param str file_path: A file path for this IDF; not necessarily a valid path as it is never used, just available
                           for bookkeeping purposes.
     """
+
     def __init__(self, file_path):
         self.file_path = file_path
         self.version_string = None
@@ -246,12 +271,14 @@ class IDFStructure(object):
         for r in required_objects:
             objects = self.get_idf_objects_by_type(r.name)
             if len(objects) == 0:
-                issues.append(ValidationIssue(r.name, message="Required object not found in IDF contents"))
+                issues.append(ValidationIssue(r.name, ValidationIssue.WARNING,
+                                              message="Required object not found in IDF contents"))
         unique_objects = idd_structure.get_objects_with_meta_data('\\unique-object')
         for u in unique_objects:
             objects = self.get_idf_objects_by_type(u.name)
             if len(objects) > 1:
-                issues.append(ValidationIssue(u.name, message="Unique object has multiple instances in IDF contents"))
+                issues.append(ValidationIssue(u.name, ValidationIssue.WARNING,
+                                              message="Unique object has multiple instances in IDF contents"))
         for idf_object in self.objects:
             if idf_object.comment:
                 continue
