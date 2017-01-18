@@ -19,6 +19,7 @@ class TransitionManager(object):
     :param str_or_None original_idd_file: Full path to the idd file for the original, starting, EnergyPlus version
     :param str_or_None new_idd_file: Full path to the idd file for the final, ending, EnergyPlus version
     """
+
     def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
         if new_input_file is None:  # pragma no cover
@@ -144,11 +145,11 @@ class TransitionManager(object):
 
         # validate the current idf before continuing
         issues = original_idf_structure.validate(original_idd_structure)
-        if len(issues) > 0:
+        if len(issues) > 0:  # pragma no cover
             errors = [i for i in issues if i.severity == ValidationIssue.ERROR]
-            if len(errors) > 0:  # pragma no cover
+            if len(errors) > 0:
                 raise ManagerProcessingException(
-                      "Errors found in validating of original idf against original idd; aborting", issues)
+                    "Errors found in validating of original idf against original idd; aborting", issues)
 
         class LocalRuleInformation:
             def __init__(self, local_rule):
