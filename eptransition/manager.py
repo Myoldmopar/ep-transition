@@ -21,11 +21,11 @@ class TransitionManager(object):
     """
     def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
-        if new_input_file is None:
+        if new_input_file is None:  # pragma no cover
             self.new_input_file = self.original_input_file[:-4] + "_updated" + self.original_input_file[-4:]
         else:
             self.new_input_file = new_input_file
-        if os.path.exists(self.new_input_file):
+        if os.path.exists(self.new_input_file):  # pragma no cover
             os.remove(self.new_input_file)
         # keep these as possibly None for now.
         self.original_idd_file = original_idd_file
