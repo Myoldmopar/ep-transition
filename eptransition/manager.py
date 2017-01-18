@@ -85,11 +85,11 @@ class TransitionManager(object):
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
         # if the IDD files are "None", then try to match them up
-        if self.original_idd_file is None:
+        if self.original_idd_file is None:  # pragma no cover
             cur_dir = os.path.dirname(os.path.realpath(__file__))
             self.original_idd_file = os.path.join(cur_dir, "versions",
                                                   str(this_transition.start_version), "Energy+.idd")
-        if self.new_idd_file is None:
+        if self.new_idd_file is None:  # pragma no cover
             cur_dir = os.path.dirname(os.path.realpath(__file__))
             self.new_idd_file = os.path.join(cur_dir, "versions",
                                              str(this_transition.end_version), "Energy+.idd")
