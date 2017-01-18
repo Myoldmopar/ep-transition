@@ -3,11 +3,18 @@ class ValidationIssue:
     This init only class stores information about any issue that occurred when reading an IDF file.
 
     :param str object_name: The object type that was being validated when this issue arose
+    :param int severity: The severity of this issue, from the class enum constants
     :param str field_name: The field name that was being validated when this issue arose, if available.
     :param str message: A descriptive message for this issue
     """
-    def __init__(self, object_name, field_name=None, message=None):
+
+    INFORMATION = 0
+    WARNING = 1
+    ERROR = 2
+
+    def __init__(self, severity, object_name, field_name=None, message=None):
         self.object_name = object_name
+        self.severity = severity
         self.field_name = field_name
         self.message = message
 
