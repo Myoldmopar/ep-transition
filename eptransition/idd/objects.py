@@ -13,6 +13,7 @@ class IDDField:
 
     :param str an_index: The Ai or Ni descriptor for this field in the IDD, where i is an integer 1-...
     """
+
     def __init__(self, an_index):
         self.field_an_index = an_index
         self.meta_data = {}
@@ -34,6 +35,7 @@ class IDDObject:
 
     :param str name: The object's type, or name
     """
+
     def __init__(self, name):
         self.name = name
         self.meta_data = {}
@@ -52,6 +54,7 @@ class IDDGroup:
 
     :param str name: The group's name
     """
+
     def __init__(self, name):
         self.name = name
         self.objects = []
@@ -76,6 +79,7 @@ class IDDStructure:
     :param str file_path: A file path for this IDD; not necessarily a valid path as it is never used, just available
                           for bookkeeping purposes.
     """
+
     def __init__(self, file_path):
         self.file_path = file_path
         self.version_string = None

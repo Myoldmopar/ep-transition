@@ -15,6 +15,7 @@ class IDFProcessor:
     :ivar IDFStructure idf: The resulting IDFStructure instance after processing the IDF file/stream
     :ivar str file_path: A file path for this IDF, although it may be just a simple descriptor
     """
+
     def __init__(self):
         self.idf = None
         self.file_path = None

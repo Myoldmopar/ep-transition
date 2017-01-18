@@ -6,6 +6,7 @@ class UnimplementedMethodException(Exception):
     :param str class_name: The name of the base class where the virtual function is defined
     :param str method_name: The method name which should be overridden in the derived class
     """
+
     def __init__(self, class_name, method_name):
         self.class_name = class_name
         self.method_name = method_name
@@ -74,6 +75,7 @@ class ManagerProcessingException(Exception):
     """
     This exception occurs when the transition tool encounters an unexpected issue when doing the transition.
     """
+
     def __init__(self, msg, issues=None):
         self.message = msg
         self.issues = issues
@@ -91,6 +93,7 @@ class ProcessingException(Exception):
     """
     This exception occurs when an unexpected error occurs during the processing of an input file.
     """
+
     def __init__(self, message, line_index=None, object_name='', field_name=''):
         super(ProcessingException, self).__init__(message)
         self.line_index = line_index

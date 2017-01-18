@@ -9,6 +9,7 @@ class VersionRule(base_rule.TransitionRule):
 
     :param end_version: The new value for the version object's single field: Version ID
     """
+
     def __init__(self, end_version):
         base_rule.TransitionRule.__init__(self)
         self.end_version_id = end_version

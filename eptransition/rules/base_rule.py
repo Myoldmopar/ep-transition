@@ -9,6 +9,7 @@ class ObjectTypeAndName:
     :param str object_type: The object type
     :param str object_name: The name of the object (usually field[0]
     """
+
     def __init__(self, object_type, object_name):
         self.type = object_type
         self.name = object_name
@@ -22,6 +23,7 @@ class TransitionReturn:
     :param [ObjectTypeAndName] objects_to_delete: The list of idf object type/name combinations to be deleted as a
                                                  result of this transition
     """
+
     def __init__(self, objects_to_write, objects_to_delete=None):
         self.to_write = objects_to_write
         if not objects_to_delete:
@@ -33,6 +35,7 @@ class TransitionRule:
     """
     This class is a must-override base class for defining transition rules for idf objects
     """
+
     def __init__(self):
         pass
 

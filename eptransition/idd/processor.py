@@ -38,6 +38,7 @@ class IDDProcessor:
     :ivar IDDStructure idd: The resulting IDDStructure instance after processing the IDD file/stream
     :ivar str file_path: A file path for this IDD, although it may be just a simple descriptor
     """
+
     def __init__(self):
         self.idd = None
         self.idd_file_stream = None

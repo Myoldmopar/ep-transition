@@ -55,13 +55,14 @@ class TransitionManager(object):
         elif self.original_input_file.endswith('.jdf'):  # pragma no cover
             original_idf_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise eFTE("Original input file path has unexpected extension, should be .idf or .jdf")
+            raise eFTE(self.original_input_file, eFTE.ORIGINAL_INPUT_FILE,
+                       "Unexpected extension, should be .idf or .jdf")
         if self.new_input_file.endswith('.idf'):
             new_idf_file_type = TypeEnum.IDF
         elif self.new_input_file.endswith('.jdf'):  # pragma no cover
             new_idf_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise eFTE("New input file path has unexpected extension, should be .idf or .jdf")
+            raise eFTE(self.new_input_file, eFTE.UPDATED_INPUT_FILE, "Unexpected extension, should be .idf or .jdf")
 
         # At this point we now need to know the version of the idf, before we even try to read the idd really
         original_idf_processor = IDFProcessor()
@@ -83,14 +84,13 @@ class TransitionManager(object):
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
         # if the IDD files are "None", then try to match them up
+        idd_file = "Energy+.idd"
         if self.original_idd_file is None:  # pragma no cover
             cur_dir = os.path.dirname(os.path.realpath(__file__))
-            self.original_idd_file = os.path.join(cur_dir, "versions",
-                                                  str(this_transition.start_version), "Energy+.idd")
+            self.original_idd_file = os.path.join(cur_dir, "versions", str(this_transition.start_version), idd_file)
         if self.new_idd_file is None:  # pragma no cover
             cur_dir = os.path.dirname(os.path.realpath(__file__))
-            self.new_idd_file = os.path.join(cur_dir, "versions",
-                                             str(this_transition.end_version), "Energy+.idd")
+            self.new_idd_file = os.path.join(cur_dir, "versions", str(this_transition.end_version), idd_file)
 
         # Validate dictionary file things
         if not os.path.exists(self.original_idd_file):  # pragma no cover
@@ -102,27 +102,27 @@ class TransitionManager(object):
         elif self.original_idd_file.endswith('.jdd'):  # pragma no cover
             original_idd_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise eFTE("Original input dictionary path has unexpected extension, should be .idd or .jdd")
+            raise eFTE(self.original_idd_file, eFTE.ORIGINAL_DICT_FILE, "Unexpected extension, should be .idd or .jdd")
         if self.new_idd_file.endswith('.idd'):
             new_idd_file_type = TypeEnum.IDF
         elif self.new_idd_file.endswith('.jdd'):  # pragma no cover
             new_idd_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise eFTE("New input dictionary path has unexpected extension, should be .idd or .jdd")
+            raise eFTE(self.new_idd_file, eFTE.UPDATED_DICT_FILE, "Unexpected extension, should be .idd or .jdd")
 
         # now validate the file types match each other
         if original_idf_file_type == original_idd_file_type:
             pass  # that's a good thing
         else:  # pragma no cover
-            raise eFTE(
-                "Original file types don't match; input file={}; dictionary={}".format(
-                    original_idf_file_type, original_idd_file_type))
+            raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
+                original_idf_file_type, original_idd_file_type))
 
         end_type = FILE_TYPES[end_version]
         if new_idf_file_type == end_type and new_idd_file_type == end_type:
             pass  # that's a good thing
         else:  # pragma no cover
-            raise eFTE("Updated files don't match expected version file type; expected: " + end_type)
+            raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
+                new_idf_file_type, new_idd_file_type))
 
         # and process the original idd file
         original_idd_processor = IDDProcessor()

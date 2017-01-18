@@ -5,7 +5,7 @@ from eptransition.exceptions import UnimplementedMethodException, ManagerProcess
 
 class TestUnimplementedMethodException(unittest.TestCase):
     def test_type(self):
-        e = UnimplementedMethodException()
+        e = UnimplementedMethodException("ClassName", "MethodName")
         self.assertTrue(isinstance(e, Exception))
 
 
