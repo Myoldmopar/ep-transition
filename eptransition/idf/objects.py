@@ -3,7 +3,7 @@ class ValidationIssue:
     This init only class stores information about any issue that occurred when reading an IDF file.
 
     :param str object_name: The object type that was being validated when this issue arose
-    :param int severity: The severity of this issue, from the class enum constants
+    :param int severity: The severity of this issue, from the class constants
     :param str message: A descriptive message for this issue
     :param str field_name: The field name that was being validated when this issue arose, if available.
     """
@@ -23,7 +23,7 @@ class ValidationIssue:
         """
         Returns a string version of the severity of this issue
 
-        :param int severity_integer: One of the enum values defined in this class (INFORMATION, etc.)
+        :param int severity_integer: One of the constants defined in this class (INFORMATION, etc.)
         :return: A string representation of the severity
         """
         if severity_integer == ValidationIssue.INFORMATION:
