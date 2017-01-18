@@ -1,3 +1,4 @@
+from eptransition.exceptions import ManagerProcessingException
 from eptransition.rules.base_rule import TransitionRule, OutputVariableTransitionRule
 from eptransition.rules.rules85to86 import (
     branch as branch86,
@@ -11,7 +12,6 @@ from eptransition.rules.rules86to87 import (
     branch as branch87,
     output_variables as output87
 )
-from eptransition.exceptions import ManagerProcessingException
 
 
 class TypeEnum(object):
@@ -35,6 +35,7 @@ class SingleTransition(object):
                                                          as implemented for this version
     :raises ManagerProcessingException: for any invalid inputs
     """
+
     def __init__(self, start_version, end_version, transitions, outputs):
         # error handling first
         try:

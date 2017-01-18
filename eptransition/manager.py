@@ -1,10 +1,10 @@
 import os
 
 from eptransition.exceptions import (
-    FileAccessException, FileTypeException, ManagerProcessingException, ProcessingException
+    FileAccessException as eFAE, FileTypeException as eFTE, ManagerProcessingException, ProcessingException
 )
 from eptransition.idd.processor import IDDProcessor
-from eptransition.idf.objects import IDFStructure
+from eptransition.idf.objects import IDFStructure, ValidationIssue
 from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
 from eptransition.versions.versions import TRANSITIONS, TypeEnum, FILE_TYPES
@@ -19,6 +19,7 @@ class TransitionManager(object):
     :param str_or_None original_idd_file: Full path to the idd file for the original, starting, EnergyPlus version
     :param str_or_None new_idd_file: Full path to the idd file for the final, ending, EnergyPlus version
     """
+
     def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
         if new_input_file is None:  # pragma no cover
@@ -42,28 +43,26 @@ class TransitionManager(object):
         """
         # Validate input file related things
         if not os.path.exists(self.original_input_file):  # pragma no cover
-            raise FileAccessException(
-                "Could not access original input file at path = \"" + self.original_input_file + "\"")
+            raise eFAE(self.original_input_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_INPUT_FILE)
         if os.path.exists(self.new_input_file):  # pragma no cover
-            raise FileAccessException(
-                "Updated input file already exists at = \"" + self.new_input_file + "\"; remove before running!")
+            raise eFAE(self.new_input_file, eFAE.FILE_EXISTS_MUST_DELETE, eFAE.UPDATED_INPUT_FILE)
         try:
             open(self.new_input_file, 'w').write('-')
         except:  # pragma no cover
-            raise FileAccessException(
-                "Could not write to updated file name at = \"" + self.new_input_file + "\"; aborting!")
+            raise eFAE(self.new_input_file, eFAE.CANNOT_WRITE_TO_FILE, eFAE.UPDATED_INPUT_FILE)
         if self.original_input_file.endswith('.idf'):
             original_idf_file_type = TypeEnum.IDF
         elif self.original_input_file.endswith('.jdf'):  # pragma no cover
             original_idf_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise FileTypeException("Original input file path has unexpected extension, should be .idf or .jdf")
+            raise eFTE(self.original_input_file, eFTE.ORIGINAL_INPUT_FILE,
+                       "Unexpected extension, should be .idf or .jdf")
         if self.new_input_file.endswith('.idf'):
             new_idf_file_type = TypeEnum.IDF
         elif self.new_input_file.endswith('.jdf'):  # pragma no cover
             new_idf_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise FileTypeException("New input file path has unexpected extension, should be .idf or .jdf")
+            raise eFTE(self.new_input_file, eFTE.UPDATED_INPUT_FILE, "Unexpected extension, should be .idf or .jdf")
 
         # At this point we now need to know the version of the idf, before we even try to read the idd really
         original_idf_processor = IDFProcessor()
@@ -85,48 +84,45 @@ class TransitionManager(object):
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
         # if the IDD files are "None", then try to match them up
+        idd_file = "Energy+.idd"
         if self.original_idd_file is None:  # pragma no cover
             cur_dir = os.path.dirname(os.path.realpath(__file__))
-            self.original_idd_file = os.path.join(cur_dir, "versions",
-                                                  str(this_transition.start_version), "Energy+.idd")
+            self.original_idd_file = os.path.join(cur_dir, "versions", str(this_transition.start_version), idd_file)
         if self.new_idd_file is None:  # pragma no cover
             cur_dir = os.path.dirname(os.path.realpath(__file__))
-            self.new_idd_file = os.path.join(cur_dir, "versions",
-                                             str(this_transition.end_version), "Energy+.idd")
+            self.new_idd_file = os.path.join(cur_dir, "versions", str(this_transition.end_version), idd_file)
 
         # Validate dictionary file things
         if not os.path.exists(self.original_idd_file):  # pragma no cover
-            raise FileAccessException(
-                "Could not access original IDD file at path = \"" + self.original_idd_file + "\"")
+            raise eFAE(self.original_idd_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_DICT_FILE)
         if not os.path.exists(self.new_idd_file):  # pragma no cover
-            raise FileAccessException(
-                "Could not access updated IDD file at path = \"" + self.new_idd_file + "\"")
+            raise eFAE(self.new_idd_file, eFAE.CANNOT_FIND_FILE, eFAE.UPDATED_DICT_FILE)
         if self.original_idd_file.endswith('.idd'):
             original_idd_file_type = TypeEnum.IDF
         elif self.original_idd_file.endswith('.jdd'):  # pragma no cover
             original_idd_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise FileTypeException("Original input dictionary path has unexpected extension, should be .idd or .jdd")
+            raise eFTE(self.original_idd_file, eFTE.ORIGINAL_DICT_FILE, "Unexpected extension, should be .idd or .jdd")
         if self.new_idd_file.endswith('.idd'):
             new_idd_file_type = TypeEnum.IDF
         elif self.new_idd_file.endswith('.jdd'):  # pragma no cover
             new_idd_file_type = TypeEnum.JSON
         else:  # pragma no cover
-            raise FileTypeException("New input dictionary path has unexpected extension, should be .idd or .jdd")
+            raise eFTE(self.new_idd_file, eFTE.UPDATED_DICT_FILE, "Unexpected extension, should be .idd or .jdd")
 
         # now validate the file types match each other
         if original_idf_file_type == original_idd_file_type:
             pass  # that's a good thing
         else:  # pragma no cover
-            raise FileTypeException(
-                "Original file types don't match; input file={}; dictionary={}".format(
-                    original_idf_file_type, original_idd_file_type))
+            raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
+                original_idf_file_type, original_idd_file_type))
 
         end_type = FILE_TYPES[end_version]
         if new_idf_file_type == end_type and new_idd_file_type == end_type:
             pass  # that's a good thing
         else:  # pragma no cover
-            raise FileTypeException("Updated files don't match expected version file type; expected: " + end_type)
+            raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
+                new_idf_file_type, new_idd_file_type))
 
         # and process the original idd file
         original_idd_processor = IDDProcessor()
@@ -145,9 +141,10 @@ class TransitionManager(object):
         # validate the current idf before continuing
         issues = original_idf_structure.validate(original_idd_structure)
         if len(issues) > 0:  # pragma no cover
-            pass
-        # raise ManagerProcessingException(  This will be uncommented once we have severity rules
-        #     "Issues found in validating of original idf against original idd; aborting", issues)
+            errors = [i for i in issues if i.severity == ValidationIssue.ERROR]
+            if len(errors) > 0:
+                raise ManagerProcessingException(
+                    "Errors found in validating of original idf against original idd; aborting", issues)
 
         class LocalRuleInformation:
             def __init__(self, local_rule):

@@ -3,6 +3,10 @@ from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
 
 class Rule(TransitionRule):
+    """
+    DESCRIBES THE RULE HERE
+    """
+
     def get_name_of_object_to_transition(self):
         return "Branch"
 

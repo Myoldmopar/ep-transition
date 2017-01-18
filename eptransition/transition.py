@@ -3,9 +3,9 @@
 import argparse
 import sys
 
-from eptransition.exceptions import ManagerProcessingException
-from eptransition.manager import TransitionManager
 from eptransition import __version__
+from eptransition.exceptions import ManagerProcessingException, FileAccessException, FileTypeException
+from eptransition.manager import TransitionManager
 
 
 def main(args=None):
@@ -30,12 +30,12 @@ def main(args=None):
     try:
         manager = TransitionManager(args.original_input[0], args.output, args.previdd, args.newidd)
     except Exception as e:  # pragma no cover
-        print("Could not instantiate manager from command line args...")
+        print("Could not instantiate manager from command line args...exception message follows\n{}".format(e.message))
         return 1
     try:
         manager.perform_transition()
-    except ManagerProcessingException as e:  # pragma no cover
-        print str(e)
+    except (FileAccessException, FileTypeException, ManagerProcessingException) as e:  # pragma no cover
+        print("Problem occurred during transition! Exception message: \n " + str(e))
         return 1
     return 0
 

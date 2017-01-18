@@ -2,7 +2,6 @@ from eptransition.rules.base_rule import OutputVariableTransitionRule
 
 
 class Rule(OutputVariableTransitionRule):
-
     def get_output_objects(self):
         return self.original_full_variable_type_list()
 
