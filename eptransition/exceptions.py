@@ -99,4 +99,4 @@ class ProcessingException(Exception):
         self.line_index = line_index
 
     def __str__(self):
-        return "Processing Exception on line number " + str(self.line_index)  # pragma: no cover
+        return "Processing Exception on line number " + str(self.line_index)
