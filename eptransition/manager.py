@@ -4,7 +4,7 @@ from eptransition.exceptions import (
     FileAccessException, FileTypeException, ManagerProcessingException, ProcessingException
 )
 from eptransition.idd.processor import IDDProcessor
-from eptransition.idf.objects import IDFStructure
+from eptransition.idf.objects import IDFStructure, ValidationIssue
 from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
 from eptransition.versions.versions import TRANSITIONS, TypeEnum, FILE_TYPES
@@ -128,10 +128,11 @@ class TransitionManager(object):
 
         # validate the current idf before continuing
         issues = original_idf_structure.validate(original_idd_structure)
-        if len(issues) > 0:  # pragma no cover
-            pass
-        # raise ManagerProcessingException(  This will be uncommented once we have severity rules
-        #     "Issues found in validating of original idf against original idd; aborting", issues)
+        if len(issues) > 0:
+            errors = [i for i in issues if i.severity == ValidationIssue.ERROR]
+            if len(errors) > 0:  # pragma no cover
+                raise ManagerProcessingException(
+                      "Errors found in validating of original idf against original idd; aborting", issues)
 
         class LocalRuleInformation:
             def __init__(self, local_rule):
