@@ -44,8 +44,7 @@ class TransitionRule:
         :return: A string name of an object to transition
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "TransitionRule derived classes should override get_name_of_object_to_transition() method")
+        raise UnimplementedMethodException("TransitionRule", "get_name_of_object_to_transition")
 
     def get_names_of_dependent_objects(self):
         """
@@ -55,8 +54,7 @@ class TransitionRule:
         :return: A list of string object names
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "TransitionRule derived classes should override get_names_of_dependent_objects() method")
+        raise UnimplementedMethodException("TransitionRule", "get_names_of_dependent_objects")
 
     def transition(self, core_object, dependent_objects):
         """
@@ -70,8 +68,7 @@ class TransitionRule:
         :return: A list of new IDFObject instances, typically just one though
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "TransitionRule derived classes should override transition() method")
+        raise UnimplementedMethodException("TransitionRule", "transition")
 
 
 class OutputVariableTransitionRule:
@@ -128,8 +125,7 @@ class OutputVariableTransitionRule:
         :return: A list of strings, each representing an output object type name
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "OutputVariableTransitionRule derived classes should override get_output_objects() method")
+        raise UnimplementedMethodException("OutputVariableTransitionRule", "get_output_objects")
 
     def get_standard_indexes_from_object(self, object_name):
         """
@@ -142,8 +138,7 @@ class OutputVariableTransitionRule:
         :return: A list of zero-based indexes, each representing a field containing an output variable name
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "OutputVariableTransitionRule derived classes should override get_standard_indexes_from_object() method")
+        raise UnimplementedMethodException("OutputVariableTransitionRule", "get_standard_indexes_from_object")
 
     def get_complex_operation_types(self):
         """
@@ -153,8 +148,7 @@ class OutputVariableTransitionRule:
         :return: A list of strings, each representing an object name that requires complex transition operations
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "OutputVariableTransitionRule derived classes should override get_complex_operation_types() method")
+        raise UnimplementedMethodException("OutputVariableTransitionRule", "get_complex_operation_types")
 
     def get_simple_swaps(self):
         """
@@ -165,8 +159,7 @@ class OutputVariableTransitionRule:
         :return: A dictionary of <old_variable_name, new_variable_name>
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "OutputVariableTransitionRule derived classes should override get_simple_swaps() method")
+        raise UnimplementedMethodException("OutputVariableTransitionRule", "get_simple_swaps")
 
     def simple_name_swap(self, variable_name):
         """
@@ -193,8 +186,7 @@ class OutputVariableTransitionRule:
         :return: A list of new IDFObject instances, typically just one though
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
-        raise UnimplementedMethodException(
-            "OutputVariableTransitionRule derived classes should override complex_output_operation() method")
+        raise UnimplementedMethodException("OutputVariableTransitionRule", "complex_output_operation")
 
     def transition(self, core_object):
         """
