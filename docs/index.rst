@@ -7,8 +7,8 @@ Welcome to EnergyPlus Python Transition's documentation!
 ========================================================
 
 EnergyPlus Python Transition is a remake of the Fortran-based EnergyPlus file transition tool.  The purpose of this
-tool is to transition an EnergyPlus input file from one version to another.  Because the input forms change between
-EnergyPlus versions so dramatically, having a tool like this is a mandatory piece of the EnergyPlus workflow.
+tool is to transition an EnergyPlus input file from one version to the latest version.  Because the input forms change
+between EnergyPlus versions so dramatically, having a tool like this is a mandatory piece of the EnergyPlus workflow.
 
 The previous version, in Fortran, was difficult to maintain, as fewer and fewer Fortran developers remain.  In addition,
 with the possibility of future input syntax changes (JSON), a new version transition tool was desired.  This version,
@@ -36,8 +36,7 @@ installation and pass in the input file(s) to transition::
 
   eptransition /path/to/idf /path/to/another/idf
 
-There are additional optional command line arguments, but these are currently marked for major changes, so they aren't
-documented here.  Executing this command line will cause the tool to read the input file(s) first to find the start
+Executing this command line will cause the tool to read the input file(s) first to find the start
 version for each transition process.  The tool then checks whether this version is available and if so, reads appropriate
 dictionary files for the start/end version, processes the IDF, executes all transition rules, and writes out a
 transitioned input file.
@@ -60,8 +59,7 @@ to programmatically transition files.  To do this, one can access the manager fu
      except Exception as e:
          print(e)
 
-This is equivalent to the command line call above.  As with the command line, there are additional, optional arguments
-that can be passed in, but these are marked for major changes so they aren't documented here.
+This is equivalent to the command line call above.
 
 Class Structure:
 

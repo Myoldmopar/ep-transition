@@ -8,6 +8,7 @@ __pycache__/
 
 .idea
 EPTransition.log
+*_updated.idf
 
 # Distribution / packaging
 .Python

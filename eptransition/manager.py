@@ -21,29 +21,20 @@ class TransitionManager(object):
     Developer note: This class raises many exceptions, so logging.exception is handled at the level of the code
     calling these functions within a try/except block.  These functions do logging, but only the info/debug level.
 
-    :param str_or_None original_input_file: Full path to the original idf to transition
-    :param str_or_None new_input_file: Full path to the final (transitioned) idf
-    :param str_or_None original_idd_file: Full path to the idd file for the original, starting, EnergyPlus version
-    :param str_or_None new_idd_file: Full path to the idd file for the final, ending, EnergyPlus version
+    :param str original_input_file: Full path to the original idf to transition
     """
-
-    def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
+    def __init__(self, original_input_file):
         self.original_input_file = original_input_file
         module_logger.debug("Transitioning file: {}".format(original_input_file))
-        if new_input_file is None:  # pragma no cover
-            module_logger.debug("Call to TransitionManager init with new_input_file=None, trying to make a filename")
-            self.new_input_file = self.original_input_file[:-4] + "_updated" + self.original_input_file[-4:]
-            module_logger.debug("Created the new output file as {}".format(self.new_input_file))
-        else:
-            module_logger.debug("TransitionManager init called with actual new_input_file path, using it")
-            self.new_input_file = new_input_file
+        self.new_input_file = self.original_input_file[:-4] + "_updated" + self.original_input_file[-4:]
+        module_logger.debug("Created the new output file as {}".format(self.new_input_file))
         if os.path.exists(self.new_input_file):  # pragma no cover
             module_logger.debug("new_input_file path already exists, trying to remove!")
             os.remove(self.new_input_file)
             module_logger.debug("Successfully removed previous new_input_file")
-        # keep these as possibly None for now.
-        self.original_idd_file = original_idd_file
-        self.new_idd_file = new_idd_file
+        # instantiate to None for now
+        self.original_idd_file = None
+        self.new_idd_file = None
 
     def perform_transition(self):
         """

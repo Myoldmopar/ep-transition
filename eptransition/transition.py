@@ -42,14 +42,12 @@ def main(args=None):
     parser = argparse.ArgumentParser(description=__description__, epilog=epilogue,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("input_files", help="The original input files to transition", nargs='+')
-    parser.add_argument("-o", "--output", action="store", help="Path to write the transitioned input file structure")
-    parser.add_argument("-p", "--previdd", action="store", help="Path to an original IDD")
-    parser.add_argument("-n", "--newidd", action="store", help="Path to a new IDD")
     parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args(args=args)
+    logger.debug("***Transition started: attempting to transition {} files".format(len(args.input_files)))
     for input_file in args.input_files:
         try:
-            manager = TransitionManager(input_file, args.output, args.previdd, args.newidd)
+            manager = TransitionManager(input_file)
         except Exception as e:  # pragma no cover
             logger.exception(
                 "Could not instantiate manager from command line args...exception message follows\n{}".format(e.message))
@@ -59,6 +57,9 @@ def main(args=None):
         except (FileAccessException, FileTypeException, ManagerProcessingException) as e:  # pragma no cover
             logger.exception("Problem occurred during transition! Exception message: \n " + str(e))
             raise
+
+    # if successful, return 0
+    return 0
 
 
 if __name__ == "__main__":  # pragma no cover
