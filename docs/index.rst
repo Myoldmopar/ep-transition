@@ -16,7 +16,46 @@ written in Python, is more modular in nature, with almost the entire codebase wr
 version of EnergyPlus, and only the rules themselves plus 2 other lines needing to be modified for adding another
 version.  The rules themselves are simply derived classes in Python that give clear guidance on writing new rules.
 
-Contents:
+Installation:
+
+Each tagged release of the software is posted to PyPi_.  With this in place, installation of the library into a given
+Python installation is easy using pip::
+
+  pip install eptransition
+
+Once this is installed, it will copy the library into Python's appropriate package folder, and also create a symlink
+when possible into the PATH so that the eptransition script can be called directly from the command line.  Usage of
+these two modes are described below.
+
+.. _PyPi: https://pypi.python.org/pypi/eptransition/
+
+Usage from Command Line:
+
+Once installed, in order to execute the program from the command line, simply call the symlink created during
+installation and pass in the input file to transition::
+
+  eptransition /path/to/idf
+
+Usage from Library:
+
+Once installed, using from existing Python code is a simple matter.  Simply create a new Python script, and start by
+importing the library::
+
+  import eptransition
+
+With the library imported, one can access all the underlying model structure, although the most likely usage will be
+to programmatically transition files.  To do this, one can access the manager function directly::
+
+  from eptransition.manager import TransitionManager
+  tm = TransitionManager("/path/to/idf/to/transition")
+  try:
+      tm.perform_transition()
+  except Exception as e:
+      print(e)
+
+This will transition the file.
+
+Class Structure:
 
 .. toctree::
    :maxdepth: 2
