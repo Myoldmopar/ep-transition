@@ -1,4 +1,5 @@
 import os
+import logging
 
 from eptransition.exceptions import (
     FileAccessException as eFAE, FileTypeException as eFTE, ManagerProcessingException, ProcessingException
@@ -10,9 +11,15 @@ from eptransition.rules.version_rule import VersionRule
 from eptransition.versions.versions import TRANSITIONS, TypeEnum, FILE_TYPES
 
 
+module_logger = logging.getLogger('eptransition.manager')
+
+
 class TransitionManager(object):
     """
     This class is the main manager for performing a single transition of an input file from one version to another.
+
+    Developer note: This class raises many exceptions, so logging.exception is handled at the level of the code
+    calling these functions within a try/except block.  These functions do logging, but only the info/debug level.
 
     :param str_or_None original_input_file: Full path to the original idf to transition
     :param str_or_None new_input_file: Full path to the final (transitioned) idf
@@ -23,11 +30,16 @@ class TransitionManager(object):
     def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
         if new_input_file is None:  # pragma no cover
+            module_logger.debug("Call to TransitionManager init with new_input_file=None, trying to make a filename")
             self.new_input_file = self.original_input_file[:-4] + "_updated" + self.original_input_file[-4:]
+            module_logger.debug("Created the new output file as {}".format(self.new_input_file))
         else:
+            module_logger.debug("TransitionManager init called with actual new_input_file path, using it")
             self.new_input_file = new_input_file
         if os.path.exists(self.new_input_file):  # pragma no cover
+            module_logger.debug("new_input_file path already exists, trying to remove!")
             os.remove(self.new_input_file)
+            module_logger.debug("Successfully removed previous new_input_file")
         # keep these as possibly None for now.
         self.original_idd_file = original_idd_file
         self.new_idd_file = new_idd_file
@@ -69,28 +81,35 @@ class TransitionManager(object):
         try:
             # this call _will_ process the version into IDFObject.version_float or raise an exception if it fails
             original_idf_structure = original_idf_processor.process_file_given_file_path(self.original_input_file)
+            module_logger.debug(
+                "Successfully processed idf structure; found {} objects".format(len(original_idf_structure.objects)))
         except:  # pragma no cover
             raise ManagerProcessingException("Could not process original idf; aborting")
 
         # so we get the original idf version now
         original_idf_version = original_idf_structure.version_float
+        module_logger.debug("Original IDF version found as {}".format(original_idf_version))
 
         # then we know which VERSION item we're working on:
         if original_idf_version in TRANSITIONS:
             this_transition = TRANSITIONS[original_idf_version]
             end_version = this_transition.end_version
+            module_logger.debug("Found this version in transitions, will try to transition from {} to {}".format(
+                this_transition.start_version, this_transition.end_version
+            ))
         else:  # pragma no cover
             raise ManagerProcessingException(
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
         # if the IDD files are "None", then try to match them up
         idd_file = "Energy+.idd"
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
         if self.original_idd_file is None:  # pragma no cover
-            cur_dir = os.path.dirname(os.path.realpath(__file__))
             self.original_idd_file = os.path.join(cur_dir, "versions", str(this_transition.start_version), idd_file)
+            module_logger.debug("Using \"original\" idd file at path: {}".format(self.original_idd_file))
         if self.new_idd_file is None:  # pragma no cover
-            cur_dir = os.path.dirname(os.path.realpath(__file__))
             self.new_idd_file = os.path.join(cur_dir, "versions", str(this_transition.end_version), idd_file)
+            module_logger.debug("Using \"new\" idd file at path: {}".format(self.new_idd_file))
 
         # Validate dictionary file things
         if not os.path.exists(self.original_idd_file):  # pragma no cover
@@ -128,6 +147,7 @@ class TransitionManager(object):
         original_idd_processor = IDDProcessor()
         try:
             original_idd_structure = original_idd_processor.process_file_given_file_path(self.original_idd_file)
+            module_logger.debug("Successfully processed original idd")
         except ProcessingException as e:  # pragma no cover
             raise ManagerProcessingException("Could not process original idd; message = " + str(e))
 
@@ -135,16 +155,21 @@ class TransitionManager(object):
         new_idd_processor = IDDProcessor()
         try:
             new_idd_structure = new_idd_processor.process_file_given_file_path(self.new_idd_file)
+            module_logger.debug("Successfully processed \"new\" idd")
         except:  # pragma no cover
             raise ManagerProcessingException("Could not process new idd; aborting")
 
         # validate the current idf before continuing
         issues = original_idf_structure.validate(original_idd_structure)
         if len(issues) > 0:  # pragma no cover
-            errors = [i for i in issues if i.severity == ValidationIssue.ERROR]
-            if len(errors) > 0:
-                raise ManagerProcessingException(
-                    "Errors found in validating of original idf against original idd; aborting", issues)
+            for i in issues:
+                if i.severity == ValidationIssue.INFORMATION:
+                    module_logger.debug(str(i))
+                elif i.severity == ValidationIssue.WARNING:
+                    module_logger.warn(str(i))
+                elif i.severity == ValidationIssue.ERROR:
+                    raise ManagerProcessingException(
+                        "Errors found in validating of original idf against original idd; aborting", issues)
 
         class LocalRuleInformation:
             def __init__(self, local_rule):
@@ -162,6 +187,7 @@ class TransitionManager(object):
         if this_transition.output_variable_transition is None:
             output_rule = None
             output_names = []
+            module_logger.warn("This transition did not find an output variable transition class...you sure?")
         else:
             output_rule = this_transition.output_variable_transition()
             output_names = output_rule.get_output_objects()
@@ -181,6 +207,7 @@ class TransitionManager(object):
             # if the upper case version of this idf object is in the rule map, process the rule, otherwise just
             # keep the object in the intermediate list of objects to write
             if idf_object_type_upper in rule_map:
+                module_logger.debug("Transition object type: {}".format(idf_object_type_upper))
                 # retrieve the rule for this idf object
                 this_rule = rule_map[idf_object_type_upper]
                 # create a map of dependents; where the key is the upper case object type and the value is
@@ -190,6 +217,10 @@ class TransitionManager(object):
                     dependents[dep_idf_type.upper()] = original_idf_structure.get_idf_objects_by_type(dep_idf_type)
                 # call transition to actually perform object changes
                 transition_response = this_rule.transition_function(original_idf_object, dependents)
+                module_logger.debug(
+                    "Object transition complete; # objects to write: {}; # objects to delete: {}".format(
+                        len(transition_response.to_write), len(transition_response.to_delete)
+                    ))
                 # extend the intermediate list objects with changed things and the delete list with things to delete
                 intermediate_idf_objects.extend(transition_response.to_write)
                 objects_to_delete.extend(transition_response.to_delete)
@@ -201,6 +232,7 @@ class TransitionManager(object):
                 intermediate_idf_objects.append(original_idf_object)
 
         # create a map of objects to delete based on type
+        module_logger.debug("First pass transition complete; # objects to delete: {}".format(len(objects_to_delete)))
         delete_map = {}
         for object_to_delete in objects_to_delete:
             object_type_upper = object_to_delete.type.upper()
@@ -224,5 +256,6 @@ class TransitionManager(object):
         final_idf_structure.objects = final_idf_objects
         final_idf_structure.write_idf(self.new_input_file, new_idd_structure)
 
-        # done
+        # report and done
+        module_logger.debug("Transition complete; final # objects: {}".format(len(final_idf_structure.objects)))
         return 0

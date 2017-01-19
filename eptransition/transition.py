@@ -2,11 +2,13 @@
 
 import argparse
 import sys
+import logging
 
 from eptransition import __version__, __description__
 from eptransition.exceptions import ManagerProcessingException, FileAccessException, FileTypeException
 from eptransition.manager import TransitionManager
 from eptransition.versions.versions import TRANSITIONS
+from eptransition import __name__ as logname
 
 
 def main(args=None):
@@ -19,7 +21,19 @@ def main(args=None):
                  followed by real arguments.  If this is not passed in, sys.argv is assumed.
     :return: 0 for success, 1 for failure
     """
+
+    # set up the highest level logger
+    logger = logging.getLogger('eptransition')
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler('{}.log'.format(logname))
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    # now start processing
     if args is None:  # pragma no cover
+        logger.debug("Call to main() with no function arguments; using sys.argv")
         args = sys.argv[1:]
     epilogue = "This version of the E+ translator includes the following translations:\n"
     for k, v in TRANSITIONS.items():
@@ -36,12 +50,13 @@ def main(args=None):
     try:
         manager = TransitionManager(args.original_input[0], args.output, args.previdd, args.newidd)
     except Exception as e:  # pragma no cover
-        print("Could not instantiate manager from command line args...exception message follows\n{}".format(e.message))
+        logger.exception(
+            "Could not instantiate manager from command line args...exception message follows\n{}".format(e.message))
         return 1
     try:
         manager.perform_transition()
     except (FileAccessException, FileTypeException, ManagerProcessingException) as e:  # pragma no cover
-        print("Problem occurred during transition! Exception message: \n " + str(e))
+        logger.exception("Problem occurred during transition! Exception message: \n " + str(e))
         return 1
     return 0
 
