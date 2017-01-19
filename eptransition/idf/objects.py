@@ -1,6 +1,6 @@
 class ValidationIssue:
     """
-    This init only class stores information about any issue that occurred when reading an IDF file.
+    This class stores information about any issue that occurred when reading an IDF file.
 
     :param str object_name: The object type that was being validated when this issue arose
     :param int severity: The severity of this issue, from the class constants
@@ -47,7 +47,7 @@ class IDFObject(object):
     """
     This class defines a single IDF object.  An IDF object is either a comma/semicolon delimited list of actual
     object data, or a block of line delimited comments.  Blocks of comment lines are treated as IDF objects so they can
-    be intelligently written back out to a new IDF file after transition in the same-ish location.
+    be intelligently written back out to a new IDF file after transition in the same location.
 
     Relevant members are listed here:
 

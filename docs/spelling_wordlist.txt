@@ -1,12 +1,9 @@
 Ai
 argv
-codebase
 idd
 idf
-Indices
-init
-ish
 metadata
 param
+programmatically
 stdout
 workflow

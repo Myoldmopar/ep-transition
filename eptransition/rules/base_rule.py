@@ -4,7 +4,7 @@ from eptransition.idf.objects import IDFObject
 
 class ObjectTypeAndName:
     """
-    This is a simple init only class for defining an object type/name combination
+    This is a simple class for defining an object type/name combination
 
     :param str object_type: The object type
     :param str object_name: The name of the object (usually field[0]
@@ -17,7 +17,7 @@ class ObjectTypeAndName:
 
 class TransitionReturn:
     """
-    This is a simple init only class for capturing the response from a transition call
+    This is a simple class for capturing the response from a transition call
 
     :param [IDFObject] objects_to_write: The list of IDFObject instances to be written as a result of this transition
     :param [ObjectTypeAndName] objects_to_delete: The list of idf object type/name combinations to be deleted as a

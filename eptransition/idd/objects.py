@@ -1,6 +1,6 @@
 class IDDField:
     """
-    A simple init-only class that defines a single field for an IDD object.  Relevant members are listed here:
+    A simple class that defines a single field for an IDD object.  Relevant members are listed here:
 
     :ivar str field_an_index: Main identifier for this field
     :ivar dict(str,[str]) meta_data: A dictionary, where each key is a string metadata type, such as '\\note', and each
@@ -22,7 +22,7 @@ class IDDField:
 
 class IDDObject:
     """
-    A simple init-only class that defines a single IDD object.  Relevant members are listed here:
+    A simple class that defines a single IDD object.  Relevant members are listed here:
 
     :ivar str name: IDD Type, or name, of this object
     :ivar dict(str,[str]) meta_data: A dictionary, where each key is a string metadata type, such as '\\memo', and each
@@ -44,7 +44,7 @@ class IDDObject:
 
 class IDDGroup:
     """
-    A simple init-only class that defines a single IDD group.  An IDD group is simply a container for IDD objects.
+    A simple class that defines a single IDD group.  An IDD group is simply a container for IDD objects.
     Relevant members are listed here:
 
     :ivar str name: IDD Type, or name, of this group
