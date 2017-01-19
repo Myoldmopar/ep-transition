@@ -32,13 +32,13 @@ directly from the command line.  Usage of these two modes are described below.
 Usage from Command Line:
 
 Once installed, in order to execute the program from the command line, simply call the executable link created during
-installation and pass in the input file to transition::
+installation and pass in the input file(s) to transition::
 
-  eptransition /path/to/idf
+  eptransition /path/to/idf /path/to/another/idf
 
 There are additional optional command line arguments, but these are currently marked for major changes, so they aren't
-documented here.  Executing this command line will cause the tool to read the input file first to find the start
-version for the transition process.  The tool then checks whether this version is available and if so, reads appropriate
+documented here.  Executing this command line will cause the tool to read the input file(s) first to find the start
+version for each transition process.  The tool then checks whether this version is available and if so, reads appropriate
 dictionary files for the start/end version, processes the IDF, executes all transition rules, and writes out a
 transitioned input file.
 
@@ -53,11 +53,12 @@ With the library imported, one can access all the underlying model structure, al
 to programmatically transition files.  To do this, one can access the manager function directly::
 
   from eptransition.manager import TransitionManager
-  tm = TransitionManager("/path/to/idf")
-  try:
-      tm.perform_transition()
-  except Exception as e:
-      print(e)
+  for idf in ['/path/to/idf', 'path/to/another/idf']:
+     tm = TransitionManager("/path/to/idf")
+     try:
+         tm.perform_transition()
+     except Exception as e:
+         print(e)
 
 This is equivalent to the command line call above.  As with the command line, there are additional, optional arguments
 that can be passed in, but these are marked for major changes so they aren't documented here.

@@ -29,6 +29,7 @@ class TransitionManager(object):
 
     def __init__(self, original_input_file, new_input_file=None, original_idd_file=None, new_idd_file=None):
         self.original_input_file = original_input_file
+        module_logger.debug("Transitioning file: {}".format(original_input_file))
         if new_input_file is None:  # pragma no cover
             module_logger.debug("Call to TransitionManager init with new_input_file=None, trying to make a filename")
             self.new_input_file = self.original_input_file[:-4] + "_updated" + self.original_input_file[-4:]
