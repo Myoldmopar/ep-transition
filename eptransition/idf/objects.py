@@ -19,7 +19,7 @@ class ValidationIssue:
         self.field_name = field_name
 
     @staticmethod
-    def severity_string(severity_integer):  # pragma no cover
+    def severity_string(severity_integer):
         """
         Returns a string version of the severity of this issue
 
@@ -32,6 +32,8 @@ class ValidationIssue:
             return "*WARNING*"
         elif severity_integer == ValidationIssue.ERROR:
             return "**ERROR**"
+        else:
+            raise Exception("Bad integer passed into severity_string()")
 
     def __str__(self):  # pragma no cover
         msg = ' * Issue Found; severity = ' + ValidationIssue.severity_string(self.severity) + '\n'
@@ -195,9 +197,10 @@ class IDFObject(object):
         This function simply writes out the idf string to a file object
 
         :param file_object: A file-type object that responds to a write command
-        :return: Nothing
+        :return: None
         """
         file_object.write(self.object_string())
+        return None
 
 
 class IDFStructure(object):
@@ -253,10 +256,11 @@ class IDFStructure(object):
 
         :param str idf_path: The path to the file to write
         :param IDDStructure idd_structure: An optional IDDStructure instance representing an entire IDD file
-        :return: Nothing
+        :return: None
         """
         with open(idf_path, 'w') as f:
             f.write(self.whole_idf_string(idd_structure))
+        return None
 
     def validate(self, idd_structure):
         """
