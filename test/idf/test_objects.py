@@ -3,7 +3,7 @@ import unittest
 
 from eptransition.exceptions import ProcessingException
 from eptransition.idd.processor import IDDProcessor
-from eptransition.idf.objects import IDFObject
+from eptransition.idf.objects import IDFObject, ValidationIssue
 from eptransition.idf.processor import IDFProcessor
 
 
@@ -224,3 +224,19 @@ OtherObject,
         idf_structure = IDFProcessor().process_file_via_string(idf_string)
         issues = idf_structure.validate(self.idd_structure)
         self.assertEqual(len(issues), 1)
+
+
+class TestValidationIssue(unittest.TestCase):
+
+    def test_validation_issue_info(self):
+        self.assertIn("INFORMATION", ValidationIssue.severity_string(ValidationIssue.INFORMATION))
+
+    def test_validation_issue_warning(self):
+        self.assertIn("WARNING", ValidationIssue.severity_string(ValidationIssue.WARNING))
+
+    def test_validation_issue_error(self):
+        self.assertIn("ERROR", ValidationIssue.severity_string(ValidationIssue.ERROR))
+
+    def test_validation_issue_bad(self):
+        with self.assertRaises(Exception):
+            ValidationIssue.severity_string(-999)
