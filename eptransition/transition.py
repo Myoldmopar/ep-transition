@@ -3,9 +3,10 @@
 import argparse
 import sys
 
-from eptransition import __version__
+from eptransition import __version__, __description__
 from eptransition.exceptions import ManagerProcessingException, FileAccessException, FileTypeException
 from eptransition.manager import TransitionManager
+from eptransition.versions.versions import TRANSITIONS
 
 
 def main(args=None):
@@ -20,11 +21,16 @@ def main(args=None):
     """
     if args is None:  # pragma no cover
         args = sys.argv[1:]
-    parser = argparse.ArgumentParser(description="Transition an EnergyPlus Input File")
+    epilogue = "This version of the E+ translator includes the following translations:\n"
+    for k, v in TRANSITIONS.items():
+        if v.transitions:
+            epilogue += " * {} to {}  --  ({} transitions)\n".format(v.start_version, v.end_version, len(v.transitions))
+    parser = argparse.ArgumentParser(description=__description__, epilog=epilogue,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("original_input", help="The original input file to transition", nargs=1)
-    parser.add_argument("-o", "--output", help="Path to write the transitioned input file", action="store")
-    parser.add_argument("-p", "--previdd", help="Path to an original IDD", action="store")
-    parser.add_argument("-n", "--newidd", help="Path to a new IDD", action="store")
+    parser.add_argument("-o", "--output", action="store", help="Path to write the transitioned input file structure")
+    parser.add_argument("-p", "--previdd", action="store", help="Path to an original IDD")
+    parser.add_argument("-n", "--newidd", action="store", help="Path to a new IDD")
     parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args(args=args)
     try:
