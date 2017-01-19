@@ -24,7 +24,7 @@ class TypeEnum(object):
 
 class SingleTransition(object):
     """
-    Internal init only version information class
+    Internal version information class
 
     :param float start_version: The major.minor floating point version identifier for the start version of this
                                 transition

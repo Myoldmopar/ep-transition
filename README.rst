@@ -8,8 +8,8 @@ Documentation |image0|
 
 Documentation is hosted on
 `ReadTheDocs <http://energyplus-python-transition.readthedocs.org/en/latest/>`__.
-The docs are completely bare right now. To build the documentation,
-enter the docs/ subdirectory and execute ``make html``; then open
+Documentation includes installation and usage tips, as well as a full documentation of the code base. To build the
+documentation, enter the docs/ subdirectory and execute ``make html``; then open
 ``/docs/_build/html/index.html`` to see the documentation.
 
 Testing |image1|
