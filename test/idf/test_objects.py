@@ -240,3 +240,7 @@ class TestValidationIssue(unittest.TestCase):
     def test_validation_issue_bad(self):
         with self.assertRaises(Exception):
             ValidationIssue.severity_string(-999)
+
+    def test_validation_issue_string(self):
+        s = str(ValidationIssue("MyObject", ValidationIssue.ERROR, "Some message", "this field"))
+        s += ""

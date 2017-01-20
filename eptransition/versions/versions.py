@@ -49,17 +49,17 @@ class SingleTransition(object):
         # error handling first
         try:
             start_version = float(start_version)
-        except ValueError:  # pragma no cover
+        except ValueError:
             raise ManagerProcessingException("Error in SingleTransition construction; non-float start version")
         try:
             end_version = float(end_version)
-        except ValueError:  # pragma no cover
+        except ValueError:
             raise ManagerProcessingException("Error in SingleTransition construction; non-float end version")
-        if not all([isinstance(x, TransitionRule) for x in transitions]):  # pragma no cover
+        if not all([isinstance(x, TransitionRule) for x in transitions]):
             raise ManagerProcessingException("Error in SingleTransition construction; all transition rules must " +
                                              "derive from TransitionRule")
         if outputs is not None:
-            if not isinstance(outputs, OutputVariableTransitionRule):  # pragma no cover
+            if not isinstance(outputs, OutputVariableTransitionRule):
                 raise ManagerProcessingException("Error in SingleTransition construction; output transition must " +
                                                  "derive from OutputVariableTransitionRule")
         # then assign class variables

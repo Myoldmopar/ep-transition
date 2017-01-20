@@ -35,7 +35,7 @@ class ValidationIssue:
         else:
             raise Exception("Bad integer passed into severity_string()")
 
-    def __str__(self):  # pragma no cover
+    def __str__(self):
         msg = ' * Issue Found; severity = ' + ValidationIssue.severity_string(self.severity) + '\n'
         msg += '  Object Name = ' + self.object_name + '\n'
         if self.field_name is not None:
