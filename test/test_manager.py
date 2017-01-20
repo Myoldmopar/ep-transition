@@ -1,9 +1,12 @@
+import logging
 import os
 import shutil
 import tempfile
 import unittest
 
 from eptransition.manager import TransitionManager
+
+logging.basicConfig(filename=tempfile.mktemp(), level=logging.DEBUG)
 
 
 class TestManager(unittest.TestCase):
