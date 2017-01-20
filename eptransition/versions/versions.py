@@ -10,8 +10,6 @@ from eptransition.rules.rules85to86.zonehvac_airdistributionunit import Rule as 
 from eptransition.rules.rules85to86.empd import Rule as empd86
 from eptransition.rules.rules85to86.coilheatinggas import Rule as coilheatinggas86
 from eptransition.rules.rules85to86.exteriorfuelequipment import Rule as exteriorequip86
-from eptransition.rules.rules85to86.remove_dehumidification_fields import Rule as dehumid86a
-from eptransition.rules.rules85to86.remove_dehumidification_fields import Rule2 as dehumid86b
 from eptransition.rules.rules85to86.chillerheater import Rule as chillerheater86
 from eptransition.rules.rules85to86.setpoint_managers import Rule as setpointmanagers86a
 from eptransition.rules.rules85to86.setpoint_managers import Rule2 as setpointmanagers86b
@@ -85,13 +83,13 @@ Transition85_86 = SingleTransition(8.5, 8.6,
                                        empd86(),
                                        coilheatinggas86(),
                                        exteriorequip86(),
-                                       dehumid86a(),
-                                       dehumid86b(),
                                        chillerheater86(),
                                        setpointmanagers86a(),
                                        setpointmanagers86b(),
                                        actuator86(),
                                        vavreheat86(),
+                                       remove_field("HVACTemplate:System:UnitarySystem", 56),  # dehumidification
+                                       remove_field("HVACTemplate:System:Unitary", 39),  # dehumidification
                                    ],
                                    outputs=None)
 Transition86_87 = SingleTransition(8.6, 8.7,
