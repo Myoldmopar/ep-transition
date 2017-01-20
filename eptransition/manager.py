@@ -1,5 +1,6 @@
 import os
 import logging
+import shutil
 
 from eptransition.exceptions import (
     FileAccessException as eFAE, FileTypeException as eFTE, ManagerProcessingException, ProcessingException
@@ -8,7 +9,7 @@ from eptransition.idd.processor import IDDProcessor
 from eptransition.idf.objects import IDFStructure, ValidationIssue
 from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
-from eptransition.versions.versions import TRANSITIONS, TypeEnum, FILE_TYPES
+from eptransition.versions.versions import TRANSITIONS, TypeEnum
 
 
 module_logger = logging.getLogger('eptransition.manager')
@@ -16,7 +17,7 @@ module_logger = logging.getLogger('eptransition.manager')
 
 class TransitionManager(object):
     """
-    This class is the main manager for performing a single transition of an input file from one version to another.
+    This class is the main manager for performing transition of an input file to the latest version.
 
     Developer note: This class raises many exceptions, so logging.exception is handled at the level of the code
     calling these functions within a try/except block.  These functions do logging, but only the info/debug level.
@@ -26,12 +27,18 @@ class TransitionManager(object):
     def __init__(self, original_input_file):
         self.original_input_file = original_input_file
         module_logger.debug("Transitioning file: {}".format(original_input_file))
-        self.new_input_file = self.original_input_file[:-4] + "_updated" + self.original_input_file[-4:]
-        module_logger.debug("Created the new output file as {}".format(self.new_input_file))
-        if os.path.exists(self.new_input_file):  # pragma no cover
-            module_logger.debug("new_input_file path already exists, trying to remove!")
-            os.remove(self.new_input_file)
-            module_logger.debug("Successfully removed previous new_input_file")
+        self.original_base_file_name = os.path.splitext(os.path.basename(original_input_file))[0]
+        self.output_directory = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name)
+        module_logger.debug("Created the new output directory as {}".format(self.output_directory))
+        if os.path.exists(self.output_directory):  # pragma no cover
+            module_logger.debug("output_directory already exists, I'll leave it alone and hope for the best!")
+        else:
+            try:
+                os.mkdir(self.output_directory)
+            except OSError:  # pragma no cover
+                module_logger.debug("Could not make output directory, permission issue maybe?")
+                raise
+
         # instantiate to None for now
         self.original_idd_file = None
         self.new_idd_file = None
@@ -48,12 +55,6 @@ class TransitionManager(object):
         # Validate input file related things
         if not os.path.exists(self.original_input_file):  # pragma no cover
             raise eFAE(self.original_input_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_INPUT_FILE)
-        if os.path.exists(self.new_input_file):  # pragma no cover
-            raise eFAE(self.new_input_file, eFAE.FILE_EXISTS_MUST_DELETE, eFAE.UPDATED_INPUT_FILE)
-        try:
-            open(self.new_input_file, 'w').write('-')
-        except:  # pragma no cover
-            raise eFAE(self.new_input_file, eFAE.CANNOT_WRITE_TO_FILE, eFAE.UPDATED_INPUT_FILE)
         if self.original_input_file.endswith('.idf'):
             original_idf_file_type = TypeEnum.IDF
         elif self.original_input_file.endswith('.jdf'):  # pragma no cover
@@ -61,12 +62,12 @@ class TransitionManager(object):
         else:  # pragma no cover
             raise eFTE(self.original_input_file, eFTE.ORIGINAL_INPUT_FILE,
                        "Unexpected extension, should be .idf or .jdf")
-        if self.new_input_file.endswith('.idf'):
-            new_idf_file_type = TypeEnum.IDF
-        elif self.new_input_file.endswith('.jdf'):  # pragma no cover
-            new_idf_file_type = TypeEnum.JSON
-        else:  # pragma no cover
-            raise eFTE(self.new_input_file, eFTE.UPDATED_INPUT_FILE, "Unexpected extension, should be .idf or .jdf")
+        # if self.new_input_file.endswith('.idf'):
+        #     new_idf_file_type = TypeEnum.IDF
+        # elif self.new_input_file.endswith('.jdf'):  # pragma no cover
+        #     new_idf_file_type = TypeEnum.JSON
+        # else:  # pragma no cover
+        #     raise eFTE(self.new_input_file, eFTE.UPDATED_INPUT_FILE, "Unexpected extension, should be .idf or .jdf")
 
         # At this point we now need to know the version of the idf, before we even try to read the idd really
         original_idf_processor = IDFProcessor()
@@ -107,8 +108,20 @@ class TransitionManager(object):
             raise ManagerProcessingException(
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
+        # first copy this original file into the output directory renamed with the version ID for ease of diffing, etc.
+        target_original_file = os.path.join(
+            self.output_directory, "{}_{}.idf".format(self.original_base_file_name, original_idf_version))
+        try:
+            shutil.copy(self.original_input_file, target_original_file)
+        except Exception:  # pragma no cover
+            module_logger.debug("Could not copy original input file from {} to {}".format(
+                self.original_input_file, target_original_file))
+            raise
+
         for i, this_transition in enumerate(these_transitions):
             end_version = this_transition.end_version
+            this_version_idf_file_path = os.path.join(
+                self.output_directory, "{}_{}.idf".format(self.original_base_file_name, end_version))
             module_logger.debug("Found this version in transitions, will try to transition from {} to {}".format(
                 this_transition.start_version, this_transition.end_version
             ))
@@ -135,12 +148,6 @@ class TransitionManager(object):
             else:  # pragma no cover
                 raise eFTE(self.original_idd_file, eFTE.ORIGINAL_DICT_FILE,
                            "Unexpected extension, should be .idd or .jdd")
-            if self.new_idd_file.endswith('.idd'):
-                new_idd_file_type = TypeEnum.IDF
-            elif self.new_idd_file.endswith('.jdd'):  # pragma no cover
-                new_idd_file_type = TypeEnum.JSON
-            else:  # pragma no cover
-                raise eFTE(self.new_idd_file, eFTE.UPDATED_DICT_FILE, "Unexpected extension, should be .idd or .jdd")
 
             # now validate the file types match each other
             if original_idf_file_type == original_idd_file_type:
@@ -148,13 +155,6 @@ class TransitionManager(object):
             else:  # pragma no cover
                 raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
                     original_idf_file_type, original_idd_file_type))
-
-            end_type = FILE_TYPES[end_version]
-            if new_idf_file_type == end_type and new_idd_file_type == end_type:
-                pass  # that's a good thing
-            else:  # pragma no cover
-                raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
-                    new_idf_file_type, new_idd_file_type))
 
             # and process the original idd file
             original_idd_processor = IDDProcessor()
@@ -256,7 +256,7 @@ class TransitionManager(object):
                     delete_map[object_type_upper] = [object_name_upper]
 
             # and now we write out the final idf structure
-            final_idf_structure = IDFStructure(self.new_input_file)
+            final_idf_structure = IDFStructure(this_version_idf_file_path)
 
             # loop over all
             for intermediate_idf_object in intermediate_idf_objects:
@@ -271,13 +271,14 @@ class TransitionManager(object):
             # report and done
             module_logger.debug("Transition complete; final # objects: {}".format(len(final_idf_structure.objects)))
 
-            # but now...if we are going to cycle, we'll want the idf_to_transition variable to be filled
-            # and if we are done, we'll write the file
+            # if we are going to cycle, we'll want the idf_to_transition variable to be filled
+            # either way we'll write this intermediate file
+            idf_to_transition = final_idf_structure
+            final_idf_structure.write_idf(this_version_idf_file_path, new_idd_structure)
+
             if i == len(these_transitions) - 1:
                 module_logger.debug("Completed all transitions, writing file and leaving")
-                final_idf_structure.write_idf(self.new_input_file, new_idd_structure)
             else:
                 module_logger.debug("Going to start a new transition on this file, storing structure and continuing")
-                idf_to_transition = final_idf_structure
 
         return 0

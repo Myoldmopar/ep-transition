@@ -1,5 +1,10 @@
+import logging
+
 from eptransition.exceptions import UnimplementedMethodException
 from eptransition.idf.objects import IDFObject
+
+
+module_logger = logging.getLogger('eptransition.rules.base_rule')
 
 
 class ObjectTypeAndName:
@@ -208,14 +213,17 @@ class OutputVariableTransitionRule:
         new_idf_fields = original_idf_fields
         # then go through and do simple renames of the variables in the expected locations
         indexes = self.get_standard_indexes_from_object(obj_name_upper)
-        for i in indexes:
-            try:
-                original_idf_fields[i]
-            except IndexError:  # pragma no cover   this could be covered if the idf tests were larger
-                break
-            maybe_new_name = self.simple_name_swap(original_idf_fields[i].upper())
-            if maybe_new_name:
-                new_idf_fields[i] = maybe_new_name
+        if indexes is None:
+            module_logger.warn("no indexes for output object: {}".format(core_object.object_name))  # pragma no cover
+        else:
+            for i in indexes:
+                try:
+                    original_idf_fields[i]
+                except IndexError:  # pragma no cover   this could be covered if the idf tests were larger
+                    break
+                maybe_new_name = self.simple_name_swap(original_idf_fields[i].upper())
+                if maybe_new_name:
+                    new_idf_fields[i] = maybe_new_name
         # and create a temporary object
         new_variable_object = IDFObject([core_object.object_name] + new_idf_fields)
         # then do complex operations if needed
