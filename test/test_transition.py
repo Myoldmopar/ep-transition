@@ -41,5 +41,8 @@ class TestDriver(unittest.TestCase):
 
     def test_command_line(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
+        root_dir = os.path.join(cur_dir, "..")
         transition_file = os.path.join(cur_dir, "..", "eptransition", "transition.py")
-        subprocess.check_output(["python", transition_file, "-h"])
+        my_env = os.environ.copy()
+        my_env["PYTHONPATH"] = root_dir
+        subprocess.check_output(["python", transition_file, "-h"], env=my_env)
