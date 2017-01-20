@@ -1,10 +1,8 @@
-import logging
-
 from eptransition.idf.objects import IDFObject
 from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
 
-class Rule(TransitionRule):
+class Rule(TransitionRule):  # pragma no cover
     """
     DESCRIBES THE RULE HERE
     """
