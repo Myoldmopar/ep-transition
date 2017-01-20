@@ -1,3 +1,5 @@
+import logging
+
 from eptransition.idf.objects import IDFObject
 from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
@@ -19,7 +21,7 @@ class Rule(TransitionRule):
         # these would be, zero based, 1, 7, 12, 17, 22, ....
         indeces_to_remove = [1]
         num_fields = len(core_object.fields)
-        i_to_remove = 7
+        i_to_remove = 2
         while True:
             i_to_remove += 5
             if i_to_remove < num_fields:  # pragma no cover
