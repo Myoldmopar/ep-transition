@@ -192,7 +192,7 @@ class TransitionManager(object):
             # now read in the rules and create a map based on the upper case version of the IDF object to transition
             this_version_rule = VersionRule(end_version)
             rules = [this_version_rule]
-            rules.extend([x() for x in this_transition.transitions])
+            rules.extend(this_transition.transitions)
             rule_map = {}
             for rule in rules:
                 rule_map[rule.get_name_of_object_to_transition().upper()] = LocalRuleInformation(rule)
@@ -202,7 +202,7 @@ class TransitionManager(object):
                 output_names = []
                 module_logger.warn("This transition did not find an output variable transition class...you sure?")
             else:
-                output_rule = this_transition.output_variable_transition()
+                output_rule = this_transition.output_variable_transition
                 output_names = output_rule.get_output_objects()
 
             # create a list of objects to be deleted (which is a list of Type/Name, or more accurately Type/Field0

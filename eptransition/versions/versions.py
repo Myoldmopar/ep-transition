@@ -54,11 +54,11 @@ class SingleTransition(object):
             end_version = float(end_version)
         except ValueError:  # pragma no cover
             raise ManagerProcessingException("Error in SingleTransition construction; non-float end version")
-        if not all([issubclass(x, TransitionRule) for x in transitions]):  # pragma no cover
+        if not all([isinstance(x, TransitionRule) for x in transitions]):  # pragma no cover
             raise ManagerProcessingException("Error in SingleTransition construction; all transition rules must " +
                                              "derive from TransitionRule")
         if outputs is not None:
-            if not issubclass(outputs, OutputVariableTransitionRule):  # pragma no cover
+            if not isinstance(outputs, OutputVariableTransitionRule):  # pragma no cover
                 raise ManagerProcessingException("Error in SingleTransition construction; output transition must " +
                                                  "derive from OutputVariableTransitionRule")
         # then assign class variables
@@ -74,29 +74,29 @@ Transition84_85 = SingleTransition(8.4, 8.5,
                                    outputs=None)
 Transition85_86 = SingleTransition(8.5, 8.6,
                                    transitions=[
-                                       branch86.Rule,
-                                       inletmixer86.Rule,
-                                       supplymixer86.Rule,
-                                       otherequipment86.Rule,
-                                       zonehvac_adu86.Rule,
-                                       empd86.Rule,
-                                       coilheatinggas86.Rule,
-                                       exteriorequip86.Rule,
-                                       dehumid86.Rule,
-                                       dehumid86.Rule2,
-                                       chillerheater86.Rule,
-                                       setpointmanagers86.Rule,
-                                       setpointmanagers86.Rule2,
-                                       actuator86.Rule,
-                                       vavreheat86.Rule,
+                                       branch86.Rule(),
+                                       inletmixer86.Rule(),
+                                       supplymixer86.Rule(),
+                                       otherequipment86.Rule(),
+                                       zonehvac_adu86.Rule(),
+                                       empd86.Rule(),
+                                       coilheatinggas86.Rule(),
+                                       exteriorequip86.Rule(),
+                                       dehumid86.Rule(),
+                                       dehumid86.Rule2(),
+                                       chillerheater86.Rule(),
+                                       setpointmanagers86.Rule(),
+                                       setpointmanagers86.Rule2(),
+                                       actuator86.Rule(),
+                                       vavreheat86.Rule(),
                                    ],
                                    outputs=None)
 Transition86_87 = SingleTransition(8.6, 8.7,
                                    transitions=[
-                                       branch87.Rule,
-                                       controller_list87.Rule,
+                                       branch87.Rule(),
+                                       controller_list87.Rule(),
                                    ],
-                                   outputs=output87.Rule)
+                                   outputs=output87.Rule())
 
 FILE_TYPES = {8.4: TypeEnum.IDF, 8.5: TypeEnum.IDF, 8.6: TypeEnum.IDF, 8.7: TypeEnum.IDF}
 TRANSITIONS = {8.4: Transition84_85, 8.5: Transition85_86, 8.6: Transition86_87}  # key is start version
