@@ -61,7 +61,7 @@ class TestManager(unittest.TestCase):
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
         tm = TransitionManager(final_idf_path)
         tm.perform_transition()
-        tm = TransitionManager(final_idf_path)
+        TransitionManager(final_idf_path)
 
     def test_idf_bad_extension(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))

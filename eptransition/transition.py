@@ -48,13 +48,13 @@ def main(args=None):
     for input_file in args.input_files:
         try:
             manager = TransitionManager(input_file)
-        except Exception as e:  # pragma no cover
+        except Exception as e:
             logger.exception(
                 "Could not instantiate manager from command line args...exception message follows\n{}".format(e.message))
             raise
         try:
             manager.perform_transition()
-        except (FileAccessException, FileTypeException, ManagerProcessingException) as e:  # pragma no cover
+        except (FileAccessException, FileTypeException, ManagerProcessingException) as e:
             logger.exception("Problem occurred during transition! Exception message: \n " + str(e))
             raise
 
