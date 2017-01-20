@@ -35,7 +35,7 @@ class TransitionManager(object):
         else:
             try:
                 os.mkdir(self.output_directory)
-            except OSError:
+            except OSError:  # pragma no cover
                 module_logger.debug("Could not make output directory, permission issue maybe?")
                 raise
 
@@ -113,7 +113,7 @@ class TransitionManager(object):
             self.output_directory, "{}_{}.idf".format(self.original_base_file_name, original_idf_version))
         try:
             shutil.copy(self.original_input_file, target_original_file)
-        except Exception as e:
+        except Exception:  # pragma no cover
             module_logger.debug("Could not copy original input file from {} to {}".format(
                 self.original_input_file, target_original_file))
             raise

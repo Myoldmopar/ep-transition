@@ -214,7 +214,7 @@ class OutputVariableTransitionRule:
         # then go through and do simple renames of the variables in the expected locations
         indexes = self.get_standard_indexes_from_object(obj_name_upper)
         if indexes is None:
-            module_logger.warn("no indexes for output object: {}".format(core_object.object_name))
+            module_logger.warn("no indexes for output object: {}".format(core_object.object_name))  # pragma no cover
         else:
             for i in indexes:
                 try:
