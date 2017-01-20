@@ -148,12 +148,6 @@ class TransitionManager(object):
             else:  # pragma no cover
                 raise eFTE(self.original_idd_file, eFTE.ORIGINAL_DICT_FILE,
                            "Unexpected extension, should be .idd or .jdd")
-            if self.new_idd_file.endswith('.idd'):
-                new_idd_file_type = TypeEnum.IDF
-            elif self.new_idd_file.endswith('.jdd'):  # pragma no cover
-                new_idd_file_type = TypeEnum.JSON
-            else:  # pragma no cover
-                raise eFTE(self.new_idd_file, eFTE.UPDATED_DICT_FILE, "Unexpected extension, should be .idd or .jdd")
 
             # now validate the file types match each other
             if original_idf_file_type == original_idd_file_type:
