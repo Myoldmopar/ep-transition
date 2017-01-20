@@ -1,8 +1,12 @@
 import StringIO
+import logging
 import os
 
 from eptransition import exceptions
 from eptransition.idd.objects import IDDField, IDDObject, IDDStructure, IDDGroup
+
+
+module_logger = logging.getLogger('eptransition.idd.processor')
 
 
 class CurrentReadType:
@@ -422,7 +426,9 @@ class IDDProcessor:
                     elif 'IDD_BUILD' in token_builder:
                         self.idd.build_string = token_builder.strip().split(' ')[1].strip()
                         magic_cache_key = "{}__{}".format(self.idd.version_string, self.idd.build_string)
+                        module_logger.debug("Encountered IDD_BUILD, checking cache for key {}".format(magic_cache_key))
                         if magic_cache_key in IDD_CACHE:
+                            module_logger.debug("Found this IDD cache key in the cache, using existing entry")
                             self.idd = IDD_CACHE[magic_cache_key]
                             return self.idd
                     token_builder = ''
@@ -437,6 +443,7 @@ class IDDProcessor:
         # save this idd structure in the cache
         if magic_cache_key:
             IDD_CACHE[magic_cache_key] = self.idd
+            module_logger.debug("Storing this IDD in cache with key: {}".format(magic_cache_key))
 
         # and return the magically useful IDDStructure instance
         return self.idd
