@@ -85,77 +85,93 @@ class OutputVariableTransitionRule:
     These objects are treated somewhat specially by the tool because a small change can affect so
     many objects, and it would be unwise to expect each version to include so much repeated code.
 
-    The fields for each object are described here:
+    The fields for each object are described next
 
-    OV: Output:Variable
-      0: Key Value
-      1: Variable Name  ****
-      2: Reporting Frequency
-      3: Schedule Name
+    - OV: Output:Variable
 
-    OM: Output:Meter, OMM: Output:Meter:MeterFileOnly
-      0: Name  ????
-      1: Reporting Frequency
+        0. Key Value
+        1. Variable Name  * * * *
+        2. Reporting Frequency
+        3. Schedule Name
 
-    OMC: Output:Meter:Cumulative, OMCM: Output:Meter:Cumulative:MeterFileOnly
-      0: Name  ????
-      1: Reporting Frequency
+    - OM: Output:Meter, OMM: Output:Meter:MeterFileOnly
 
-    OTT: Output:Table:TimeBins
-      0: Key Value
-      1: Variable Name  ****
-      2: Interval Start
-      3: Interval Size
-      4: Interval Count
-      5: Schedule Name
-      6: Variable Type
+        0. Name  ????
+        1. Reporting Frequency
 
-    FMUI: ExternalInterface:FunctionalMockupUnitImport:From:Variable
-      0: EnergyPlus Key Value
-      1: EnergyPlus Variable Name  ****
-      2: FMU File Name
-      3: FMU Instance Name
-      4: FMU Variable Name
+    - OMC: Output:Meter:Cumulative, OMCM: Output:Meter:Cumulative:MeterFileOnly
 
-    FMUE: ExternalInterface:FunctionalMockupUnitExport:From:Variable
-      0: EnergyPlus Key Value
-      1: EnergyPlus Variable Name  ****
-      2: FMU Variable Name
+        0. Name  ????
+        1. Reporting Frequency
 
-    EMS: EnergyManagementSystem:Sensor
-      0: Name
-      1: Output:Variable or Output:Meter Key Name
-      2: Output:Variable or Output:Meter Name  ****
+    - OTT: Output:Table:TimeBins
 
-    OTM: Output:Table:Monthly
-      0: Name
-      1: Digits after Decimal
-      2: Variable or Meter X Name  ****
-      3: Variable or Meter X Aggregation Type
-      ... repeating with variable names for each 2, 4, 6, 8, ...
+        0. Key Value
+        1. Variable Name  * * * *
+        2. Interval Start
+        3. Interval Size
+        4. Interval Count
+        5. Schedule Name
+        6. Variable Type
 
-    OTA: Output:Table:Annual
-      0: Name
-      1: Filter
-      2: Schedule Name
-      3: Variable or Meter X Name  ****
-      4: Variable or Meter X Aggregation Type
-      ... repeating with variable names for each 3, 5, 7, 9, ...
+    - FMUI: ExternalInterface:FunctionalMockupUnitImport:From:Variable
 
-    MC: Meter:Custom
-      0: Name
-      1: Fuel Type
-      2: Key Name X
-      3: Output Variable or Meter Name X  ****
-      ... repeating with variable names for each 3, 5, 7, 9, ...
+        0. EnergyPlus Key Value
+        1. EnergyPlus Variable Name  * * * *
+        2. FMU File Name
+        3. FMU Instance Name
+        4. FMU Variable Name
 
-    MCD: Meter:CustomDecrement
-      0: Name
-      1: Fuel Type
-      2: Source Meter Name  ????
-      3: Key Name X
-      4: Output Variable or Meter Name X
-      ... repeating with variable names for each 4, 6, 8, 10, ...
+    - FMUE: ExternalInterface:FunctionalMockupUnitExport:From:Variable
+
+        0. EnergyPlus Key Value
+        1. EnergyPlus Variable Name  * * * *
+        2. FMU Variable Name
+
+    - EMS: EnergyManagementSystem:Sensor
+
+        0. Name
+        1. Output:Variable or Output:Meter Key Name
+        2. Output:Variable or Output:Meter Name  * * * *
+
+    - OTM: Output:Table:Monthly
+
+        0. Name
+        1. Digits after Decimal
+        2. Variable or Meter X Name  * * * *
+        3. Variable or Meter X Aggregation Type
+
+        ... repeating with variable names for each 2, 4, 6, 8, ...
+
+    - OTA: Output:Table:Annual
+
+        0. Name
+        1. Filter
+        2. Schedule Name
+        3. Variable or Meter X Name  * * * *
+        4. Variable or Meter X Aggregation Type
+
+        ... repeating with variable names for each 3, 5, 7, 9, ...
+
+    - MC: Meter:Custom
+
+        0. Name
+        1. Fuel Type
+        2. Key Name X
+        3. Output Variable or Meter Name X  * * * *
+
+        ... repeating with variable names for each 3, 5, 7, 9, ...
+
+    - MCD: Meter:CustomDecrement
+
+        0. Name
+        1. Fuel Type
+        2. Source Meter Name  ????
+        3. Key Name X
+        4. Output Variable or Meter Name X
+
+        ... repeating with variable names for each 4, 6, 8, 10, ...
+
     """
 
     # convenience constants
