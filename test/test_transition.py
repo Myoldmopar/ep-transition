@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 import tempfile
 import unittest
 
@@ -21,3 +22,8 @@ class TestDriver(unittest.TestCase):
         self.assertEqual(0, r)
         r = transition.main([final_idf_path_86])
         self.assertEqual(0, r)
+
+    def test_command_line(self):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        transition_file = os.path.join(cur_dir, "..", "eptransition", "transition.py")
+        subprocess.check_output(["python", transition_file, "-h"])

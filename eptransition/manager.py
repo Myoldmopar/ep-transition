@@ -30,12 +30,12 @@ class TransitionManager(object):
         self.original_base_file_name = os.path.splitext(os.path.basename(original_input_file))[0]
         self.output_directory = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name)
         module_logger.debug("Created the new output directory as {}".format(self.output_directory))
-        if os.path.exists(self.output_directory):  # pragma no cover
+        if os.path.exists(self.output_directory):
             module_logger.debug("output_directory already exists, I'll leave it alone and hope for the best!")
         else:
             try:
                 os.mkdir(self.output_directory)
-            except OSError:  # pragma no cover
+            except OSError:
                 module_logger.debug("Could not make output directory, permission issue maybe?")
                 raise
 
@@ -53,13 +53,13 @@ class TransitionManager(object):
         :raises ManagerProcessingException: if there is a problem processing the contents of the files
         """
         # Validate input file related things
-        if not os.path.exists(self.original_input_file):  # pragma no cover
+        if not os.path.exists(self.original_input_file):
             raise eFAE(self.original_input_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_INPUT_FILE)
         if self.original_input_file.endswith('.idf'):
             original_idf_file_type = TypeEnum.IDF
         elif self.original_input_file.endswith('.jdf'):  # pragma no cover
             original_idf_file_type = TypeEnum.JSON
-        else:  # pragma no cover
+        else:
             raise eFTE(self.original_input_file, eFTE.ORIGINAL_INPUT_FILE,
                        "Unexpected extension, should be .idf or .jdf")
 
@@ -70,7 +70,7 @@ class TransitionManager(object):
             idf_to_transition = original_idf_processor.process_file_given_file_path(self.original_input_file)
             module_logger.debug(
                 "Successfully processed idf structure; found {} objects".format(len(idf_to_transition.objects)))
-        except:  # pragma no cover
+        except:
             raise ManagerProcessingException("Could not process original idf; aborting")
 
         # initialize the return structures
@@ -102,7 +102,7 @@ class TransitionManager(object):
                     continue
                 else:
                     break
-        else:  # pragma no cover
+        else:
             raise ManagerProcessingException(
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
@@ -127,10 +127,10 @@ class TransitionManager(object):
             # if the IDD files are "None", then try to match them up
             idd_file = "Energy+.idd"
             cur_dir = os.path.dirname(os.path.realpath(__file__))
-            if self.original_idd_file is None:  # pragma no cover
+            if self.original_idd_file is None:
                 self.original_idd_file = os.path.join(cur_dir, "versions", str(this_transition.start_version), idd_file)
                 module_logger.debug("Using \"original\" idd file at path: {}".format(self.original_idd_file))
-            if self.new_idd_file is None:  # pragma no cover
+            if self.new_idd_file is None:
                 self.new_idd_file = os.path.join(cur_dir, "versions", str(this_transition.end_version), idd_file)
                 module_logger.debug("Using \"new\" idd file at path: {}".format(self.new_idd_file))
 
@@ -172,7 +172,7 @@ class TransitionManager(object):
 
             # validate the current idf before continuing
             issues = idf_to_transition.validate(original_idd_structure)
-            if len(issues) > 0:  # pragma no cover
+            if len(issues) > 0:  # pragma no cover, we haven't really got these organized yet
                 for i in issues:
                     if i.severity == ValidationIssue.INFORMATION:
                         module_logger.debug(str(i))
