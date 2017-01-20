@@ -47,7 +47,7 @@ class TransitionManager(object):
         """
         This function manages the transition from one version to another by opening, validating, and writing files
 
-        :return: 0 for success, raises exception for failures
+        :return: Final transitioned idf structure; raises exception for failures
         :raises FileAccessException: if a specified file does not access
         :raises FileTypeException: if a specified file type does not match the expected condition
         :raises ManagerProcessingException: if there is a problem processing the contents of the files
@@ -62,12 +62,6 @@ class TransitionManager(object):
         else:  # pragma no cover
             raise eFTE(self.original_input_file, eFTE.ORIGINAL_INPUT_FILE,
                        "Unexpected extension, should be .idf or .jdf")
-        # if self.new_input_file.endswith('.idf'):
-        #     new_idf_file_type = TypeEnum.IDF
-        # elif self.new_input_file.endswith('.jdf'):  # pragma no cover
-        #     new_idf_file_type = TypeEnum.JSON
-        # else:  # pragma no cover
-        #     raise eFTE(self.new_input_file, eFTE.UPDATED_INPUT_FILE, "Unexpected extension, should be .idf or .jdf")
 
         # At this point we now need to know the version of the idf, before we even try to read the idd really
         original_idf_processor = IDFProcessor()
@@ -78,6 +72,10 @@ class TransitionManager(object):
                 "Successfully processed idf structure; found {} objects".format(len(idf_to_transition.objects)))
         except:  # pragma no cover
             raise ManagerProcessingException("Could not process original idf; aborting")
+
+        # initialize the return structures
+        original_idf_structure = idf_to_transition
+        final_idf_structure = None
 
         # so we get the original idf version now
         original_idf_version = idf_to_transition.version_float
@@ -255,8 +253,14 @@ class TransitionManager(object):
                 else:
                     delete_map[object_type_upper] = [object_name_upper]
 
-            # and now we write out the final idf structure
+            # and now we create
             final_idf_structure = IDFStructure(this_version_idf_file_path)
+            final_idf_structure.version_float = this_version_rule.end_version_id
+            final_idf_structure.version_string = str(final_idf_structure.version_float)
+
+            module_logger.debug(
+                "Created \"final\" idf structure for this transition step, assigned version = {}".format(
+                    this_version_rule.end_version_id))
 
             # loop over all
             for intermediate_idf_object in intermediate_idf_objects:
@@ -281,4 +285,4 @@ class TransitionManager(object):
             else:
                 module_logger.debug("Going to start a new transition on this file, storing structure and continuing")
 
-        return 0
+        return original_idf_structure, final_idf_structure
