@@ -99,4 +99,4 @@ Transition86_87 = SingleTransition(8.6, 8.7,
                                    outputs=output87.Rule)
 
 FILE_TYPES = {8.4: TypeEnum.IDF, 8.5: TypeEnum.IDF, 8.6: TypeEnum.IDF, 8.7: TypeEnum.IDF}
-TRANSITIONS = {8.4: Transition84_85, 8.5: Transition85_86}  # , 8.6: Transition86_87}  # key is start version
+TRANSITIONS = {8.4: Transition84_85, 8.5: Transition85_86, 8.6: Transition86_87}  # key is start version
