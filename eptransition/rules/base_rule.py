@@ -85,6 +85,10 @@ class OutputVariableTransitionRule:
     These objects are treated somewhat specially by the tool because a small change can affect so
     many objects, and it would be unwise to expect each version to include so much repeated code.
 
+    The structure of the output objects here is based on 8.5/8.6.  In the future, if the objects didn't change much,
+    it would make most sense to just keep using this class and making small tweaks as needed.  If more major
+    changes occur, it would be best to create a new base class to move forward.
+
     The fields for each object are described next
 
     - OV: Output:Variable
@@ -96,12 +100,12 @@ class OutputVariableTransitionRule:
 
     - OM: Output:Meter, OMM: Output:Meter:MeterFileOnly
 
-        0. Name  ????
+        0. Name  * * * *
         1. Reporting Frequency
 
     - OMC: Output:Meter:Cumulative, OMCM: Output:Meter:Cumulative:MeterFileOnly
 
-        0. Name  ????
+        0. Name  * * * *
         1. Reporting Frequency
 
     - OTT: Output:Table:TimeBins
@@ -212,10 +216,12 @@ class OutputVariableTransitionRule:
             return [1]
         elif object_name in [self.EMS]:
             return [2]
-        elif object_name in [self.OTM]:  # pragma no cover   -- will add back in once we test an idf that has OTM
+        elif object_name in [self.OTM]:  # pragma no cover -- will add back in once we test an idf that has OTM
             return range(2, 100, 2)
-        elif object_name in [self.OTA]:  # pragma no cover   -- will add back in once we test in idf that has OTA
-            return range(1)
+        elif object_name in [self.OTA, self.MC]:  # pragma no cover -- will add back in once we test in idf that has OTA
+            return range(3, 100, 2)
+        elif object_name in [self.MCD]:
+            return range(4, 100, 2)
 
     def get_output_objects(self):
         """
