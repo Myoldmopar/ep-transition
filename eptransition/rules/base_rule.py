@@ -82,6 +82,100 @@ class TransitionRule:
 class OutputVariableTransitionRule:
     """
     This class is a must-override base class for defining transition rules for output variable objects
+    These objects are treated somewhat specially by the tool because a small change can affect so
+    many objects, and it would be unwise to expect each version to include so much repeated code.
+
+    The structure of the output objects here is based on 8.5/8.6.  In the future, if the objects didn't change much,
+    it would make most sense to just keep using this class and making small tweaks as needed.  If more major
+    changes occur, it would be best to create a new base class to move forward.
+
+    The fields for each object are described next
+
+    - OV: Output:Variable
+
+        0. Key Value
+        1. Variable Name  * * * *
+        2. Reporting Frequency
+        3. Schedule Name
+
+    - OM: Output:Meter, OMM: Output:Meter:MeterFileOnly
+
+        0. Name  * * * *
+        1. Reporting Frequency
+
+    - OMC: Output:Meter:Cumulative, OMCM: Output:Meter:Cumulative:MeterFileOnly
+
+        0. Name  * * * *
+        1. Reporting Frequency
+
+    - OTT: Output:Table:TimeBins
+
+        0. Key Value
+        1. Variable Name  * * * *
+        2. Interval Start
+        3. Interval Size
+        4. Interval Count
+        5. Schedule Name
+        6. Variable Type
+
+    - FMUI: ExternalInterface:FunctionalMockupUnitImport:From:Variable
+
+        0. EnergyPlus Key Value
+        1. EnergyPlus Variable Name  * * * *
+        2. FMU File Name
+        3. FMU Instance Name
+        4. FMU Variable Name
+
+    - FMUE: ExternalInterface:FunctionalMockupUnitExport:From:Variable
+
+        0. EnergyPlus Key Value
+        1. EnergyPlus Variable Name  * * * *
+        2. FMU Variable Name
+
+    - EMS: EnergyManagementSystem:Sensor
+
+        0. Name
+        1. Output:Variable or Output:Meter Key Name
+        2. Output:Variable or Output:Meter Name  * * * *
+
+    - OTM: Output:Table:Monthly
+
+        0. Name
+        1. Digits after Decimal
+        2. Variable or Meter X Name  * * * *
+        3. Variable or Meter X Aggregation Type
+
+        ... repeating with variable names for each 2, 4, 6, 8, ...
+
+    - OTA: Output:Table:Annual
+
+        0. Name
+        1. Filter
+        2. Schedule Name
+        3. Variable or Meter X Name  * * * *
+        4. Variable or Meter X Aggregation Type
+
+        ... repeating with variable names for each 3, 5, 7, 9, ...
+
+    - MC: Meter:Custom
+
+        0. Name
+        1. Fuel Type
+        2. Key Name X
+        3. Output Variable or Meter Name X  * * * *
+
+        ... repeating with variable names for each 3, 5, 7, 9, ...
+
+    - MCD: Meter:CustomDecrement
+
+        0. Name
+        1. Fuel Type
+        2. Source Meter Name  ????
+        3. Key Name X
+        4. Output Variable or Meter Name X
+
+        ... repeating with variable names for each 4, 6, 8, 10, ...
+
     """
 
     # convenience constants
@@ -95,6 +189,7 @@ class OutputVariableTransitionRule:
     FMUE = 'EXTERNALINTERFACE:FUNCTIONALMOCKUPUNITEXPORT:FROM:VARIABLE'
     EMS = 'ENERGYMANAGEMENTSYSTEM:SENSOR'
     OTM = 'OUTPUT:TABLE:MONTHLY'
+    OTA = 'OUTPUT:TABLE:ANNUAL'
     MC = 'METER:CUSTOM'
     MCD = 'METER:CUSTOMDECREMENT'
 
@@ -121,8 +216,12 @@ class OutputVariableTransitionRule:
             return [1]
         elif object_name in [self.EMS]:
             return [2]
-        elif object_name in [self.OTM]:  # pragma no cover   -- will add back in once we test an idf that has OTM
+        elif object_name in [self.OTM]:  # pragma no cover -- will add back in once we test an idf that has OTM
             return range(2, 100, 2)
+        elif object_name in [self.OTA, self.MC]:  # pragma no cover -- will add back in once we test in idf that has OTA
+            return range(3, 100, 2)
+        elif object_name in [self.MCD]:  # pragma no cover -- will add back in once we test in idf that has MCD
+            return range(4, 100, 2)
 
     def get_output_objects(self):
         """
