@@ -220,7 +220,7 @@ class OutputVariableTransitionRule:
             return range(2, 100, 2)
         elif object_name in [self.OTA, self.MC]:  # pragma no cover -- will add back in once we test in idf that has OTA
             return range(3, 100, 2)
-        elif object_name in [self.MCD]:
+        elif object_name in [self.MCD]:  # pragma no cover -- will add back in once we test in idf that has MCD
             return range(4, 100, 2)
 
     def get_output_objects(self):
