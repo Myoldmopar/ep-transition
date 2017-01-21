@@ -129,6 +129,9 @@ class IDFObject(object):
         :return: A list of ValidationIssue instances, each describing an issue encountered
         """
         issues = []
+        if idd_object is None:
+            print("Got NONE for idd_object when validating {}".format(self.object_name))
+            return issues
         for idf, idd in zip(self.fields, idd_object.fields):
             if '\\required-field' in idd.meta_data:
                 if idf == '':

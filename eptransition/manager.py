@@ -236,7 +236,12 @@ class TransitionManager(object):
                     intermediate_idf_objects.extend(transition_response.to_write)
                     objects_to_delete.extend(transition_response.to_delete)
                 elif idf_object_type_upper in output_names:
-                    transition_response = output_rule.transition(original_idf_object)
+                    # create a map of dependents; where the key is the upper case object type and the value is
+                    # the list of all the objects found in the original idf
+                    dependents = {}
+                    for dep_idf_type in output_rule.get_dependent_object_names():
+                        dependents[dep_idf_type.upper()] = idf_to_transition.get_idf_objects_by_type(dep_idf_type)
+                    transition_response = output_rule.transition(original_idf_object, dependents)
                     intermediate_idf_objects.extend(transition_response.to_write)
                 else:
                     # if there was no rule, just keep the object as it is
