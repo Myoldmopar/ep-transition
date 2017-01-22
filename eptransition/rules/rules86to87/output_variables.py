@@ -16,7 +16,7 @@ class Rule(OutputVariableTransitionRule):
             'SITE OUTDOOR AIR DRYBULB TEMPERATURE': 'THAT THERE OUTSIDE HOTNESS RIGHT',
         }
 
-    def complex_output_operation(self, full_object):
+    def complex_output_operation(self, full_object, dependent_objects):
         if full_object.object_name.upper() == self.OM:
             # make up a fake output meter operation
             new_object = full_object

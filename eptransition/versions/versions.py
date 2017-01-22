@@ -15,6 +15,10 @@ from eptransition.rules.rules85to86.setpoint_managers import Rule as setpointman
 from eptransition.rules.rules85to86.setpoint_managers import Rule2 as setpointmanagers86b
 from eptransition.rules.rules85to86.ems_actuator import Rule as actuator86
 from eptransition.rules.rules85to86.air_terminal_vav_reheat import Rule as vavreheat86
+from eptransition.rules.rules85to86.daylighting import Rule as daylighting86a
+from eptransition.rules.rules85to86.daylighting import Rule2 as daylighting86b
+from eptransition.rules.rules85to86.daylighting import Rule3 as daylighting86c
+from eptransition.rules.rules85to86.output_variables import Rule as output86
 
 from eptransition.rules.rules86to87 import (
     controller_list as controller_list87,
@@ -88,10 +92,13 @@ Transition85_86 = SingleTransition(8.5, 8.6,
                                        setpointmanagers86b(),
                                        actuator86(),
                                        vavreheat86(),
+                                       daylighting86a(),
+                                       daylighting86b(),
+                                       daylighting86c(),
                                        remove_field("HVACTemplate:System:UnitarySystem", 56),  # dehumidification
                                        remove_field("HVACTemplate:System:Unitary", 39),  # dehumidification
                                    ],
-                                   outputs=None)
+                                   outputs=output86())
 Transition86_87 = SingleTransition(8.6, 8.7,
                                    transitions=[
                                        branch87.Rule(),

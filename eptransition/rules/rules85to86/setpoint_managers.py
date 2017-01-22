@@ -2,7 +2,7 @@ from eptransition.idf.objects import IDFObject
 from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
 
-class Rule(TransitionRule):
+class Rule(TransitionRule):  # pragma no cover
     def get_name_of_object_to_transition(self):
         return "SetpointManager:SingleZone:Humidity:Minimum"
 
@@ -18,7 +18,7 @@ class Rule(TransitionRule):
         return TransitionReturn([new_object])
 
 
-class Rule2(TransitionRule):
+class Rule2(TransitionRule):  # pragma no cover
     def get_name_of_object_to_transition(self):
         return "SetpointManager:SingleZone:Humidity:Maximum"
 

@@ -31,4 +31,4 @@ class TestBaseOutputRule(unittest.TestCase):
         with self.assertRaises(UnimplementedMethodException):
             r.get_simple_swaps()
         with self.assertRaises(UnimplementedMethodException):
-            r.complex_output_operation(None)
+            r.complex_output_operation(None, None)

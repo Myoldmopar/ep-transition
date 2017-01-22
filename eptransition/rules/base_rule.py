@@ -223,6 +223,15 @@ class OutputVariableTransitionRule:
         elif object_name in [self.MCD]:  # pragma no cover -- will add back in once we test in idf that has MCD
             return range(4, 100, 2)
 
+    def get_dependent_object_names(self):
+        """
+        This method can be overridden in derived classes if any of the output variable name changes depend on other
+        objects in the idf.  Simply return a list of object names
+
+        :return: A list of object names that output variable name changes are dependent upon
+        """
+        return []
+
     def get_output_objects(self):
         """
         This method should be overridden in derived classes and return a list of all output-related object types
@@ -283,19 +292,20 @@ class OutputVariableTransitionRule:
         else:
             return None
 
-    def complex_output_operation(self, full_object):
+    def complex_output_operation(self, full_object, dependent_objects):
         """
         This method should be overridden in derived classes and should perform the complex operations to transition
         the argument object passed in.  The function should return a list because some complex operations may split the
         initial object into multiple objects.  The object passed in will have any simple name swaps already performed.
 
         :param full_object: The original object to be replaced.
+        :param dependent_objects: A dictionary of dependent objects
         :return: A list of new IDFObject instances, typically just one though
         :raises UnimplementedMethodException: Raised if this method is called on the base class itself
         """
         raise UnimplementedMethodException("OutputVariableTransitionRule", "complex_output_operation")
 
-    def transition(self, core_object):
+    def transition(self, core_object, dependent_objects):
         """
         This method can be implemented by derived classes if necessary, but should capture the entire transition
         functionality just using the other required <must-override> methods in this class.  This function first scans
@@ -304,6 +314,7 @@ class OutputVariableTransitionRule:
         returns a full IDFObject instance.
 
         :param core_object: The original object to be replaced
+        :param dependent_objects: A dictionary of dependent objects
         :return: A list of new IDFObject instances, typically just one though
         """
         original_idf_fields = core_object.fields
@@ -327,7 +338,7 @@ class OutputVariableTransitionRule:
         new_variable_object = IDFObject([core_object.object_name] + new_idf_fields)
         # then do complex operations if needed
         if obj_name_upper in self.get_complex_operation_types():
-            new_variable_objects = self.complex_output_operation(new_variable_object)
+            new_variable_objects = self.complex_output_operation(new_variable_object, dependent_objects)
         else:
             new_variable_objects = [new_variable_object]
         # and finally return whatever we ended up with
