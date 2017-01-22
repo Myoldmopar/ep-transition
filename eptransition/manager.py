@@ -195,7 +195,7 @@ class TransitionManager(object):
             for rule in rules:
                 rule_map[rule.get_name_of_object_to_transition().upper()] = LocalRuleInformation(rule)
 
-            if this_transition.output_variable_transition is None:
+            if this_transition.output_variable_transition is None:  # pragma no cover - shouldn't really have this now
                 output_rule = None
                 output_names = []
                 module_logger.warn("This transition did not find an output variable transition class...you sure?")

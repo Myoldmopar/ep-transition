@@ -1,4 +1,4 @@
-class RefPtStructure:
+class RefPtStructure:  # pragma no cover
 
     def __init__(self, ref_pt_name, control_name, x, y, z, frac_zone, illum_set_pt, zone_name):
         self.ref_pt_name = ref_pt_name
@@ -11,7 +11,7 @@ class RefPtStructure:
         self.zone_name = zone_name
 
 
-def build_ref_pt_list(ref_pt_object_list, control_object_list):
+def build_ref_pt_list(ref_pt_object_list, control_object_list):  # pragma no cover
 
     my_ref_pt_structures = []
     for ref_pt in ref_pt_object_list:

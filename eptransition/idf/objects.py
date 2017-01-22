@@ -130,7 +130,7 @@ class IDFObject(object):
         """
         issues = []
         if idd_object is None:
-            print("Got NONE for idd_object when validating {}".format(self.object_name))
+            #  add logger here: print("Got NONE for idd_object when validating {}".format(self.object_name))
             return issues
         for idf, idd in zip(self.fields, idd_object.fields):
             if '\\required-field' in idd.meta_data:

@@ -4,7 +4,7 @@ from eptransition.idf.objects import IDFObject
 from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
 
-class Rule(TransitionRule):
+class Rule(TransitionRule):  # pragma no cover
     def saturation_press(self, t_db):
         """
         Function to compute saturation vapor pressure in [kPa]

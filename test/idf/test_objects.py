@@ -86,6 +86,12 @@ MyObject,
         issues = idf_object.validate(self.idd_object)
         self.assertEqual(len(issues), 0)
 
+    def test_valid_idf_object_but_None_idd_object(self):
+        idf_string = "Version,12.9;MyObject,1,1,1;"
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(None)
+        self.assertEqual(len(issues), 0)
+
     def test_missing_version(self):
         idf_string = "MyObject,1,1,1;"
         with self.assertRaises(ProcessingException):

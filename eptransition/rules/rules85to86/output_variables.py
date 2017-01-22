@@ -3,7 +3,7 @@ from eptransition.rules.rules85to86.utilities import build_ref_pt_list
 from eptransition.idf.objects import IDFObject
 
 
-class Rule(OutputVariableTransitionRule):
+class Rule(OutputVariableTransitionRule):  # pragma no cover
     def get_output_objects(self):
         return self.original_full_variable_type_list()
 
