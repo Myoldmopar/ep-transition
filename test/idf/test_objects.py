@@ -197,6 +197,65 @@ MyObject,
 class TestIDFObjectValidation(unittest.TestCase):
     def setUp(self):
         idd_string = """
+!IDD_Version 13.9.0
+!IDD_BUILD abcdef1018
+\group MyGroup
+Version,
+  A1;  \\field VersionID
+
+MyObject,
+       \\min-fields 5
+  A1,  \\field Name
+       \\required-field
+  A2,  \\field Zone Name
+       \\required-field
+  N1,  \\field A
+       \\required-field
+  N2,  \\field B
+       \\required-field
+  N3;  \\field C
+       \\default 0.8
+       \\required-field
+        """
+        self.idd_structure = IDDProcessor().process_file_via_string(idd_string)
+        self.idd_object = self.idd_structure.get_object_by_type('MyObject')
+
+    def test_valid_fully_populated_idf_object(self):
+        idf_string = """
+Version,12.9;
+MyObject,Name,ZoneName,1,2,3;"""
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 0)
+
+    def test_valid_defaulted_missing_idf_object(self):
+        idf_string = """
+Version,12.9;
+MyObject,Name,ZoneName,1,2;"""
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 0)
+
+    def test_valid_defaulted_blank_idf_object(self):
+        idf_string = """
+Version,12.9;
+MyObject,Name,ZoneName,1,2,;"""
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 0)
+
+    def test_invalid_idf_object_required_field_no_default(self):
+        idf_string = """
+Version,12.9;
+MyObject,Name,ZoneName,1;"""
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('MyObject')[0]
+        issues = idf_object.validate(self.idd_object)
+        self.assertEqual(len(issues), 2)
+
+
+class TestIDFStructureValidation(unittest.TestCase):
+    def setUp(self):
+        idd_string = """
 !IDD_Version 8.1.0
 !IDD_BUILD abcdef1011
 \group MyGroup

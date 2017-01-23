@@ -1,7 +1,14 @@
 import unittest
 
 from eptransition.exceptions import UnimplementedMethodException
-from eptransition.rules.base_rule import TransitionRule, OutputVariableTransitionRule
+from eptransition.rules.base_rule import TransitionRule, OutputVariableTransitionRule, ObjectTypeAndName
+
+
+class TestObjectTypeAndName(unittest.TestCase):
+    def test_dumb_test(self):
+        otn = ObjectTypeAndName('dumbtype', 'dumbname')
+        self.assertEqual(otn.name, 'dumbname')
+        self.assertEqual(otn.type, 'dumbtype')
 
 
 class TestBaseRule(unittest.TestCase):
@@ -32,3 +39,5 @@ class TestBaseOutputRule(unittest.TestCase):
             r.get_simple_swaps()
         with self.assertRaises(UnimplementedMethodException):
             r.complex_output_operation(None, None)
+        # make sure the base object names returns a plain list
+        self.assertEqual(r.get_dependent_object_names(), [])

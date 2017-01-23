@@ -92,7 +92,8 @@ class TransitionManager(object):
             # start the variable before we loop
             current_transition_end_version = first_transition.end_version
             while True:
-                if current_transition_end_version in TRANSITIONS:
+                if current_transition_end_version in TRANSITIONS:  # pragma no cover
+                    # this block simply won't happen until we add a second transition in later
                     current_transition = TRANSITIONS[current_transition_end_version]
                     these_transitions.append(current_transition)
                     current_transition_end_version = current_transition.end_version
@@ -224,7 +225,7 @@ class TransitionManager(object):
                     # create a map of dependents; where the key is the upper case object type and the value is
                     # the list of all the objects found in the original idf
                     dependents = {}
-                    for dep_idf_type in this_rule.dependent_names:
+                    for dep_idf_type in this_rule.dependent_names:  # pragma no cover -- add back when testing this
                         dependents[dep_idf_type.upper()] = idf_to_transition.get_idf_objects_by_type(dep_idf_type)
                     # call transition to actually perform object changes
                     transition_response = this_rule.transition_function(original_idf_object, dependents)
@@ -250,7 +251,7 @@ class TransitionManager(object):
             # create a map of objects to delete based on type
             module_logger.debug("First pass transition complete; # objects to delete: {}".format(len(objects_to_delete)))
             delete_map = {}
-            for object_to_delete in objects_to_delete:
+            for object_to_delete in objects_to_delete:  # pragma no cover  -- add back when a real rule does this
                 object_type_upper = object_to_delete.type.upper()
                 object_name_upper = object_to_delete.name.upper()
                 if object_type_upper in delete_map:
@@ -270,7 +271,8 @@ class TransitionManager(object):
             # loop over all
             for intermediate_idf_object in intermediate_idf_objects:
                 delete = False
-                if intermediate_idf_object.object_name.upper() in delete_map:
+                # take out the pragma once we have a transition rule that actually does deletions
+                if intermediate_idf_object.object_name.upper() in delete_map:  # pragma no cover
                     if intermediate_idf_object.fields[0].upper() in delete_map[intermediate_idf_object.object_name.upper()]:
                         delete = True
                 if not delete:
@@ -287,7 +289,7 @@ class TransitionManager(object):
 
             if i == len(these_transitions) - 1:
                 module_logger.debug("Completed all transitions, writing file and leaving")
-            else:
+            else:  # pragma no cover -- add back once we have multiple transitions
                 module_logger.debug("Going to start a new transition on this file, storing structure and continuing")
 
         return original_idf_structure, final_idf_structure

@@ -55,7 +55,7 @@ Version,
       \\memo Specifies the EnergyPlus version of the IDF file.
       \\memo Some additional memo line
       \\unique-object
-      \format singleLine
+      \\format singleLine
   A1 ; \\field Version Identifier
       \\default 8.6
 
@@ -102,7 +102,7 @@ Version,A1;
           N2;  \\field NumericFieldB
                \\autosizabled
                 """
-        with self.assertRaises(ProcessingException) as e:
+        with self.assertRaises(ProcessingException):
             IDDProcessor().process_file_via_string(idd_string).get_object_by_type('MyObject')
 
     def test_invalid_idd_metadata(self):
@@ -125,7 +125,7 @@ Version,A1;
         MyObject,
           N1;  \\field NumericFieldA
         """
-        with self.assertRaises(ProcessingException) as e:
+        with self.assertRaises(ProcessingException):
             IDDProcessor().process_file_via_string(idd_string)
 
     def test_missing_build(self):
@@ -135,10 +135,10 @@ Version,A1;
         MyObject,
           N1;  \\field NumericFieldA
         """
-        with self.assertRaises(ProcessingException) as e:
+        with self.assertRaises(ProcessingException):
             IDDProcessor().process_file_via_string(idd_string)
 
-    def test_nonnumeric_version(self):
+    def test_non_numeric_version(self):
         idd_string = """
         !IDD_Version X.Y.Z
         !IDD_BUILD abcdef1000
@@ -146,7 +146,19 @@ Version,A1;
         MyObject,
           N1;  \\field NumericFieldA
         """
-        with self.assertRaises(ProcessingException) as e:
+        with self.assertRaises(ProcessingException):
+            IDDProcessor().process_file_via_string(idd_string)
+
+    def test_bad_non_numeric_metadata(self):
+        idd_string = """
+        !IDD_Version 122.6.0
+        !IDD_BUILD abcdef1000
+        \group MyGroup
+        MyObject,
+          \\min-fields Q
+          N1;  \\field NumericFieldA
+        """
+        with self.assertRaises(ProcessingException):
             IDDProcessor().process_file_via_string(idd_string)
 
 

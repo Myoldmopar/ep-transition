@@ -293,6 +293,16 @@ class IDDProcessor:
 
                 if peeked_char == '\n':
                     data = token_builder.strip()
+                    # quick validation of some meta data
+                    if cur_obj_meta_data_type == '\\min-fields':
+                        try:
+                            float(data)
+                        except ValueError:
+                            raise exceptions.ProcessingException(
+                                "Erroneous meta data for min-fields, non-numeric number of fields? Weird...",
+                                line_index=line_index,
+                                object_name=cur_object.name
+                            )
                     if cur_obj_meta_data_type not in cur_object.meta_data:
                         string_list = [data]
                         cur_object.meta_data[cur_obj_meta_data_type] = string_list
