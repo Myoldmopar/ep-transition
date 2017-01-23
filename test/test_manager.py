@@ -26,7 +26,7 @@ class TestManager(unittest.TestCase):
 
         # and do some assertions on the final structure
         self.assertEqual(62, len(final_structure.objects))
-        self.assertEqual(8.7, final_structure.version_float)
+        self.assertEqual(8.6, final_structure.version_float)
 
         # do an actual object comparison, first find the first branch object in the file
         first_original_branch_object = original_structure.get_idf_objects_by_type("Branch")[0]

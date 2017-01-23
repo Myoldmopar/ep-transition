@@ -214,7 +214,7 @@ class OutputVariableTransitionRule:
             return [0]
         elif object_name in [self.OV, self.OTT, self.FMUE, self.FMUI]:
             return [1]
-        elif object_name in [self.EMS]:
+        elif object_name in [self.EMS]:  # pragma no cover -- will add back in once we test an idf that has EMS
             return [2]
         elif object_name in [self.OTM]:  # pragma no cover -- will add back in once we test an idf that has OTM
             return range(2, 100, 2)
@@ -287,7 +287,7 @@ class OutputVariableTransitionRule:
         :return: A new variable name, if a swap is to be performed, or None if not
         """
         swaps = self.get_simple_swaps()
-        if variable_name in swaps:
+        if variable_name in swaps:  # pragma no cover -- add in once we have a transition rule that does a swap
             return swaps[variable_name]
         else:
             return None
@@ -332,7 +332,7 @@ class OutputVariableTransitionRule:
                 except IndexError:  # pragma no cover   this could be covered if the idf tests were larger
                     break
                 maybe_new_name = self.simple_name_swap(original_idf_fields[i].upper())
-                if maybe_new_name:
+                if maybe_new_name:  # pragma no cover -- add in once we have a transition rule that does a swap
                     new_idf_fields[i] = maybe_new_name
         # and create a temporary object
         new_variable_object = IDFObject([core_object.object_name] + new_idf_fields)

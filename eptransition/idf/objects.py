@@ -1,3 +1,8 @@
+import logging
+
+module_logger = logging.getLogger('eptransition.idd.processor')
+
+
 class ValidationIssue:
     """
     This class stores information about any issue that occurred when reading an IDF file.
@@ -129,9 +134,28 @@ class IDFObject(object):
         :return: A list of ValidationIssue instances, each describing an issue encountered
         """
         issues = []
+        # first thing check if we even have an IDD object to validate against
         if idd_object is None:
-            #  add logger here: print("Got NONE for idd_object when validating {}".format(self.object_name))
+            module_logger.debug("Got \"None\" for idd_object when validating {}".format(self.object_name))
             return issues
+        # then check some object level things
+        if '\\min-fields' in idd_object.meta_data:
+            minimum_required_fields = int(idd_object.meta_data['\\min-fields'][0])
+            actual_num_fields = len(self.fields)
+            for i in range(minimum_required_fields):
+                if i < actual_num_fields:  # if the item is there
+                    if not self.fields[i]:  # if it's blank
+                        if '\\default' in idd_object.fields[i].meta_data:  # if it's blank but has a default value
+                            self.fields[i] = idd_object.fields[i].meta_data['\\default'][0]  # fill with default
+                        # if it doesn't have a default, just leave it blank, later checks will catch it
+                else:  # if the item isn't even there
+                    if '\\default' in idd_object.fields[i].meta_data:  # if it has a default value
+                        self.fields.append(idd_object.fields[i].meta_data['\\default'][0])  # fill with default
+                    else:  # or if it doesn't have a default
+                        self.fields.append('')  # make sure it does have an entry (blank) and it will be caught later
+                        issues.append(ValidationIssue(idd_object.name, ValidationIssue.WARNING,
+                                                      'Field within \\min-fields missing and no default',
+                                                      idd_object.fields[i].field_name))
         for idf, idd in zip(self.fields, idd_object.fields):
             if '\\required-field' in idd.meta_data:
                 if idf == '':

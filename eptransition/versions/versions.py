@@ -20,12 +20,6 @@ from eptransition.rules.rules85to86.daylighting import Rule2 as daylighting86b
 from eptransition.rules.rules85to86.daylighting import Rule3 as daylighting86c
 from eptransition.rules.rules85to86.output_variables import Rule as output86
 
-from eptransition.rules.rules86to87 import (
-    controller_list as controller_list87,
-    branch as branch87,
-    output_variables as output87
-)
-
 
 class TypeEnum(object):
     """
@@ -99,12 +93,12 @@ Transition85_86 = SingleTransition(8.5, 8.6,
                                        remove_field("HVACTemplate:System:Unitary", 39),  # dehumidification
                                    ],
                                    outputs=output86())
-Transition86_87 = SingleTransition(8.6, 8.7,
-                                   transitions=[
-                                       branch87.Rule(),
-                                       controller_list87.Rule(),
-                                   ],
-                                   outputs=output87.Rule())
+# Transition86_87 = SingleTransition(8.6, 8.7,
+#                                    transitions=[
+#                                        branch87.Rule(),
+#                                        controller_list87.Rule(),
+#                                    ],
+#                                    outputs=output87.Rule())
 
-FILE_TYPES = {8.4: TypeEnum.IDF, 8.5: TypeEnum.IDF, 8.6: TypeEnum.IDF, 8.7: TypeEnum.IDF}
-TRANSITIONS = {8.4: Transition84_85, 8.5: Transition85_86, 8.6: Transition86_87}  # key is start version
+FILE_TYPES = {8.4: TypeEnum.IDF, 8.5: TypeEnum.IDF, 8.6: TypeEnum.IDF}
+TRANSITIONS = {8.4: Transition84_85, 8.5: Transition85_86}  # key is start version
