@@ -297,7 +297,7 @@ class IDDProcessor:
                     if cur_obj_meta_data_type == '\\min-fields':
                         try:
                             float(data)
-                        except ValueError as e:
+                        except ValueError:
                             raise exceptions.ProcessingException(
                                 "Erroneous meta data for min-fields, non-numeric number of fields? Weird...",
                                 line_index=line_index,
