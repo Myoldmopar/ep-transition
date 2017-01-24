@@ -290,6 +290,21 @@ OtherObject,
         issues = idf_structure.validate(self.idd_structure)
         self.assertEqual(len(issues), 1)
 
+    def test_single_line_validation(self):
+        idd_string = """
+        !IDD_Version 56.1.0
+        !IDD_BUILD abcdef1011
+        \group MyGroup
+        Version,
+        A1; \\field VersionID
+
+        Object;"""
+        idd_object = IDDProcessor().process_file_via_string(idd_string).get_object_by_type('Object')
+        idf_string = "Version,23.1;Object;"
+        idf_object = IDFProcessor().process_file_via_string(idf_string).get_idf_objects_by_type('Object')[0]
+        issues = idf_object.validate(idd_object)
+        self.assertEqual(len(issues), 0)
+
 
 class TestValidationIssue(unittest.TestCase):
 

@@ -141,6 +141,9 @@ class IDFObject(object):
             module_logger.debug("Got \"None\" for idd_object when validating {}".format(self.object_name))
             return issues
         # then check some object level things
+        if isinstance(idd_object, str):
+            # we have a single-line string-only idd object, just leave
+            return issues
         if '\\min-fields' in idd_object.meta_data:
             minimum_required_fields = int(idd_object.meta_data['\\min-fields'][0])
             actual_num_fields = len(self.fields)
