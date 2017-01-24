@@ -338,6 +338,8 @@ class IDDProcessor:
                 elif peeked_char in ['A', 'N']:
                     token_builder = ''
                     # this is hit when we have an AN value right after a previous AN value, so no meta data is added
+                    if cur_field.field_name is None:
+                        cur_field.field_name = ""
                     cur_object.fields.append(cur_field)
                     read_status = CurrentReadType.ReadingFieldANValue
 
