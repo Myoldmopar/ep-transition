@@ -70,8 +70,7 @@ class TransitionManager(object):
             idf_to_transition = original_idf_processor.process_file_given_file_path(self.original_input_file)
             module_logger.debug(
                 "Successfully processed idf structure; found {} objects".format(len(idf_to_transition.objects)))
-        except Exception as e:
-            print(e)
+        except Exception:
             raise ManagerProcessingException("Could not process original idf; aborting")
 
         # initialize the return structures

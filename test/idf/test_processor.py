@@ -41,10 +41,10 @@ ObjectType,
         idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
         self.assertEquals(2, len(idf_structure.objects))
 
-    def test_invalid_goofy_idf(self):
+    def test_valid_goofy_idf(self):
         idf_object = """
 Version,1.1;
-Objecttype,
+Objecttype,  ! comment
 object_name,
 something, !- with a comment
 
@@ -53,8 +53,22 @@ something, !- with a comment
 last field with space; ! and comment for fun
 """
         processor = IDFProcessor()
-        with self.assertRaises(ProcessingException):
-            processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(2, len(idf_structure.objects))
+
+    def test_valid_goofy_idf_2(self):
+        idf_object = """
+Version,81.9;
+! here is a comment
+Objecttype,  ! here is another comment!
+object_name,
+something, !- with a comment
+,
+last field with space; ! and comment for fun
+"""
+        processor = IDFProcessor()
+        idf_structure = processor.process_file_via_stream(StringIO.StringIO(idf_object))
+        self.assertEquals(3, len(idf_structure.objects))  # comment + two objects
 
     def test_nonnumerc_version(self):
         idf_object = """

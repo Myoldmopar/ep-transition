@@ -1,6 +1,6 @@
 import StringIO
-import os
 import logging
+import os
 
 from eptransition import exceptions
 from eptransition.idf.objects import IDFObject, IDFStructure
@@ -171,15 +171,16 @@ class IDFProcessor:
                             "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
                 # the last line in an idf object blob should have a semicolon; if it doesn't it might indicate
                 # a comment block in the middle of a single idf object
-                if not out_lines[-1].endswith(';'):
-                    message = str("Encountered a missing semicolon condition; this can indicate comments placed within"
-                                  " a single idf object.  This is valid IDF for E+, but this translator does not yet"
-                                  " handle such condition.  Check for the IDF content starting at the line: \"{}\""
-                                  " but note that the issue may be much farther down than that line.".format(
-                                    out_lines[0]
-                                  ))
-                    module_logger.warn(message)
-                    raise exceptions.ProcessingException(message)
+                # if not out_lines[-1].endswith(';'):
+                #     message = str(
+                #         "Encountered a missing semicolon condition; this can indicate comments placed within"
+                #         " a single idf object.  This is valid IDF for E+, but this translator does not yet"
+                #         " handle such condition.  Check for the IDF content starting at the line: \"{}\""
+                #         " but note that the issue may be much farther down than that line.".format(
+                #             out_lines[0]
+                #         ))
+                #     module_logger.warn(message)
+                #     raise exceptions.ProcessingException(message)
                 # intermediate: join entire array and re-split by semicolon
                 idf_data_joined = ''.join(out_lines)
                 idf_object_strings = idf_data_joined.split(";")

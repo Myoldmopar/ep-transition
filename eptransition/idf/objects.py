@@ -121,7 +121,7 @@ class IDFObject(object):
                         units_string = ' {' + idd_field.meta_data['\\units'][0] + '}'
                     else:
                         units_string = ''
-                    if idd_field.field_name is None:
+                    if idd_field.field_name is None:  # pragma no cover  - our files don't have an object like this yet
                         idd_field.field_name = ''
                     s += "  " + (str(idf_field) + terminator).ljust(
                         padding_size) + "!- " + idd_field.field_name + units_string + "\n"
