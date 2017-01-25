@@ -207,12 +207,12 @@ class IDFObject(object):
                     except ValueError:
                         if '\\autosizable' in idd.meta_data and idf.upper() == 'AUTOSIZE':
                             pass  # everything is ok
+                        elif '\\autocalculatable' in idd.meta_data and idf.upper() in ['AUTOCALCULATE', 'AUTOSIZE']:
+                            pass  # everything is ok
                         elif idf.upper() == 'AUTOSIZE':
                             issues.append(ValidationIssue(
                                 idd_object.name, ValidationIssue.WARNING,
                                 'Autosize detected in numeric field that is _not_ listed autosizable', idd.field_name))
-                        elif '\\autocalculatable' in idd.meta_data and idf.upper() == 'AUTOCALCULATE':
-                            pass  # everything is ok
                         elif idf.upper() == 'AUTOCALCULATE':
                             issues.append(ValidationIssue(
                                 idd_object.name, ValidationIssue.WARNING,

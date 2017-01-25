@@ -17,7 +17,10 @@ class Rule(TransitionRule):  # pragma no cover
         new_idf_fields.append(original_idf_fields[0] + '_DaylCtrl')  # 0
         new_idf_fields.append(original_idf_fields[0])  # 1
         new_idf_fields.append('SplitFlux')  # 2
-        new_idf_fields.append(original_idf_fields[19])  # 3
+        try:
+            new_idf_fields.append(original_idf_fields[19])  # 3
+        except IndexError:
+            new_idf_fields.append('')
         if original_idf_fields[12] == '1':
             new_idf_fields.append('Continuous')  # 4
         elif original_idf_fields[12] == '2':
@@ -109,7 +112,7 @@ class Rule2(TransitionRule):  # pragma no cover
         new_idf_fields.append('')  # 11
         new_idf_fields.append(original_idf_fields[7])  # 12
         for ref_pt in daylight_ref_pts:
-            if ref_pt.controlname.upper() == original_idf_fields[0].upper():
+            if ref_pt.control_name.upper() == original_idf_fields[0].upper():
                 new_idf_fields.append(ref_pt.ref_pt_name)
                 new_idf_fields.append(ref_pt.frac_zone)
                 new_idf_fields.append(ref_pt.illum_set_pt)
@@ -132,7 +135,7 @@ class Rule3(TransitionRule):  # pragma no cover
         new_idf_fields.append('Daylighting:ReferencePoint')
         new_idf_fields.append(original_idf_fields[0])  # 0
         for ref_pt in daylight_ref_pts:
-            if ref_pt.controlname.upper() == original_idf_fields[1].upper():
+            if ref_pt.control_name.upper() == original_idf_fields[1].upper():
                 new_idf_fields.append(ref_pt.zone_name)
                 break
         new_idf_fields.append(original_idf_fields[2])

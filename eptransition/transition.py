@@ -45,21 +45,23 @@ def main(args=None):
     parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args(args=args)
     logger.debug("***Transition started: attempting to transition {} files".format(len(args.input_files)))
+    exception_raised = False
     for input_file in args.input_files:
         try:
             manager = TransitionManager(input_file)
+            manager.perform_transition()
         except Exception as e:
             logger.exception(
-                "Could not instantiate manager from command line args...exception message follows\n{}".format(e.message))
-            raise
-        try:
-            manager.perform_transition()
-        except (FileAccessException, FileTypeException, ManagerProcessingException) as e:
-            logger.exception("Problem occurred during transition! Exception message: \n " + str(e))
+                "Problem occurred during transition, skipping this file!\n File: {}\n Message: {}".format(
+                    input_file, e.message))
+            exception_raised = True
             raise
 
     # if successful, return 0
-    return 0
+    if not exception_raised:
+        return 0
+    else:
+        return 1
 
 
 if __name__ == "__main__":  # pragma no cover
