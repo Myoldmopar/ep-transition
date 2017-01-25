@@ -323,3 +323,15 @@ class IDFStructure(object):
             if this_object_issues:
                 issues.extend(this_object_issues)
         return issues
+
+    def global_swap(self, dict_of_swaps):
+        upper_case_swaps = {}
+        for k, v in dict_of_swaps.iteritems():
+            upper_case_swaps[k.upper()] = v
+        for idf_object in self.objects:
+            if idf_object.comment:
+                continue
+            else:
+                for i, idf_field in enumerate(idf_object.fields):
+                    if idf_field.upper() in upper_case_swaps:
+                        idf_object.fields[i] = upper_case_swaps[idf_field.upper()]

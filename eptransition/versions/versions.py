@@ -43,7 +43,7 @@ class SingleTransition(object):
     :raises ManagerProcessingException: for any invalid inputs
     """
 
-    def __init__(self, start_version, end_version, transitions, outputs):
+    def __init__(self, start_version, end_version, transitions, outputs, global_swap):
         # error handling first
         try:
             start_version = float(start_version)
@@ -60,17 +60,23 @@ class SingleTransition(object):
             if not isinstance(outputs, OutputVariableTransitionRule):
                 raise ManagerProcessingException("Error in SingleTransition construction; output transition must " +
                                                  "derive from OutputVariableTransitionRule")
+        if global_swap is not None:
+            if not isinstance(global_swap, dict):
+                raise ManagerProcessingException("Error in SingleTransition construction; global swap transition must "
+                                                 "be a dictionary of {old_token: new_token}")
         # then assign class variables
         self.start_version = start_version
         self.end_version = end_version
         self.transitions = transitions
         self.output_variable_transition = outputs
+        self.global_swap = global_swap
 
 
 # We need to have the very first baseline in here even if it isn't ever a target transition
 Transition84_85 = SingleTransition(8.4, 8.5,
                                    transitions=[],
-                                   outputs=None)
+                                   outputs=None,
+                                   global_swap=None)
 Transition85_86 = SingleTransition(8.5, 8.6,
                                    transitions=[
                                        branch86(),
@@ -92,7 +98,8 @@ Transition85_86 = SingleTransition(8.5, 8.6,
                                        remove_field("HVACTemplate:System:UnitarySystem", 56),  # dehumidification
                                        remove_field("HVACTemplate:System:Unitary", 39),  # dehumidification
                                    ],
-                                   outputs=output86())
+                                   outputs=output86(),
+                                   global_swap={'Coil:Heating:Gas': 'Coil:Heating:Fuel'})
 # Transition86_87 = SingleTransition(8.6, 8.7,
 #                                    transitions=[
 #                                        branch87.Rule(),

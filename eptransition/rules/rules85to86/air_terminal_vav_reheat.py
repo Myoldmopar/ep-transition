@@ -14,8 +14,14 @@ class Rule(TransitionRule):
         # If F16 is "reverse" and either F17 or F18 is not blank, replace "Reverse" with" ReverseWithLimits".
         original_idf_fields = core_object.fields
         original_f16 = original_idf_fields[15]
-        original_f17 = original_idf_fields[16]
-        original_f18 = original_idf_fields[17]
+        try:
+            original_f17 = original_idf_fields[16]
+        except IndexError:
+            original_f17 = ""
+        try:
+            original_f18 = original_idf_fields[17]
+        except IndexError:
+            original_f18 = ""
         new_idf_fields = original_idf_fields
 
         if original_f16.upper() == "REVERSE":

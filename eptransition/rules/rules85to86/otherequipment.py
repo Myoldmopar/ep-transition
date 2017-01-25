@@ -11,18 +11,9 @@ class Rule(TransitionRule):
 
     def transition(self, core_object, dependent_objects):  # pragma no cover
         original_idf_fields = core_object.fields
-        # we need to remove F2, F8, F13, F18, ....
-        # these would be, zero based, 1, 7, 12, 17, 22, ....
-        indeces_to_remove = [1]
-        num_fields = len(core_object.fields)
-        i_to_remove = 7
-        while True:
-            i_to_remove += 5
-            if i_to_remove < num_fields:  # pragma no cover
-                indeces_to_remove.append(i_to_remove)
-            else:
-                break
-        new_idf_fields = [i for j, i in enumerate(original_idf_fields) if j not in indeces_to_remove]
-        new_branch_object = IDFObject([core_object.object_name] + new_idf_fields)
+        # need to just add a new field F2, (index 1 here), blank
+        new_idf_fields = original_idf_fields
+        new_idf_fields.insert(1, "")
+        new_equip_object = IDFObject([core_object.object_name] + new_idf_fields)
         # return a list since some transitions may split/add new objects
-        return TransitionReturn([new_branch_object])
+        return TransitionReturn([new_equip_object])

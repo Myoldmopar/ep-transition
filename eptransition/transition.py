@@ -44,6 +44,7 @@ def main(args=None):
     parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args(args=args)
     logger.debug("***Transition started: attempting to transition {} files".format(len(args.input_files)))
+    failed_files = []
     for input_file in args.input_files:
         try:
             manager = TransitionManager(input_file)
@@ -52,7 +53,11 @@ def main(args=None):
             logger.exception(
                 "Problem occurred during transition, skipping this file!\n File: {}\n Message: {}".format(
                     input_file, e.message))
+            failed_files.append(input_file)
             raise
+
+    for ff in failed_files:
+        print(" ** Failed to transition: {}".format(ff))
 
     # if successful, return 0
     return 0

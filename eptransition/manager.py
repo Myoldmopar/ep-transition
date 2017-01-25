@@ -213,6 +213,10 @@ class TransitionManager(object):
             # create a final list of idf objects to actually be written to the idf
             final_idf_objects = []
 
+            # if there are any global swaps to make, make them now
+            if this_transition.global_swap:
+                idf_to_transition.global_swap(this_transition.global_swap)
+
             # loop over all objects in the original input file
             for original_idf_object in idf_to_transition.objects:
                 idf_object_type_upper = original_idf_object.object_name.upper()
