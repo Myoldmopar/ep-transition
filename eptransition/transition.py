@@ -56,7 +56,7 @@ def main(args=None):
             failed_files.append(input_file)
             raise
 
-    for ff in failed_files:
+    for ff in failed_files:  # pragma no cover -- not tested yet
         print(" ** Failed to transition: {}".format(ff))
 
     # if successful, return 0

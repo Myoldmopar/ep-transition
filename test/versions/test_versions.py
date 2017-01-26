@@ -16,10 +16,7 @@ class TestTypeEnums(unittest.TestCase):
 class TestSingleTransition(unittest.TestCase):
 
     def test_valid(self):
-        try:
-            SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule(), None)
-        except:
-            self.fail("Can't pass a valid SingleTransition instantiation")
+        SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule(), None)
 
     def test_bad_start_version(self):
         with self.assertRaises(ManagerProcessingException):

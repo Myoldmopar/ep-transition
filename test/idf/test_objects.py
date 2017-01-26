@@ -306,6 +306,28 @@ OtherObject,
         self.assertEqual(len(issues), 0)
 
 
+class TestGlobalSwap(unittest.TestCase):
+    def setUp(self):
+        idd_string = """
+    !IDD_Version 87.11.0
+    !IDD_BUILD abcdef1011
+    \group MyGroup
+    Version,
+      A1;  \\field VersionID
+
+    ObjectU,
+      A1;  \\field My field name
+            """
+        self.idd_structure = IDDProcessor().process_file_via_string(idd_string)
+
+    def test_swapping(self):
+        idf_string = "Version,87.11;ObjectU,MyFirstKey;"
+        idf_structure = IDFProcessor().process_file_via_string(idf_string)
+        idf_structure.global_swap({"MyFirstKey": "MySecondKey"})
+        idf_object = idf_structure.get_idf_objects_by_type("ObjectU")[0]
+        self.assertIn("MySecondKey", idf_object.fields)
+
+
 class TestValidationIssue(unittest.TestCase):
 
     def test_validation_issue_info(self):
