@@ -70,7 +70,7 @@ class TransitionManager(object):
             idf_to_transition = original_idf_processor.process_file_given_file_path(self.original_input_file)
             module_logger.debug(
                 "Successfully processed idf structure; found {} objects".format(len(idf_to_transition.objects)))
-        except:
+        except Exception:
             raise ManagerProcessingException("Could not process original idf; aborting")
 
         # initialize the return structures
@@ -212,6 +212,10 @@ class TransitionManager(object):
 
             # create a final list of idf objects to actually be written to the idf
             final_idf_objects = []
+
+            # if there are any global swaps to make, make them now
+            if this_transition.global_swap:
+                idf_to_transition.global_swap(this_transition.global_swap)
 
             # loop over all objects in the original input file
             for original_idf_object in idf_to_transition.objects:

@@ -57,7 +57,7 @@ class TestManager(unittest.TestCase):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "eptransition", "versions", "8.5", "PlantLoadProfile.idf")
         working_dir = tempfile.mkdtemp()
-        shutil.copy(idf_path, working_dir)  # "forgot" to copy the idf in
+        shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
         tm = TransitionManager(final_idf_path)
         tm.perform_transition()
@@ -77,7 +77,7 @@ class TestManager(unittest.TestCase):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "eptransition", "versions", "other", "Invalid.idf")
         working_dir = tempfile.mkdtemp()
-        shutil.copy(idf_path, working_dir)  # "forgot" to copy the idf in
+        shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
         tm = TransitionManager(final_idf_path)
         with self.assertRaises(ManagerProcessingException):
@@ -87,7 +87,7 @@ class TestManager(unittest.TestCase):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "eptransition", "versions", "other", "ValidNoVersion.idf")
         working_dir = tempfile.mkdtemp()
-        shutil.copy(idf_path, working_dir)  # "forgot" to copy the idf in
+        shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
         tm = TransitionManager(final_idf_path)
         with self.assertRaises(ManagerProcessingException):
@@ -97,7 +97,7 @@ class TestManager(unittest.TestCase):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
         idf_path = os.path.join(cur_dir, "..", "eptransition", "versions", "other", "InvalidVersion.idf")
         working_dir = tempfile.mkdtemp()
-        shutil.copy(idf_path, working_dir)  # "forgot" to copy the idf in
+        shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
         tm = TransitionManager(final_idf_path)
         with self.assertRaises(ManagerProcessingException):

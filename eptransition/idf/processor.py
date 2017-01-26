@@ -1,8 +1,11 @@
 import StringIO
+import logging
 import os
 
 from eptransition import exceptions
 from eptransition.idf.objects import IDFObject, IDFStructure
+
+module_logger = logging.getLogger('eptransition.idd.processor')
 
 
 class IDFProcessor:
@@ -83,6 +86,10 @@ class IDFProcessor:
                     blob_lines = []
                 self.lines = blob_lines
 
+        # should there maybe be 3 "state as of last line" options?
+        # 1. reading comment block
+        # 2. reading IDF block
+
         # so let's try keeping the idf in blobs of either comment data or object data
         current_blob = None
         initial_blobs = []
@@ -93,17 +100,49 @@ class IDFProcessor:
             elif line_text.startswith('!'):
                 if current_blob is None:
                     current_blob = Blob(Blob.COMMENT)
+                    current_blob.lines.append(line_text)
+                elif current_blob.blob_type == Blob.COMMENT:
+                    # just add to the lines and carry on
+                    current_blob.lines.append(line_text)
                 elif current_blob.blob_type == Blob.OBJECT:
-                    initial_blobs.append(current_blob)
-                    current_blob = Blob(Blob.COMMENT)
-                current_blob.lines.append(line_text)
+                    # ignore it, we are still trying to read the object..
+                    continue
             else:
                 if current_blob is None:
+                    # then this blob is fresh and is the start of a new object, but it could also be the end (one-liner)
                     current_blob = Blob(Blob.OBJECT)
+                    actual_line = line_text
+                    if '!' in line_text >= 0:
+                        actual_line = line_text[:line_text.find("!")]
+                    if ';' in actual_line:
+                        # we end this object blob
+                        current_blob.lines.append(line_text)
+                        initial_blobs.append(current_blob)
+                        current_blob = None
+                    else:
+                        current_blob.lines.append(line_text)
+                elif current_blob.blob_type == Blob.OBJECT:
+                    # then we should append this line to the current blob, but we also need to check if it is the end
+                    current_blob.lines.append(line_text)
+                    actual_line = line_text
+                    if '!' in line_text >= 0:
+                        actual_line = line_text[:line_text.find("!")]
+                    if ';' in actual_line:
+                        # we end this object blob
+                        initial_blobs.append(current_blob)
+                        current_blob = None
                 elif current_blob.blob_type == Blob.COMMENT:
+                    # then we need to package up the previous comment blob, and create this new one, but again..1-liner?
                     initial_blobs.append(current_blob)
                     current_blob = Blob(Blob.OBJECT)
-                current_blob.lines.append(line_text)
+                    current_blob.lines.append(line_text)
+                    actual_line = line_text
+                    if '!' in line_text >= 0:
+                        actual_line = line_text[:line_text.find("!")]
+                    if ';' in actual_line:
+                        # we end this object blob
+                        initial_blobs.append(current_blob)
+                        current_blob = None
         if current_blob is not None:
             initial_blobs.append(current_blob)
 
@@ -132,12 +171,16 @@ class IDFProcessor:
                             "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
                 # the last line in an idf object blob should have a semicolon; if it doesn't it might indicate
                 # a comment block in the middle of a single idf object
-                if not out_lines[-1].endswith(';'):
-                    raise exceptions.ProcessingException(
-                        "Encountered a missing semicolon condition; this can indicate comments placed within" +
-                        " a single idf object.  This is valid IDF for EnergyPlus, but this translator does not yet" +
-                        " handle such condition."
-                    )
+                # if not out_lines[-1].endswith(';'):
+                #     message = str(
+                #         "Encountered a missing semicolon condition; this can indicate comments placed within"
+                #         " a single idf object.  This is valid IDF for E+, but this translator does not yet"
+                #         " handle such condition.  Check for the IDF content starting at the line: \"{}\""
+                #         " but note that the issue may be much farther down than that line.".format(
+                #             out_lines[0]
+                #         ))
+                #     module_logger.warn(message)
+                #     raise exceptions.ProcessingException(message)
                 # intermediate: join entire array and re-split by semicolon
                 idf_data_joined = ''.join(out_lines)
                 idf_object_strings = idf_data_joined.split(";")

@@ -121,6 +121,8 @@ class IDFObject(object):
                         units_string = ' {' + idd_field.meta_data['\\units'][0] + '}'
                     else:
                         units_string = ''
+                    if idd_field.field_name is None:  # pragma no cover  - our files don't have an object like this yet
+                        idd_field.field_name = ''
                     s += "  " + (str(idf_field) + terminator).ljust(
                         padding_size) + "!- " + idd_field.field_name + units_string + "\n"
             return s
@@ -139,6 +141,9 @@ class IDFObject(object):
             module_logger.debug("Got \"None\" for idd_object when validating {}".format(self.object_name))
             return issues
         # then check some object level things
+        if isinstance(idd_object, str):
+            # we have a single-line string-only idd object, just leave
+            return issues
         if '\\min-fields' in idd_object.meta_data:
             minimum_required_fields = int(idd_object.meta_data['\\min-fields'][0])
             actual_num_fields = len(self.fields)
@@ -202,12 +207,12 @@ class IDFObject(object):
                     except ValueError:
                         if '\\autosizable' in idd.meta_data and idf.upper() == 'AUTOSIZE':
                             pass  # everything is ok
+                        elif '\\autocalculatable' in idd.meta_data and idf.upper() in ['AUTOCALCULATE', 'AUTOSIZE']:
+                            pass  # everything is ok
                         elif idf.upper() == 'AUTOSIZE':
                             issues.append(ValidationIssue(
                                 idd_object.name, ValidationIssue.WARNING,
                                 'Autosize detected in numeric field that is _not_ listed autosizable', idd.field_name))
-                        elif '\\autocalculatable' in idd.meta_data and idf.upper() == 'AUTOCALCULATE':
-                            pass  # everything is ok
                         elif idf.upper() == 'AUTOCALCULATE':
                             issues.append(ValidationIssue(
                                 idd_object.name, ValidationIssue.WARNING,
@@ -318,3 +323,15 @@ class IDFStructure(object):
             if this_object_issues:
                 issues.extend(this_object_issues)
         return issues
+
+    def global_swap(self, dict_of_swaps):
+        upper_case_swaps = {}
+        for k, v in dict_of_swaps.iteritems():
+            upper_case_swaps[k.upper()] = v
+        for idf_object in self.objects:
+            if idf_object.comment:
+                continue
+            else:
+                for i, idf_field in enumerate(idf_object.fields):
+                    if idf_field.upper() in upper_case_swaps:
+                        idf_object.fields[i] = upper_case_swaps[idf_field.upper()]

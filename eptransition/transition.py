@@ -5,7 +5,6 @@ import sys
 import logging
 
 from eptransition import __version__, __description__
-from eptransition.exceptions import ManagerProcessingException, FileAccessException, FileTypeException
 from eptransition.manager import TransitionManager
 from eptransition.versions.versions import TRANSITIONS
 from eptransition import __name__ as logname
@@ -45,18 +44,20 @@ def main(args=None):
     parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
     args = parser.parse_args(args=args)
     logger.debug("***Transition started: attempting to transition {} files".format(len(args.input_files)))
+    failed_files = []
     for input_file in args.input_files:
         try:
             manager = TransitionManager(input_file)
+            manager.perform_transition()
         except Exception as e:
             logger.exception(
-                "Could not instantiate manager from command line args...exception message follows\n{}".format(e.message))
+                "Problem occurred during transition, skipping this file!\n File: {}\n Message: {}".format(
+                    input_file, e.message))
+            failed_files.append(input_file)
             raise
-        try:
-            manager.perform_transition()
-        except (FileAccessException, FileTypeException, ManagerProcessingException) as e:
-            logger.exception("Problem occurred during transition! Exception message: \n " + str(e))
-            raise
+
+    for ff in failed_files:  # pragma no cover -- not tested yet
+        print(" ** Failed to transition: {}".format(ff))
 
     # if successful, return 0
     return 0
