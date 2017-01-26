@@ -40,6 +40,8 @@ class SingleTransition(object):
                                          version
     :param OutputVariableTransitionRule_or_None outputs: Name of a class that derives from OutputVariableTransitionRule,
                                                          as implemented for this version
+    :param dict_or_None global_swap: A dictionary of string:string that are used to globally search and replace within
+                                     the idf prior to actual transition
     :raises ManagerProcessingException: for any invalid inputs
     """
 

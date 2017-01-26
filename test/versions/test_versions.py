@@ -15,22 +15,28 @@ class TestTypeEnums(unittest.TestCase):
 
 class TestSingleTransition(unittest.TestCase):
 
-    def test_start_version(self):
-        SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule())
-        with self.assertRaises(ManagerProcessingException):
-            SingleTransition("abe", 2.0, [TransitionRule()], OutputVariableTransitionRule())
+    def test_valid(self):
+        try:
+            SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule(), None)
+        except:
+            self.fail("Can't pass a valid SingleTransition instantiation")
 
-    def test_end_version(self):
-        SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule())
+    def test_bad_start_version(self):
         with self.assertRaises(ManagerProcessingException):
-            SingleTransition(1.0, "abe", [TransitionRule()], OutputVariableTransitionRule())
+            SingleTransition("abe", 2.0, [TransitionRule()], OutputVariableTransitionRule(), None)
 
-    def test_transitions(self):
-        SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule())
+    def test_bad_end_version(self):
         with self.assertRaises(ManagerProcessingException):
-            SingleTransition(1.0, 2.0, [TypeEnum()], OutputVariableTransitionRule())
+            SingleTransition(1.0, "abe", [TransitionRule()], OutputVariableTransitionRule(), None)
 
-    def test_output(self):
-        SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule())
+    def test_bad_transitions_type(self):
         with self.assertRaises(ManagerProcessingException):
-            SingleTransition(1.0, 2.0, [TransitionRule()], TypeEnum())
+            SingleTransition(1.0, 2.0, [TypeEnum()], OutputVariableTransitionRule(), None)
+
+    def test_bad_output_type(self):
+        with self.assertRaises(ManagerProcessingException):
+            SingleTransition(1.0, 2.0, [TransitionRule()], TypeEnum(), None)
+
+    def test_bad_global_type(self):
+        with self.assertRaises(ManagerProcessingException):
+            SingleTransition(1.0, 2.0, [TransitionRule()], OutputVariableTransitionRule(), TypeEnum())
