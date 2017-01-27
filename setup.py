@@ -11,11 +11,15 @@ from eptransition import __version__
 
 print(sys.argv)
 
+if len(sys.argv) > 1:
+    if sys.argv[1] == 'test':
+        tests = unittest.TestLoader().discover('test')
+        unittest.TextTestRunner().run(tests)
+
 
 def my_test_suite():
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('test', pattern='test_*.py')
-    "got test suite, here's what we'll run:"
     print(str(test_suite))
     return test_suite
 
@@ -50,5 +54,5 @@ setuptools.setup(
             'eptransition=eptransition.transition:main',
         ],
     },
-    test_suite='setup.my_test_suite',
+    # test_suite='setup.my_test_suite',
 )
