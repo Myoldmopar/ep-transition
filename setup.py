@@ -10,7 +10,7 @@ from eptransition import __version__
 
 def my_test_suite():
     test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover('test', pattern='test_*.py')
+    test_suite = test_loader.discover('eptransition.test', pattern='test_*.py')
     print(str(test_suite))
     return test_suite
 
