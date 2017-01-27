@@ -12,6 +12,7 @@ install:
 - pip install tox coveralls
 script:
 - tox -e $TOX_ENV
+- echo "WHATS UP??"
 after_success: test $TOX_ENV = "python" && coveralls
 deploy:
 - provider: pypi
