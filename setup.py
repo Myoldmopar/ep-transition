@@ -45,5 +45,6 @@ setuptools.setup(
             'eptransition=eptransition.transition:main',
         ],
     },
-    test_suite='setup.my_test_suite',
+    test_suite='nose.collector',
+    tests_require=['nose'],
 )
