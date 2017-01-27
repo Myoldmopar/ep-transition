@@ -4,8 +4,12 @@ import codecs
 import unittest
 import os
 import setuptools
+import sys
 
 from eptransition import __version__
+
+
+print(sys.argv)
 
 
 def my_test_suite():
