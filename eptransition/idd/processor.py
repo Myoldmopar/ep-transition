@@ -5,7 +5,6 @@ import os
 from eptransition import exceptions
 from eptransition.idd.objects import IDDField, IDDObject, IDDStructure, IDDGroup
 
-
 module_logger = logging.getLogger('eptransition.idd.processor')
 
 

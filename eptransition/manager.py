@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 import shutil
 
 from eptransition.exceptions import (
@@ -10,7 +10,6 @@ from eptransition.idf.objects import IDFStructure, ValidationIssue
 from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
 from eptransition.versions.versions import TRANSITIONS, TypeEnum
-
 
 module_logger = logging.getLogger('eptransition.manager')
 
@@ -24,6 +23,7 @@ class TransitionManager(object):
 
     :param str original_input_file: Full path to the original idf to transition
     """
+
     def __init__(self, original_input_file):
         self.original_input_file = original_input_file
         module_logger.debug("Transitioning file: {}".format(original_input_file))
@@ -160,9 +160,10 @@ class TransitionManager(object):
             this_version_mvi_file_path = None
             if self.original_mvi_file:
                 prior_version_mvi_file_path = os.path.join(
-                self.output_directory, "{}_{}.mvi".format(self.original_base_file_name, this_transition.start_version))
+                    self.output_directory,
+                    "{}_{}.mvi".format(self.original_base_file_name, this_transition.start_version))
                 this_version_mvi_file_path = os.path.join(
-                self.output_directory, "{}_{}.mvi".format(self.original_base_file_name, end_version))
+                    self.output_directory, "{}_{}.mvi".format(self.original_base_file_name, end_version))
                 module_logger.debug("Found MVI version in transitions, will try to transition from {} to {}".format(
                     this_transition.start_version, this_transition.end_version
                 ))
@@ -317,7 +318,8 @@ class TransitionManager(object):
                     intermediate_idf_objects.append(original_idf_object)
 
             # create a map of objects to delete based on type
-            module_logger.debug("First pass transition complete; # objects to delete: {}".format(len(objects_to_delete)))
+            module_logger.debug(
+                "First pass transition complete; # objects to delete: {}".format(len(objects_to_delete)))
             delete_map = {}
             for object_to_delete in objects_to_delete:  # pragma no cover  -- add back when a real rule does this
                 object_type_upper = object_to_delete.type.upper()
@@ -341,7 +343,8 @@ class TransitionManager(object):
                 delete = False
                 # take out the pragma once we have a transition rule that actually does deletions
                 if intermediate_idf_object.object_name.upper() in delete_map:  # pragma no cover
-                    if intermediate_idf_object.fields[0].upper() in delete_map[intermediate_idf_object.object_name.upper()]:
+                    if intermediate_idf_object.fields[0].upper() in delete_map[
+                        intermediate_idf_object.object_name.upper()]:
                         delete = True
                 if not delete:
                     final_idf_objects.append(intermediate_idf_object)

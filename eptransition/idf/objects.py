@@ -152,7 +152,7 @@ class IDFObject(object):
                     if not self.fields[i]:  # if it's blank
                         if '\\default' in idd_object.fields[i].meta_data:  # if it's blank but has a default value
                             self.fields[i] = idd_object.fields[i].meta_data['\\default'][0]  # fill with default
-                        # if it doesn't have a default, just leave it blank, later checks will catch it
+                            # if it doesn't have a default, just leave it blank, later checks will catch it
                 else:  # if the item isn't even there
                     if '\\default' in idd_object.fields[i].meta_data:  # if it has a default value
                         self.fields.append(idd_object.fields[i].meta_data['\\default'][0])  # fill with default
