@@ -71,11 +71,11 @@ def main(args=None):
             if args.throw:
                 raise
 
-    for ff in failed_files:  # pragma no cover -- not tested yet
+    for ff in failed_files:  # pragma no cover -- I don't want output during tests, raise exception instead
         print(" ** Failed to transition: {}".format(ff))
 
     # if successful, return 0
-    if failed_files:
+    if failed_files:  # pragma no cover -- I don't want to print stdout during tests, so exceptions are raised instead
         return 1
     else:
         return 0
