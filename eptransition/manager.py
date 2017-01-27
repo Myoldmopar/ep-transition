@@ -53,11 +53,19 @@ class TransitionManager(object):
         if os.path.exists(potential_mvi_path):
             self.original_mvi_file = potential_mvi_path
 
-    def rvi_mvi_replace(self, original_file_path, new_file_path, output_rule):
-        contents = open(original_file_path).read()
-        for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
-            contents = contents.replace(old, new)
-        open(new_file_path, "w").write(contents)
+    def rvi_mvi_replace(self, original_file_path, new_file_path, output_rule):  # pragma no cover - open up later
+        # first clean up the output variable list, make each key upper case and strip any randomness off of each value
+        upper_case_dictionary = dict()
+        for k, v in output_rule.get_simple_swaps().iteritems():
+            upper_case_dictionary[k.upper()] = v.strip()
+        # then read the original file line by line, checking for a stripped-upper-case key
+        with open(new_file_path, 'w') as f_out:
+            with open(original_file_path) as f:
+                for line in f:
+                    if line.strip().upper() in upper_case_dictionary:
+                        f_out.write(upper_case_dictionary[line.strip().upper()] + '\n')
+                    else:
+                        f_out.write(line)
 
     def perform_transition(self):
         """
