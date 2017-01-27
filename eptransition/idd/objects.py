@@ -3,9 +3,9 @@ class IDDField:
     A simple class that defines a single field for an IDD object.  Relevant members are listed here:
 
     :ivar str field_an_index: Main identifier for this field
-    :ivar dict(str,[str]) meta_data: A dictionary, where each key is a string metadata type, such as '\\note', and each
+    :ivar dict(str,[str]) meta_data: A dictionary, where each key is a string metadata type, such as "\\note", and each
                                       value is a list of strings for each entry in the metadata of the key type.  So if
-                                      the field has 3 note lines, the dictionary value for key '\\note' would be a 3
+                                      the field has 3 note lines, the dictionary value for key "\\note" would be a 3
                                       element list, holding the 3 note lines.
     :ivar str field_name: A convenience variable holding the field name, if it is found in the metadata
 
@@ -25,9 +25,9 @@ class IDDObject:
     A simple class that defines a single IDD object.  Relevant members are listed here:
 
     :ivar str name: IDD Type, or name, of this object
-    :ivar dict(str,[str]) meta_data: A dictionary, where each key is a string metadata type, such as '\\memo', and each
+    :ivar dict(str,[str]) meta_data: A dictionary, where each key is a string metadata type, such as "\\memo", and each
                                      value is a list of strings for each entry in the metadata of the key type.  So if
-                                     the object has 3 memo lines, the dictionary value for key '\\memo' would be a 3
+                                     the object has 3 memo lines, the dictionary value for key "\\memo" would be a 3
                                      element list, holding the 3 memo lines.
     :ivar list(IDDField) fields: A list of IDDField instances in order as read from the IDD
 

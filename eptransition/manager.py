@@ -11,7 +11,7 @@ from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
 from eptransition.versions.versions import TRANSITIONS, TypeEnum
 
-module_logger = logging.getLogger('eptransition.manager')
+module_logger = logging.getLogger("eptransition.manager")
 
 
 class TransitionManager(object):
@@ -45,13 +45,27 @@ class TransitionManager(object):
 
         # also we should check for mvi/rvi files
         self.original_rvi_file = None
-        potential_rvi_path = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name + '.rvi')
+        potential_rvi_path = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name + ".rvi")
         if os.path.exists(potential_rvi_path):
             self.original_rvi_file = potential_rvi_path
         self.original_mvi_file = None
-        potential_mvi_path = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name + '.mvi')
+        potential_mvi_path = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name + ".mvi")
         if os.path.exists(potential_mvi_path):
             self.original_mvi_file = potential_mvi_path
+
+    def rvi_mvi_replace(self, original_file_path, new_file_path, output_rule):  # pragma no cover - open up later
+        # first clean up the output variable list, make each key upper case and strip any randomness off of each value
+        upper_case_dictionary = dict()
+        for k, v in output_rule.get_simple_swaps().iteritems():
+            upper_case_dictionary[k.upper()] = v.strip()
+        # then read the original file line by line, checking for a stripped-upper-case key
+        with open(new_file_path, 'w') as f_out:
+            with open(original_file_path) as f:
+                for line in f:
+                    if line.strip().upper() in upper_case_dictionary:
+                        f_out.write(upper_case_dictionary[line.strip().upper()] + '\n')
+                    else:
+                        f_out.write(line)
 
     def perform_transition(self):
         """
@@ -65,9 +79,9 @@ class TransitionManager(object):
         # Validate input file related things
         if not os.path.exists(self.original_input_file):
             raise eFAE(self.original_input_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_INPUT_FILE)
-        if self.original_input_file.endswith('.idf'):
+        if self.original_input_file.endswith(".idf"):
             original_idf_file_type = TypeEnum.IDF
-        elif self.original_input_file.endswith('.jdf'):  # pragma no cover
+        elif self.original_input_file.endswith(".jdf"):  # pragma no cover
             original_idf_file_type = TypeEnum.JSON
         else:
             raise eFTE(self.original_input_file, eFTE.ORIGINAL_INPUT_FILE,
@@ -91,7 +105,7 @@ class TransitionManager(object):
         original_idf_version = idf_to_transition.version_float
         module_logger.debug("Original IDF version found as {}".format(original_idf_version))
 
-        # then we know which VERSION item we're working on:
+        # then we know which VERSION item we"re working on:
         if original_idf_version in TRANSITIONS:
             # store the initial one
             first_transition = TRANSITIONS[original_idf_version]
@@ -194,9 +208,9 @@ class TransitionManager(object):
                 raise eFAE(self.original_idd_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_DICT_FILE)
             if not os.path.exists(self.new_idd_file):  # pragma no cover
                 raise eFAE(self.new_idd_file, eFAE.CANNOT_FIND_FILE, eFAE.UPDATED_DICT_FILE)
-            if self.original_idd_file.endswith('.idd'):
+            if self.original_idd_file.endswith(".idd"):
                 original_idd_file_type = TypeEnum.IDF
-            elif self.original_idd_file.endswith('.jdd'):  # pragma no cover
+            elif self.original_idd_file.endswith(".jdd"):  # pragma no cover
                 original_idd_file_type = TypeEnum.JSON
             else:  # pragma no cover
                 raise eFTE(self.original_idd_file, eFTE.ORIGINAL_DICT_FILE,
@@ -259,15 +273,9 @@ class TransitionManager(object):
                 output_names = output_rule.get_output_objects()
                 # here we can do the rvi mvi file stuff
                 if this_version_rvi_file_path:
-                    rvi_contents = open(prior_version_rvi_file_path).read()
-                    for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
-                        rvi_contents = rvi_contents.replace(old, new)
-                    open(this_version_rvi_file_path, 'w').write(rvi_contents)
+                    self.rvi_mvi_replace(prior_version_rvi_file_path, this_version_rvi_file_path, output_rule)
                 if this_version_mvi_file_path:
-                    mvi_contents = open(prior_version_mvi_file_path).read()
-                    for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
-                        mvi_contents = mvi_contents.replace(old, new)
-                    open(this_version_mvi_file_path, 'w').write(mvi_contents)
+                    self.rvi_mvi_replace(prior_version_mvi_file_path, this_version_mvi_file_path, output_rule)
 
             # create a list of objects to be deleted (which is a list of Type/Name, or more accurately Type/Field0
             objects_to_delete = []
@@ -353,8 +361,8 @@ class TransitionManager(object):
             # report and done
             module_logger.debug("Transition complete; final # objects: {}".format(len(final_idf_structure.objects)))
 
-            # if we are going to cycle, we'll want the idf_to_transition variable to be filled
-            # either way we'll write this intermediate file
+            # if we are going to cycle, we"ll want the idf_to_transition variable to be filled
+            # either way we"ll write this intermediate file
             idf_to_transition = final_idf_structure
             final_idf_structure.write_idf(this_version_idf_file_path, new_idd_structure)
 

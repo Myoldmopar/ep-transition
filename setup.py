@@ -4,14 +4,15 @@ import codecs
 import unittest
 import os
 import setuptools
-import sys
 
 from eptransition import __version__
 
-if len(sys.argv) > 1:
-    if sys.argv[1] == 'test':
-        tests = unittest.TestLoader().discover('test')
-        unittest.TextTestRunner().run(tests)
+
+def my_test_suite():
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('test', pattern='test_*.py')
+    print(str(test_suite))
+    return test_suite
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(this_dir, 'README.rst'), encoding='utf-8') as i_file:
@@ -43,5 +44,6 @@ setuptools.setup(
         'console_scripts': [
             'eptransition=eptransition.transition:main',
         ],
-    }
+    },
+    test_suite='setup.my_test_suite',
 )

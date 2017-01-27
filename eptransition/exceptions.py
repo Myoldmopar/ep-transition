@@ -1,7 +1,7 @@
 class UnimplementedMethodException(Exception):
     """
     This exception occurs when a call is made to a function that should be implemented in a derived class
-    but isn't, so the base class function is called.  This is a developer issue.
+    but is not, so the base class function is called.  This is a developer issue.
 
     :param str class_name: The name of the base class where the virtual function is defined
     :param str method_name: The method name which should be overridden in the derived class
@@ -81,10 +81,10 @@ class ManagerProcessingException(Exception):
         self.issues = issues
 
     def __str__(self):
-        msg = ''
+        msg = ""
         if self.issues:
             for i in self.issues:
-                msg += str(i) + '\n'
+                msg += str(i) + "\n"
         msg += self.message
         return msg
 
@@ -94,7 +94,7 @@ class ProcessingException(Exception):
     This exception occurs when an unexpected error occurs during the processing of an input file.
     """
 
-    def __init__(self, message, line_index=None, object_name='', field_name=''):
+    def __init__(self, message, line_index=None, object_name="", field_name=""):
         super(ProcessingException, self).__init__(message)
         self.message = message
         self.line_index = line_index
