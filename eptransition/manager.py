@@ -43,6 +43,16 @@ class TransitionManager(object):
         self.original_idd_file = None
         self.new_idd_file = None
 
+        # also we should check for mvi/rvi files
+        self.original_rvi_file = None
+        potential_rvi_path = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name + '.rvi')
+        if os.path.exists(potential_rvi_path):
+            self.original_rvi_file = potential_rvi_path
+        self.original_mvi_file = None
+        potential_mvi_path = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name + '.mvi')
+        if os.path.exists(potential_mvi_path):
+            self.original_rvi_file = potential_mvi_path
+
     def perform_transition(self):
         """
         This function manages the transition from one version to another by opening, validating, and writing files
@@ -107,7 +117,7 @@ class TransitionManager(object):
             raise ManagerProcessingException(
                 "IDF Version ({}) not found in available transitions".format(original_idf_version))
 
-        # first copy this original file into the output directory renamed with the version ID for ease of diffing, etc.
+        # first copy this original files into the output directory renamed with the version ID for ease of diffing, etc.
         target_original_file = os.path.join(
             self.output_directory, "{}_{}.idf".format(self.original_base_file_name, original_idf_version))
         try:
@@ -117,6 +127,28 @@ class TransitionManager(object):
                 self.original_input_file, target_original_file))
             raise
 
+        # do the same for the rvi
+        if self.original_rvi_file:
+            target_original_rvi = os.path.join(
+                self.output_directory, "{}_{}.rvi".format(self.original_base_file_name, original_idf_version))
+            try:
+                shutil.copy(self.original_rvi_file, target_original_rvi)
+            except Exception:  # pragma no cover
+                module_logger.debug("Could not copy original rvi file from {} to {}".format(
+                    self.original_input_file, target_original_rvi))
+                raise
+
+        # and do the same for the mvi
+        if self.original_mvi_file:
+            target_original_mvi = os.path.join(
+                self.output_directory, "{}_{}.mvi".format(self.original_base_file_name, original_idf_version))
+            try:
+                shutil.copy(self.original_mvi_file, target_original_mvi)
+            except Exception:  # pragma no cover
+                module_logger.debug("Could not copy original mvi file from {} to {}".format(
+                    self.original_input_file, target_original_mvi))
+                raise
+
         for i, this_transition in enumerate(these_transitions):
             end_version = this_transition.end_version
             this_version_idf_file_path = os.path.join(
@@ -124,6 +156,27 @@ class TransitionManager(object):
             module_logger.debug("Found this version in transitions, will try to transition from {} to {}".format(
                 this_transition.start_version, this_transition.end_version
             ))
+
+            this_version_mvi_file_path = None
+            if self.original_mvi_file:
+                prior_version_mvi_file_path = os.path.join(
+                self.output_directory, "{}_{}.mvi".format(self.original_base_file_name, this_transition.start_version))
+                this_version_mvi_file_path = os.path.join(
+                self.output_directory, "{}_{}.mvi".format(self.original_base_file_name, end_version))
+                module_logger.debug("Found MVI version in transitions, will try to transition from {} to {}".format(
+                    this_transition.start_version, this_transition.end_version
+                ))
+
+            this_version_rvi_file_path = None
+            if self.original_rvi_file:
+                prior_version_rvi_file_path = os.path.join(
+                    self.output_directory,
+                    "{}_{}.rvi".format(self.original_base_file_name, this_transition.start_version))
+                this_version_rvi_file_path = os.path.join(
+                    self.output_directory, "{}_{}.rvi".format(self.original_base_file_name, end_version))
+                module_logger.debug("Found RVI version in transitions, will try to transition from {} to {}".format(
+                    this_transition.start_version, this_transition.end_version
+                ))
 
             # if the IDD files are "None", then try to match them up
             idd_file = "Energy+.idd"
@@ -203,6 +256,17 @@ class TransitionManager(object):
             else:
                 output_rule = this_transition.output_variable_transition
                 output_names = output_rule.get_output_objects()
+                # here we can do the rvi mvi file stuff
+                if this_version_rvi_file_path:
+                    rvi_contents = open(prior_version_rvi_file_path).read()
+                    for old, new in output_rule.get_simple_swaps().iteritems():
+                        rvi_contents = rvi_contents.replace(old, new)
+                    open(this_version_rvi_file_path, 'w').write(rvi_contents)
+                if this_version_mvi_file_path:
+                    mvi_contents = open(prior_version_mvi_file_path).read()
+                    for old, new in output_rule.get_simple_swaps().iteritems():
+                        mvi_contents = mvi_contents.replace(old, new)
+                    open(this_version_mvi_file_path, 'w').write(mvi_contents)
 
             # create a list of objects to be deleted (which is a list of Type/Name, or more accurately Type/Field0
             objects_to_delete = []
