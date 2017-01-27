@@ -51,7 +51,7 @@ class TransitionManager(object):
         self.original_mvi_file = None
         potential_mvi_path = os.path.join(os.path.dirname(original_input_file), self.original_base_file_name + '.mvi')
         if os.path.exists(potential_mvi_path):
-            self.original_rvi_file = potential_mvi_path
+            self.original_mvi_file = potential_mvi_path
 
     def perform_transition(self):
         """
@@ -260,12 +260,12 @@ class TransitionManager(object):
                 # here we can do the rvi mvi file stuff
                 if this_version_rvi_file_path:
                     rvi_contents = open(prior_version_rvi_file_path).read()
-                    for old, new in output_rule.get_simple_swaps().iteritems():
+                    for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
                         rvi_contents = rvi_contents.replace(old, new)
                     open(this_version_rvi_file_path, 'w').write(rvi_contents)
                 if this_version_mvi_file_path:
                     mvi_contents = open(prior_version_mvi_file_path).read()
-                    for old, new in output_rule.get_simple_swaps().iteritems():
+                    for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
                         mvi_contents = mvi_contents.replace(old, new)
                     open(this_version_mvi_file_path, 'w').write(mvi_contents)
 
