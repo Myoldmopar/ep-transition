@@ -19,7 +19,7 @@ def main(args=None):
     :param args: An optional array of arguments, mimicking sys.argv.  As such, item 0 must be a dummy program name,
                  followed by real arguments.  If this is not passed in, sys.argv is assumed.
     :return: 0 on success, 1 for failure
-    :raises Exception: If the
+    :raises Exception: If the --raise flag is used, it will raise the underlying Exception at the first failure
     """
 
     # set up the highest level logger
@@ -45,10 +45,18 @@ def main(args=None):
     parser.add_argument("-v", "--version", action="version", version="%(prog)s {version}".format(version=__version__))
     parser.add_argument("-r", "--raise", dest="throw", action="store_const",
                         const=True, default=False,
-                        help="with this flag, the transition will stop at the first failure and raise an exception;"
+                        help="With this flag, the transition will stop at the first failure and raise an exception;"
                         " if the flag is not passed in, the transition will continue through all requested transitions"
                         " and return a 0 or 1 without raising an exception.  (default: Do not raise)")
+    parser.add_argument("-V", "--verbose", dest="verbose", action="store_const",
+                        const=True, default=False,
+                        help="Turns on louder output to stdout, full detail still in the log file (default: quiet)")
     args = parser.parse_args(args=args)
+    if args.verbose:  # pragma no cover -- I don't want this output during tests
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
     logger.debug("***Transition started: attempting to transition {} files".format(len(args.input_files)))
     failed_files = []
     for input_file in args.input_files:

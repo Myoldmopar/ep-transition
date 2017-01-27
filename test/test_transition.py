@@ -32,7 +32,7 @@ class TestDriver(unittest.TestCase):
         os.path.join(working_dir, os.path.basename(idf_path))
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
         with self.assertRaises(FileAccessException):
-            transition.main(['-r', final_idf_path])
+            transition.main(['--raise', final_idf_path])
 
     def test_command_line(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
