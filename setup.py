@@ -4,17 +4,8 @@ import codecs
 import unittest
 import os
 import setuptools
-import sys
 
 from eptransition import __version__
-
-
-print(sys.argv)
-
-if len(sys.argv) > 1:
-    if sys.argv[1] == 'test':
-        tests = unittest.TestLoader().discover('test')
-        unittest.TextTestRunner().run(tests)
 
 
 def my_test_suite():
@@ -54,5 +45,5 @@ setuptools.setup(
             'eptransition=eptransition.transition:main',
         ],
     },
-    # test_suite='setup.my_test_suite',
+    test_suite='setup.my_test_suite',
 )
