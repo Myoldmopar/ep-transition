@@ -11,6 +11,8 @@ from eptransition import __version__
 def my_test_suite():
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('test', pattern='test_*.py')
+    "got test suite, here's what we'll run:"
+    print(str(test_suite))
     return test_suite
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
