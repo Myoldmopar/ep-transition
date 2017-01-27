@@ -22,7 +22,7 @@ class TestDriver(unittest.TestCase):
     def test_driver_cant_instantiate(self):
         idf_path = os.path.join(os.path.abspath(os.sep), "in.idf")
         with self.assertRaises(OSError):
-            transition.main([idf_path])
+            transition.main(['-r', idf_path])
 
     def test_driver_cant_transition(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
