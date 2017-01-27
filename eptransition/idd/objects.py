@@ -33,7 +33,7 @@ class IDDObject:
 
     Constructor parameters:
 
-    :param str name: The object"s type, or name
+    :param str name: The object's type, or name
     """
 
     def __init__(self, name):
@@ -52,7 +52,7 @@ class IDDGroup:
 
     Constructor parameters:
 
-    :param str name: The group"s name
+    :param str name: The group's name
     """
 
     def __init__(self, name):
@@ -105,7 +105,7 @@ class IDDStructure:
         for o in self.single_line_objects:
             if o.upper() == type_to_get.upper():
                 return o
-        # if we haven"t returned, fail
+        # if we haven't returned, fail
         return None
 
     def get_objects_with_meta_data(self, meta_data):

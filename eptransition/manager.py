@@ -117,7 +117,7 @@ class TransitionManager(object):
             current_transition_end_version = first_transition.end_version
             while True:
                 if current_transition_end_version in TRANSITIONS:  # pragma no cover
-                    # this block simply won"t happen until we add a second transition in later
+                    # this block simply won't happen until we add a second transition in later
                     current_transition = TRANSITIONS[current_transition_end_version]
                     these_transitions.append(current_transition)
                     current_transition_end_version = current_transition.end_version
@@ -218,7 +218,7 @@ class TransitionManager(object):
 
             # now validate the file types match each other
             if original_idf_file_type == original_idd_file_type:
-                pass  # that"s a good thing
+                pass  # that's a good thing
             else:  # pragma no cover
                 raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
                     original_idf_file_type, original_idd_file_type))
@@ -241,7 +241,7 @@ class TransitionManager(object):
 
             # validate the current idf before continuing
             issues = idf_to_transition.validate(original_idd_structure)
-            if len(issues) > 0:  # pragma no cover, we haven"t really got these organized yet
+            if len(issues) > 0:  # pragma no cover, we haven't really got these organized yet
                 for i in issues:
                     if i.severity == ValidationIssue.INFORMATION:
                         module_logger.debug(str(i))

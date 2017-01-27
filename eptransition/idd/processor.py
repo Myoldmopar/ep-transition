@@ -27,7 +27,7 @@ class CurrentReadType:
 
 
 # keep a global dictionary of read IDD structures, could eventually move into the class, but right now we instantiate
-# the class over and over so that wouldn"t work
+# the class over and over so that wouldn't work
 IDD_CACHE = {}
 
 
@@ -98,7 +98,7 @@ class IDDProcessor:
         Internal worker function that reads a single character from the internal IDD stream but resets the stream to
         the former position
 
-        :return: A single character, the one immediately following the cursor, or None if it can"t peek ahead.
+        :return: A single character, the one immediately following the cursor, or None if it can't peek ahead.
         """
         pos = self.idd_file_stream.tell()
         c = self.idd_file_stream.read(1)
@@ -111,7 +111,7 @@ class IDDProcessor:
         """
         Internal worker function that reads a single character from the internal IDD stream, advancing the cursor.
 
-        :return: A single character, the one immediately following the cursor, or None if it can"t read.
+        :return: A single character, the one immediately following the cursor, or None if it can't read.
         """
         c = self.idd_file_stream.read(1)
         if c == "":
@@ -144,7 +144,7 @@ class IDDProcessor:
 
         # state machine variables
         read_status = CurrentReadType.ReadAnything  # current state machine reading status
-        revert_status_after_comment = None  # reading status before the comment, shift back to this after comment"s done
+        revert_status_after_comment = None  # reading status before the comment, shift back to this after comment's done
 
         # loop continuously, the loop will exit when it is done
         while True:
@@ -164,8 +164,8 @@ class IDDProcessor:
                 # increment the counter
                 line_index += 1
 
-            # if we aren"t already processing a comment, and we have a comment:
-            #  don"t append to the token builder, just set read status
+            # if we aren't already processing a comment, and we have a comment:
+            #  don't append to the token builder, just set read status
             if read_status != CurrentReadType.EncounteredComment_ReadToCR:
                 if just_read_char == "!":
                     if read_status != CurrentReadType.ReadingFieldMetaData:
@@ -183,7 +183,7 @@ class IDDProcessor:
                 # the possibilities are: comments, group declaration, or object definition
                 if peeked_char == "\\":  # starting a group name
                     read_status = CurrentReadType.ReadingGroupDeclaration
-                elif peeked_char in [" ", "\n", "\t"]:  # don"t do anything
+                elif peeked_char in [" ", "\n", "\t"]:  # don't do anything
                     pass
                 elif peeked_char == "!":
                     revert_status_after_comment = read_status
@@ -195,7 +195,7 @@ class IDDProcessor:
 
                 # for the group declarations, we will just check to see if the
                 # line has ended since it should be on a single line
-                # if it hasn"t then just keep on as is, if it has, parse the group name out of it
+                # if it hasn't then just keep on as is, if it has, parse the group name out of it
                 if peeked_char == "\n":
                     # first update the previous group
                     if cur_group is not None:
@@ -219,7 +219,7 @@ class IDDProcessor:
                 # they could be a single line object, such as: "Lead Input;"
                 # they could be the title of a multi field object, such as: "Version,"
                 # and they could of course have comments at the end
-                # for now I will assume that the single line objects can"t have metadata
+                # for now I will assume that the single line objects can't have metadata
                 # so read until either a comma or semicolon, also trap for errors if we reach the end of line or comment
                 if peeked_char == ",":
                     object_title = token_builder
@@ -346,7 +346,7 @@ class IDDProcessor:
 
                 if peeked_char == "\n":
 
-                    # for this one, let"s read all the way to the end of the line, then parse data
+                    # for this one, let's read all the way to the end of the line, then parse data
                     flag_found = next((x for x in self.field_flags if x in token_builder), None)
                     if flag_found:
                         data = token_builder[len(flag_found):]

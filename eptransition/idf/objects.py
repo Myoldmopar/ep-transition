@@ -121,7 +121,7 @@ class IDFObject(object):
                         units_string = " {" + idd_field.meta_data["\\units"][0] + "}"
                     else:
                         units_string = ""
-                    if idd_field.field_name is None:  # pragma no cover  - our files don"t have an object like this yet
+                    if idd_field.field_name is None:  # pragma no cover  - our files don't have an object like this yet
                         idd_field.field_name = ""
                     s += "  " + (str(idf_field) + terminator).ljust(
                         padding_size) + "!- " + idd_field.field_name + units_string + "\n"
@@ -149,8 +149,8 @@ class IDFObject(object):
             actual_num_fields = len(self.fields)
             for i in range(minimum_required_fields):
                 if i < actual_num_fields:  # if the item is there
-                    if not self.fields[i]:  # if it"s blank
-                        if "\\default" in idd_object.fields[i].meta_data:  # if it"s blank but has a default value
+                    if not self.fields[i]:  # if it's blank
+                        if "\\default" in idd_object.fields[i].meta_data:  # if it's blank but has a default value
                             self.fields[i] = idd_object.fields[i].meta_data["\\default"][0]  # fill with default
                             # if it doesn't have a default, just leave it blank, later checks will catch it
                 else:  # if the item isn't even there

@@ -90,7 +90,7 @@ class IDFProcessor:
         # 1. reading comment block
         # 2. reading IDF block
 
-        # so let"s try keeping the idf in blobs of either comment data or object data
+        # so let's try keeping the idf in blobs of either comment data or object data
         current_blob = None
         initial_blobs = []
         for line in lines:
@@ -146,7 +146,7 @@ class IDFProcessor:
         if current_blob is not None:
             initial_blobs.append(current_blob)
 
-        # next let"s go blob by blob and clean up any trailing comments and such
+        # next let's go blob by blob and clean up any trailing comments and such
         idf_objects = []
         for initial_blob in initial_blobs:
             if initial_blob.blob_type == Blob.COMMENT:
@@ -169,18 +169,6 @@ class IDFProcessor:
                     if not (l.endswith(",") or l.endswith(";")):
                         raise exceptions.ProcessingException(
                             "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
-                # the last line in an idf object blob should have a semicolon; if it doesn't it might indicate
-                # a comment block in the middle of a single idf object
-                # if not out_lines[-1].endswith(";"):
-                #     message = str(
-                #         "Encountered a missing semicolon condition; this can indicate comments placed within"
-                #         " a single idf object.  This is valid IDF for E+, but this translator does not yet"
-                #         " handle such condition.  Check for the IDF content starting at the line: \"{}\""
-                #         " but note that the issue may be much farther down than that line.".format(
-                #             out_lines[0]
-                #         ))
-                #     module_logger.warn(message)
-                #     raise exceptions.ProcessingException(message)
                 # intermediate: join entire array and re-split by semicolon
                 idf_data_joined = "".join(out_lines)
                 idf_object_strings = idf_data_joined.split(";")
