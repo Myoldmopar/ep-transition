@@ -1,6 +1,6 @@
 import logging
 
-module_logger = logging.getLogger('eptransition.idd.processor')
+module_logger = logging.getLogger("eptransition.idd.processor")
 
 
 class ValidationIssue:
@@ -41,10 +41,10 @@ class ValidationIssue:
             raise Exception("Bad integer passed into severity_string()")
 
     def __str__(self):
-        msg = ' * Issue Found; severity = ' + ValidationIssue.severity_string(self.severity) + '\n'
-        msg += '  Object Name = ' + self.object_name + '\n'
+        msg = " * Issue Found; severity = " + ValidationIssue.severity_string(self.severity) + "\n"
+        msg += "  Object Name = " + self.object_name + "\n"
         if self.field_name is not None:
-            msg += '  Field Name = ' + self.field_name + '\n'
+            msg += "  Field Name = " + self.field_name + "\n"
         return msg
 
 
@@ -85,10 +85,10 @@ class IDFObject(object):
         :param IDDObject idd_object: The IDDObject structure that matches this IDFObject
         :return: A string representation of the IDF object or comment block
         """
-        s = ''
+        s = ""
         if self.comment:
             for comment_line in self.fields:
-                s += comment_line + '\n'
+                s += comment_line + "\n"
             return s
         if not idd_object:
             if len(self.fields) == 0:
@@ -98,9 +98,9 @@ class IDFObject(object):
                 padding_size = 25
                 for index, idf_field in enumerate(self.fields):
                     if index == len(self.fields) - 1:
-                        terminator = ';'
+                        terminator = ";"
                     else:
-                        terminator = ','
+                        terminator = ","
                     s += "  " + (idf_field + terminator).ljust(
                         padding_size) + "!- \n"
             return s
@@ -114,15 +114,15 @@ class IDFObject(object):
                 for index, idf_idd_fields in enumerate(zip(self.fields, idd_fields)):
                     idf_field, idd_field = idf_idd_fields
                     if index == len(self.fields) - 1:
-                        terminator = ';'
+                        terminator = ";"
                     else:
-                        terminator = ','
-                    if '\\units' in idd_field.meta_data:
-                        units_string = ' {' + idd_field.meta_data['\\units'][0] + '}'
+                        terminator = ","
+                    if "\\units" in idd_field.meta_data:
+                        units_string = " {" + idd_field.meta_data["\\units"][0] + "}"
                     else:
-                        units_string = ''
-                    if idd_field.field_name is None:  # pragma no cover  - our files don't have an object like this yet
-                        idd_field.field_name = ''
+                        units_string = ""
+                    if idd_field.field_name is None:  # pragma no cover  - our files don"t have an object like this yet
+                        idd_field.field_name = ""
                     s += "  " + (str(idf_field) + terminator).ljust(
                         padding_size) + "!- " + idd_field.field_name + units_string + "\n"
             return s
@@ -144,84 +144,84 @@ class IDFObject(object):
         if isinstance(idd_object, str):
             # we have a single-line string-only idd object, just leave
             return issues
-        if '\\min-fields' in idd_object.meta_data:
-            minimum_required_fields = int(idd_object.meta_data['\\min-fields'][0])
+        if "\\min-fields" in idd_object.meta_data:
+            minimum_required_fields = int(idd_object.meta_data["\\min-fields"][0])
             actual_num_fields = len(self.fields)
             for i in range(minimum_required_fields):
                 if i < actual_num_fields:  # if the item is there
-                    if not self.fields[i]:  # if it's blank
-                        if '\\default' in idd_object.fields[i].meta_data:  # if it's blank but has a default value
-                            self.fields[i] = idd_object.fields[i].meta_data['\\default'][0]  # fill with default
+                    if not self.fields[i]:  # if it"s blank
+                        if "\\default" in idd_object.fields[i].meta_data:  # if it"s blank but has a default value
+                            self.fields[i] = idd_object.fields[i].meta_data["\\default"][0]  # fill with default
                             # if it doesn't have a default, just leave it blank, later checks will catch it
                 else:  # if the item isn't even there
-                    if '\\default' in idd_object.fields[i].meta_data:  # if it has a default value
-                        self.fields.append(idd_object.fields[i].meta_data['\\default'][0])  # fill with default
+                    if "\\default" in idd_object.fields[i].meta_data:  # if it has a default value
+                        self.fields.append(idd_object.fields[i].meta_data["\\default"][0])  # fill with default
                     else:  # or if it doesn't have a default
-                        self.fields.append('')  # make sure it does have an entry (blank) and it will be caught later
+                        self.fields.append("")  # make sure it does have an entry (blank) and it will be caught later
                         issues.append(ValidationIssue(idd_object.name, ValidationIssue.WARNING,
-                                                      'Field within \\min-fields missing and no default',
+                                                      "Field within \\min-fields missing and no default",
                                                       idd_object.fields[i].field_name))
         for idf, idd in zip(self.fields, idd_object.fields):
-            if '\\required-field' in idd.meta_data:
-                if idf == '':
+            if "\\required-field" in idd.meta_data:
+                if idf == "":
                     issues.append(ValidationIssue(idd_object.name, ValidationIssue.WARNING,
-                                                  'Blank required field found', idd.field_name))
+                                                  "Blank required field found", idd.field_name))
                     continue
             an_code = idd.field_an_index
-            if an_code[0] == 'N':
-                if idf.strip() != '':
+            if an_code[0] == "N":
+                if idf.strip() != "":
                     try:
                         number = float(idf)
-                        if '\\maximum' in idd.meta_data:
-                            max_constraint_string = idd.meta_data['\\maximum'][0]
+                        if "\\maximum" in idd.meta_data:
+                            max_constraint_string = idd.meta_data["\\maximum"][0]
                             if max_constraint_string[0] == "<":
                                 max_val = float(max_constraint_string[1:])
                                 if number >= max_val:
                                     issues.append(ValidationIssue(
                                         idd_object.name, ValidationIssue.WARNING,
-                                        'Field value higher than idd-specified maximum>; actual={}, max={}'.format(
+                                        "Field value higher than idd-specified maximum>; actual={}, max={}".format(
                                             number, max_val), idd.field_name))
                             else:
                                 max_val = float(max_constraint_string)
                                 if number > max_val:
                                     issues.append(ValidationIssue(
                                         idd_object.name, ValidationIssue.WARNING,
-                                        'Field value higher than idd-specified maximum; actual={}, max={}'.format(
+                                        "Field value higher than idd-specified maximum; actual={}, max={}".format(
                                             number, max_val), idd.field_name))
-                        if '\\minimum' in idd.meta_data:
-                            min_constraint_string = idd.meta_data['\\minimum'][0]
+                        if "\\minimum" in idd.meta_data:
+                            min_constraint_string = idd.meta_data["\\minimum"][0]
                             if min_constraint_string[0] == ">":
                                 min_val = float(min_constraint_string[1:])
                                 if number <= min_val:
                                     issues.append(ValidationIssue(
                                         idd_object.name, ValidationIssue.WARNING,
-                                        'Field value lower than idd-specified minimum<; actual={}, max={}'.format(
+                                        "Field value lower than idd-specified minimum<; actual={}, max={}".format(
                                             number, max_val), idd.field_name))
                             else:
                                 min_val = float(min_constraint_string)
                                 if number < min_val:
                                     issues.append(ValidationIssue(
                                         idd_object.name, ValidationIssue.WARNING,
-                                        'Field value lower than idd-specified minimum; actual={}, max={}'.format(
+                                        "Field value lower than idd-specified minimum; actual={}, max={}".format(
                                             number, max_val), idd.field_name))
                     except ValueError:
-                        if '\\autosizable' in idd.meta_data and idf.upper() == 'AUTOSIZE':
+                        if "\\autosizable" in idd.meta_data and idf.upper() == "AUTOSIZE":
                             pass  # everything is ok
-                        elif '\\autocalculatable' in idd.meta_data and idf.upper() in ['AUTOCALCULATE', 'AUTOSIZE']:
+                        elif "\\autocalculatable" in idd.meta_data and idf.upper() in ["AUTOCALCULATE", "AUTOSIZE"]:
                             pass  # everything is ok
-                        elif idf.upper() == 'AUTOSIZE':
+                        elif idf.upper() == "AUTOSIZE":
                             issues.append(ValidationIssue(
                                 idd_object.name, ValidationIssue.WARNING,
-                                'Autosize detected in numeric field that is _not_ listed autosizable', idd.field_name))
-                        elif idf.upper() == 'AUTOCALCULATE':
+                                "Autosize detected in numeric field that is _not_ listed autosizable", idd.field_name))
+                        elif idf.upper() == "AUTOCALCULATE":
                             issues.append(ValidationIssue(
                                 idd_object.name, ValidationIssue.WARNING,
-                                'Autocalculate detected in numeric field that is _not_ listed autocalculatable',
+                                "Autocalculate detected in numeric field that is _not_ listed autocalculatable",
                                 idd.field_name))
                         else:
                             issues.append(ValidationIssue(
                                 idd_object.name, ValidationIssue.WARNING,
-                                'Non-numeric value in idd-specified numeric field', idd.field_name))
+                                "Non-numeric value in idd-specified numeric field", idd.field_name))
         return issues
 
     def write_object(self, file_object):
@@ -275,10 +275,10 @@ class IDFStructure(object):
         :param IDDStructure idd_structure: An optional IDDStructure instance representing an entire IDD file
         :return: A string of the entire IDF contents, ready to write to a file
         """
-        s = ''
+        s = ""
         for idf_obj in self.objects:
             idd_obj = idd_structure.get_object_by_type(idf_obj.object_name)
-            s += idf_obj.object_string(idd_obj) + '\n'
+            s += idf_obj.object_string(idd_obj) + "\n"
         return s
 
     def write_idf(self, idf_path, idd_structure=None):
@@ -290,7 +290,7 @@ class IDFStructure(object):
         :param IDDStructure idd_structure: An optional IDDStructure instance representing an entire IDD file
         :return: None
         """
-        with open(idf_path, 'w') as f:
+        with open(idf_path, "w") as f:
             f.write(self.whole_idf_string(idd_structure))
         return None
 
@@ -303,13 +303,13 @@ class IDFStructure(object):
         :return: A list of ValidationIssue instances, each describing an issue encountered
         """
         issues = []
-        required_objects = idd_structure.get_objects_with_meta_data('\\required-object')
+        required_objects = idd_structure.get_objects_with_meta_data("\\required-object")
         for r in required_objects:
             objects = self.get_idf_objects_by_type(r.name)
             if len(objects) == 0:
                 issues.append(ValidationIssue(r.name, ValidationIssue.WARNING,
                                               message="Required object not found in IDF contents"))
-        unique_objects = idd_structure.get_objects_with_meta_data('\\unique-object')
+        unique_objects = idd_structure.get_objects_with_meta_data("\\unique-object")
         for u in unique_objects:
             objects = self.get_idf_objects_by_type(u.name)
             if len(objects) > 1:

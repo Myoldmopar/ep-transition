@@ -22,7 +22,7 @@ def build_ref_pt_list(ref_pt_object_list, control_object_list):  # pragma no cov
         this_z = ref_pt.fields[4]
         this_frac_zone = ref_pt.fields[5]
         this_illum_set_pt = ref_pt.fields[6]
-        this_zone_name = ''
+        this_zone_name = ""
         for control_object in control_object_list:
             if this_control_name.upper() == control_object.fields[0].upper():
                 this_zone_name = control_object.fields[1]

@@ -5,7 +5,7 @@ import os
 from eptransition import exceptions
 from eptransition.idd.objects import IDDField, IDDObject, IDDStructure, IDDGroup
 
-module_logger = logging.getLogger('eptransition.idd.processor')
+module_logger = logging.getLogger("eptransition.idd.processor")
 
 
 class CurrentReadType:
@@ -27,7 +27,7 @@ class CurrentReadType:
 
 
 # keep a global dictionary of read IDD structures, could eventually move into the class, but right now we instantiate
-# the class over and over so that wouldn't work
+# the class over and over so that wouldn"t work
 IDD_CACHE = {}
 
 
@@ -64,7 +64,7 @@ class IDDProcessor:
         """
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input IDD file not found=\"" + file_path + "\"")  # pragma: no cover
-        self.idd_file_stream = open(file_path, 'r')
+        self.idd_file_stream = open(file_path, "r")
         self.file_path = file_path
         return self.process_file()
 
@@ -98,11 +98,11 @@ class IDDProcessor:
         Internal worker function that reads a single character from the internal IDD stream but resets the stream to
         the former position
 
-        :return: A single character, the one immediately following the cursor, or None if it can't peek ahead.
+        :return: A single character, the one immediately following the cursor, or None if it can"t peek ahead.
         """
         pos = self.idd_file_stream.tell()
         c = self.idd_file_stream.read(1)
-        if c == '':
+        if c == "":
             c = None
         self.idd_file_stream.seek(pos)
         return c
@@ -111,10 +111,10 @@ class IDDProcessor:
         """
         Internal worker function that reads a single character from the internal IDD stream, advancing the cursor.
 
-        :return: A single character, the one immediately following the cursor, or None if it can't read.
+        :return: A single character, the one immediately following the cursor, or None if it can"t read.
         """
         c = self.idd_file_stream.read(1)
-        if c == '':
+        if c == "":
             c = None
         return c
 
@@ -140,11 +140,11 @@ class IDDProcessor:
         cur_obj_meta_data_type = None  # temporary placeholder for the type of object metadata encountered
 
         # variables related to building and processing tokens
-        token_builder = ''
+        token_builder = ""
 
         # state machine variables
         read_status = CurrentReadType.ReadAnything  # current state machine reading status
-        revert_status_after_comment = None  # reading status before the comment, shift back to this after comment's done
+        revert_status_after_comment = None  # reading status before the comment, shift back to this after comment"s done
 
         # loop continuously, the loop will exit when it is done
         while True:
@@ -157,25 +157,25 @@ class IDDProcessor:
             # update the peeked character
             peeked_char = self.peek_one_char()
             if not peeked_char:
-                peeked_char = '\n'  # to simulate that the line ended
+                peeked_char = "\n"  # to simulate that the line ended
 
             # jump if we are at an EOL
-            if just_read_char == '\n':
+            if just_read_char == "\n":
                 # increment the counter
                 line_index += 1
 
-            # if we aren't already processing a comment, and we have a comment:
-            #  don't append to the token builder, just set read status
+            # if we aren"t already processing a comment, and we have a comment:
+            #  don"t append to the token builder, just set read status
             if read_status != CurrentReadType.EncounteredComment_ReadToCR:
-                if just_read_char == '!':
+                if just_read_char == "!":
                     if read_status != CurrentReadType.ReadingFieldMetaData:
                         read_status = CurrentReadType.EncounteredComment_ReadToCR
                 else:
                     token_builder += just_read_char
 
             # clear a preceding line feed character from the token
-            if just_read_char == '\n' and len(token_builder) == 1:
-                token_builder = ''
+            if just_read_char == "\n" and len(token_builder) == 1:
+                token_builder = ""
 
             if read_status == CurrentReadType.ReadAnything:
 
@@ -183,7 +183,7 @@ class IDDProcessor:
                 # the possibilities are: comments, group declaration, or object definition
                 if peeked_char == "\\":  # starting a group name
                     read_status = CurrentReadType.ReadingGroupDeclaration
-                elif peeked_char in [" ", '\n', '\t']:  # don't do anything
+                elif peeked_char in [" ", "\n", "\t"]:  # don"t do anything
                     pass
                 elif peeked_char == "!":
                     revert_status_after_comment = read_status
@@ -195,8 +195,8 @@ class IDDProcessor:
 
                 # for the group declarations, we will just check to see if the
                 # line has ended since it should be on a single line
-                # if it hasn't then just keep on as is, if it has, parse the group name out of it
-                if peeked_char == '\n':
+                # if it hasn"t then just keep on as is, if it has, parse the group name out of it
+                if peeked_char == "\n":
                     # first update the previous group
                     if cur_group is not None:
                         self.idd.groups.append(cur_group)
@@ -219,12 +219,12 @@ class IDDProcessor:
                 # they could be a single line object, such as: "Lead Input;"
                 # they could be the title of a multi field object, such as: "Version,"
                 # and they could of course have comments at the end
-                # for now I will assume that the single line objects can't have metadata
+                # for now I will assume that the single line objects can"t have metadata
                 # so read until either a comma or semicolon, also trap for errors if we reach the end of line or comment
                 if peeked_char == ",":
                     object_title = token_builder
                     cur_object = IDDObject(object_title)
-                    token_builder = ''
+                    token_builder = ""
                     self.read_one_char()  # to clear the comma
                     read_status = CurrentReadType.LookingForObjectMetaDataOrNextField
                 elif peeked_char == ";":
@@ -232,38 +232,38 @@ class IDDProcessor:
                     object_title = token_builder
                     # this is added to singleline objects because CurGroup isn't instantiated yet, should fix
                     self.idd.single_line_objects.append(object_title.strip())
-                    token_builder = ''  # to clear the builder
+                    token_builder = ""  # to clear the builder
                     self.read_one_char()  # to clear the semicolon
                     read_status = CurrentReadType.ReadAnything
-                elif peeked_char in ['\n', '!']:  # pragma: no cover
+                elif peeked_char in ["\n", "!"]:  # pragma: no cover
                     raise exceptions.ProcessingException(
                         "An object name was not properly terminated by a comma or semicolon",
                         line_index=line_index)
 
             elif read_status == CurrentReadType.LookingForObjectMetaDataOrNextField:
 
-                token_builder = ''
-                if peeked_char == '\\':
+                token_builder = ""
+                if peeked_char == "\\":
                     read_status = CurrentReadType.ReadingObjectMetaData
-                elif peeked_char in ['A', 'N']:
+                elif peeked_char in ["A", "N"]:
                     read_status = CurrentReadType.ReadingFieldANValue
-                elif peeked_char == '!':
+                elif peeked_char == "!":
                     revert_status_after_comment = read_status
                     read_status = CurrentReadType.EncounteredComment_ReadToCR
-                elif peeked_char == ' ':
+                elif peeked_char == " ":
                     # just let it keep reading
                     pass
-                elif peeked_char == '\n':
+                elif peeked_char == "\n":
                     # just let it keep reading
                     pass
 
             elif read_status == CurrentReadType.ReadingObjectMetaData:
 
-                if peeked_char in [' ', ':', '\n']:
+                if peeked_char in [" ", ":", "\n"]:
                     if token_builder in self.obj_flags:
                         cur_obj_meta_data_type = token_builder
-                        token_builder = ''
-                        if cur_obj_meta_data_type in ['\\obselete', '\\required-object', '\\unique-object']:
+                        token_builder = ""
+                        if cur_obj_meta_data_type in ["\\obselete", "\\required-object", "\\unique-object"]:
                             # these do not carry further data, stop reading now
                             if cur_obj_meta_data_type not in cur_object.meta_data:
                                 string_list = [None]
@@ -279,7 +279,7 @@ class IDDProcessor:
                             # these will have following data, just set the flag
                             read_status = CurrentReadType.ReadingObjectMetaDataContents
                     else:  # pragma: no cover
-                        # token_builder = ''
+                        # token_builder = ""
                         raise exceptions.ProcessingException(
                             "Erroneous object meta data tag found",
                             line_index=line_index,
@@ -290,10 +290,10 @@ class IDDProcessor:
 
             elif read_status == CurrentReadType.ReadingObjectMetaDataContents:
 
-                if peeked_char == '\n':
+                if peeked_char == "\n":
                     data = token_builder.strip()
                     # quick validation of some meta data
-                    if cur_obj_meta_data_type == '\\min-fields':
+                    if cur_obj_meta_data_type == "\\min-fields":
                         try:
                             float(data)
                         except ValueError:
@@ -309,21 +309,21 @@ class IDDProcessor:
                         string_list = cur_object.meta_data[cur_obj_meta_data_type]
                         string_list.append(data)
                         cur_object.meta_data[cur_obj_meta_data_type] = string_list
-                    token_builder = ''
+                    token_builder = ""
                     cur_obj_meta_data_type = None
                     read_status = CurrentReadType.LookingForObjectMetaDataOrNextField
 
             elif read_status == CurrentReadType.ReadingFieldANValue:
 
-                if peeked_char in [',', ';']:
+                if peeked_char in [",", ";"]:
                     cur_field = IDDField(token_builder.strip())
-                    token_builder = ''
-                    if peeked_char == ',':
+                    token_builder = ""
+                    if peeked_char == ",":
                         last_field_for_object = False
-                    elif peeked_char == ';':
+                    elif peeked_char == ";":
                         last_field_for_object = True
                     read_status = CurrentReadType.ReadingFieldMetaDataOrNextANValue
-                elif peeked_char == '\n':  # pragma: no cover
+                elif peeked_char == "\n":  # pragma: no cover
                     raise exceptions.ProcessingException(
                         "Blank or erroneous ""AN"" field index value",
                         line_index=line_index,
@@ -331,11 +331,11 @@ class IDDProcessor:
 
             elif read_status == CurrentReadType.ReadingFieldMetaDataOrNextANValue:
 
-                if peeked_char == '\\':
-                    token_builder = ''
+                if peeked_char == "\\":
+                    token_builder = ""
                     read_status = CurrentReadType.ReadingFieldMetaData
-                elif peeked_char in ['A', 'N']:
-                    token_builder = ''
+                elif peeked_char in ["A", "N"]:
+                    token_builder = ""
                     # this is hit when we have an AN value right after a previous AN value, so no meta data is added
                     if cur_field.field_name is None:
                         cur_field.field_name = ""
@@ -344,23 +344,23 @@ class IDDProcessor:
 
             elif read_status == CurrentReadType.ReadingFieldMetaData:
 
-                if peeked_char == '\n':
+                if peeked_char == "\n":
 
-                    # for this one, let's read all the way to the end of the line, then parse data
+                    # for this one, let"s read all the way to the end of the line, then parse data
                     flag_found = next((x for x in self.field_flags if x in token_builder), None)
                     if flag_found:
                         data = token_builder[len(flag_found):]
                         # data needs to start with a space, otherwise things like: \fieldd My Field would be valid
                         if len(data) > 0:
-                            if data[0] not in [' ', '>', '<']:
+                            if data[0] not in [" ", ">", "<"]:
                                 raise exceptions.ProcessingException(
-                                    'Invalid meta data, expected a space after the meta data specifier before the data',
+                                    "Invalid meta data, expected a space after the meta data specifier before the data",
                                     line_index=line_index,
                                     object_name=cur_object.name,
                                     field_name=cur_field.field_name
                                 )
                         data = data.strip()
-                        if flag_found == '\\field':
+                        if flag_found == "\\field":
                             cur_field.field_name = data
                         else:
                             if flag_found not in cur_field.meta_data:
@@ -376,7 +376,7 @@ class IDDProcessor:
                             line_index=line_index,
                             object_name=cur_object.name,
                             field_name=cur_field.field_name)
-                    token_builder = ''
+                    token_builder = ""
                     if last_field_for_object:
                         read_status = CurrentReadType.LookingForFieldMetaDataOrNextObject
                     else:
@@ -388,29 +388,29 @@ class IDDProcessor:
 
             elif read_status == CurrentReadType.LookingForFieldMetaDataOrNextField:
 
-                if peeked_char in ['A', 'N']:
-                    token_builder = ''
+                if peeked_char in ["A", "N"]:
+                    token_builder = ""
                     cur_object.fields.append(cur_field)
                     read_status = CurrentReadType.ReadingFieldANValue
-                elif peeked_char == '\\':
-                    token_builder = ''
+                elif peeked_char == "\\":
+                    token_builder = ""
                     read_status = CurrentReadType.ReadingFieldMetaData
-                elif peeked_char == '!':
+                elif peeked_char == "!":
                     revert_status_after_comment = read_status
                     read_status = CurrentReadType.EncounteredComment_ReadToCR
-                elif peeked_char == '\n':
+                elif peeked_char == "\n":
                     # just let it keep reading
                     pass
 
             elif read_status == CurrentReadType.LookingForFieldMetaDataOrNextObject:
 
-                if peeked_char == '\\':
-                    token_builder = ''
+                if peeked_char == "\\":
+                    token_builder = ""
                     read_status = CurrentReadType.ReadingFieldMetaData
 
-                elif peeked_char == '\n':
+                elif peeked_char == "\n":
                     # blank line will mean we are concluding this object
-                    token_builder = ''
+                    token_builder = ""
                     cur_object.fields.append(cur_field)
                     cur_group.objects.append(cur_object)
                     read_status = CurrentReadType.ReadAnything
@@ -419,30 +419,30 @@ class IDDProcessor:
 
                 # set the flag for reading the next line if necessary
                 token_builder += just_read_char
-                if peeked_char == '\n':
+                if peeked_char == "\n":
                     if revert_status_after_comment is not None:
                         read_status = revert_status_after_comment
                         revert_status_after_comment = None
                     else:
                         read_status = CurrentReadType.ReadAnything
-                    if 'IDD_Version' in token_builder:
-                        self.idd.version_string = token_builder.strip().split(' ')[1].strip()
+                    if "IDD_Version" in token_builder:
+                        self.idd.version_string = token_builder.strip().split(" ")[1].strip()
                         try:
-                            version_tokens = self.idd.version_string.split('.')
-                            tmp_string = '{}.{}'.format(version_tokens[0], version_tokens[1])
+                            version_tokens = self.idd.version_string.split(".")
+                            tmp_string = "{}.{}".format(version_tokens[0], version_tokens[1])
                             self.idd.version_float = float(tmp_string)
                         except ValueError:
                             raise exceptions.ProcessingException(
                                 "Found IDD version, but could not coerce into floating point representation")
-                    elif 'IDD_BUILD' in token_builder:
-                        self.idd.build_string = token_builder.strip().split(' ')[1].strip()
+                    elif "IDD_BUILD" in token_builder:
+                        self.idd.build_string = token_builder.strip().split(" ")[1].strip()
                         magic_cache_key = "{}__{}".format(self.idd.version_string, self.idd.build_string)
                         module_logger.debug("Encountered IDD_BUILD, checking cache for key {}".format(magic_cache_key))
                         if magic_cache_key in IDD_CACHE:
                             module_logger.debug("Found this IDD cache key in the cache, using existing entry")
                             self.idd = IDD_CACHE[magic_cache_key]
                             return self.idd
-                    token_builder = ''
+                    token_builder = ""
 
         # end the file here, but should watch for end-of-file in other CASEs also
         self.idd.groups.append(cur_group)

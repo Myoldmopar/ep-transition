@@ -100,7 +100,7 @@ Transition85_86 = SingleTransition(8.5, 8.6,
                                        remove_field("HVACTemplate:System:Unitary", 39),  # dehumidification
                                    ],
                                    outputs=output86(),
-                                   global_swap={'Coil:Heating:Gas': 'Coil:Heating:Fuel'})
+                                   global_swap={"Coil:Heating:Gas": "Coil:Heating:Fuel"})
 # Transition86_87 = SingleTransition(8.6, 8.7,
 #                                    transitions=[
 #                                        branch87.Rule(),

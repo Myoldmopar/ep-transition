@@ -7,7 +7,7 @@ class VersionRule(base_rule.TransitionRule):
     This class implements, in a generic fashion, the transition rule for the Version object.  By passing in the
     identifier for the target version, the rules are set up so this doesn't have to change for each version.
 
-    :param end_version: The new value for the version object's single field: Version ID
+    :param end_version: The new value for the version object"s single field: Version ID
     """
 
     def __init__(self, end_version):

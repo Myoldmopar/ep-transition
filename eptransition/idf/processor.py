@@ -5,7 +5,7 @@ import os
 from eptransition import exceptions
 from eptransition.idf.objects import IDFObject, IDFStructure
 
-module_logger = logging.getLogger('eptransition.idd.processor')
+module_logger = logging.getLogger("eptransition.idd.processor")
 
 
 class IDFProcessor:
@@ -34,7 +34,7 @@ class IDFProcessor:
         """
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input file not found=\"" + file_path + "\"")
-        self.input_file_stream = open(file_path, 'r')
+        self.input_file_stream = open(file_path, "r")
         self.file_path = file_path
         return self.process_file()
 
@@ -90,14 +90,14 @@ class IDFProcessor:
         # 1. reading comment block
         # 2. reading IDF block
 
-        # so let's try keeping the idf in blobs of either comment data or object data
+        # so let"s try keeping the idf in blobs of either comment data or object data
         current_blob = None
         initial_blobs = []
         for line in lines:
             line_text = line.strip()
             if len(line_text) == 0:
                 continue
-            elif line_text.startswith('!'):
+            elif line_text.startswith("!"):
                 if current_blob is None:
                     current_blob = Blob(Blob.COMMENT)
                     current_blob.lines.append(line_text)
@@ -112,9 +112,9 @@ class IDFProcessor:
                     # then this blob is fresh and is the start of a new object, but it could also be the end (one-liner)
                     current_blob = Blob(Blob.OBJECT)
                     actual_line = line_text
-                    if '!' in line_text >= 0:
+                    if "!" in line_text >= 0:
                         actual_line = line_text[:line_text.find("!")]
-                    if ';' in actual_line:
+                    if ";" in actual_line:
                         # we end this object blob
                         current_blob.lines.append(line_text)
                         initial_blobs.append(current_blob)
@@ -125,9 +125,9 @@ class IDFProcessor:
                     # then we should append this line to the current blob, but we also need to check if it is the end
                     current_blob.lines.append(line_text)
                     actual_line = line_text
-                    if '!' in line_text >= 0:
+                    if "!" in line_text >= 0:
                         actual_line = line_text[:line_text.find("!")]
-                    if ';' in actual_line:
+                    if ";" in actual_line:
                         # we end this object blob
                         initial_blobs.append(current_blob)
                         current_blob = None
@@ -137,16 +137,16 @@ class IDFProcessor:
                     current_blob = Blob(Blob.OBJECT)
                     current_blob.lines.append(line_text)
                     actual_line = line_text
-                    if '!' in line_text >= 0:
+                    if "!" in line_text >= 0:
                         actual_line = line_text[:line_text.find("!")]
-                    if ';' in actual_line:
+                    if ";" in actual_line:
                         # we end this object blob
                         initial_blobs.append(current_blob)
                         current_blob = None
         if current_blob is not None:
             initial_blobs.append(current_blob)
 
-        # next let's go blob by blob and clean up any trailing comments and such
+        # next let"s go blob by blob and clean up any trailing comments and such
         idf_objects = []
         for initial_blob in initial_blobs:
             if initial_blob.blob_type == Blob.COMMENT:
@@ -166,12 +166,12 @@ class IDFProcessor:
                             out_lines.append(this_line.strip())
                 # check these object lines for malformed idf syntax
                 for l in out_lines:
-                    if not (l.endswith(',') or l.endswith(';')):
+                    if not (l.endswith(",") or l.endswith(";")):
                         raise exceptions.ProcessingException(
                             "IDF line doesn't end with comma/semicolon\nline:\"" + l + "\"")
                 # the last line in an idf object blob should have a semicolon; if it doesn't it might indicate
                 # a comment block in the middle of a single idf object
-                # if not out_lines[-1].endswith(';'):
+                # if not out_lines[-1].endswith(";"):
                 #     message = str(
                 #         "Encountered a missing semicolon condition; this can indicate comments placed within"
                 #         " a single idf object.  This is valid IDF for E+, but this translator does not yet"
@@ -182,7 +182,7 @@ class IDFProcessor:
                 #     module_logger.warn(message)
                 #     raise exceptions.ProcessingException(message)
                 # intermediate: join entire array and re-split by semicolon
-                idf_data_joined = ''.join(out_lines)
+                idf_data_joined = "".join(out_lines)
                 idf_object_strings = idf_data_joined.split(";")
                 # phase 3: inspect each object and its fields
                 for obj in idf_object_strings:
@@ -196,12 +196,12 @@ class IDFProcessor:
         self.idf.objects = idf_objects
 
         try:
-            self.idf.version_string = self.idf.get_idf_objects_by_type('Version')[0].fields[0]
+            self.idf.version_string = self.idf.get_idf_objects_by_type("Version")[0].fields[0]
         except IndexError:
             raise exceptions.ProcessingException("Could not get version object in idf!")
         try:
-            version_tokens = self.idf.version_string.split('.')
-            tmp_string = '{}.{}'.format(version_tokens[0], version_tokens[1])
+            version_tokens = self.idf.version_string.split(".")
+            tmp_string = "{}.{}".format(version_tokens[0], version_tokens[1])
             self.idf.version_float = float(tmp_string)
         except ValueError:
             raise exceptions.ProcessingException(

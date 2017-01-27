@@ -18,15 +18,16 @@ def main(args=None):
 
     :param args: An optional array of arguments, mimicking sys.argv.  As such, item 0 must be a dummy program name,
                  followed by real arguments.  If this is not passed in, sys.argv is assumed.
-    :return: 0 for success, 1 for failure
+    :return: 0 on success, 1 for failure
+    :raises Exception: If the
     """
 
     # set up the highest level logger
-    logger = logging.getLogger('eptransition')
+    logger = logging.getLogger("eptransition")
     logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler('{}.log'.format(logname))
+    fh = logging.FileHandler("{}.log".format(logname))
     fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
@@ -40,8 +41,13 @@ def main(args=None):
             epilogue += " * {} to {}  --  ({} transitions)\n".format(v.start_version, v.end_version, len(v.transitions))
     parser = argparse.ArgumentParser(description=__description__, epilog=epilogue,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("input_files", help="The original input files to transition", nargs='+')
-    parser.add_argument("-v", "--version", action='version', version='%(prog)s {version}'.format(version=__version__))
+    parser.add_argument("input_files", help="The original input files to transition", nargs="+")
+    parser.add_argument("-v", "--version", action="version", version="%(prog)s {version}".format(version=__version__))
+    parser.add_argument("-r", "--raise", dest="throw", action="store_const",
+                        const=True, default=False,
+                        help="with this flag, the transition will stop at the first failure and raise an exception;"
+                        " if the flag is not passed in, the transition will continue through all requested transitions"
+                        " and return a 0 or 1 without raising an exception.  (default: Do not raise)")
     args = parser.parse_args(args=args)
     logger.debug("***Transition started: attempting to transition {} files".format(len(args.input_files)))
     failed_files = []
@@ -52,15 +58,19 @@ def main(args=None):
         except Exception as e:
             logger.exception(
                 "Problem occurred during transition, skipping this file!\n File: {}\n Message: {}".format(
-                    input_file, e.message))
+                    input_file, str(e)))
             failed_files.append(input_file)
-            raise
+            if args.throw:
+                raise
 
     for ff in failed_files:  # pragma no cover -- not tested yet
         print(" ** Failed to transition: {}".format(ff))
 
     # if successful, return 0
-    return 0
+    if failed_files:
+        return 1
+    else:
+        return 0
 
 
 if __name__ == "__main__":  # pragma no cover
