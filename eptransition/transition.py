@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
-import sys
 import logging
+import sys
 
+from eptransition import __name__ as logname
 from eptransition import __version__, __description__
 from eptransition.manager import TransitionManager
 from eptransition.versions.versions import TRANSITIONS
-from eptransition import __name__ as logname
 
 
 def main(args=None):

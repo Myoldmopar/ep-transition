@@ -1,24 +1,23 @@
 from eptransition.exceptions import ManagerProcessingException
 from eptransition.rules.base_rule import TransitionRule, OutputVariableTransitionRule
-from eptransition.rules.templates.remove_single_field import Rule as remove_field
-
-from eptransition.rules.rules85to86.branch import Rule as branch86
+from eptransition.rules.rules85to86.air_terminal_vav_reheat import Rule as vavreheat86
 from eptransition.rules.rules85to86.airterminal_singleduct_inletsidemixer import Rule as inletmixer86
 from eptransition.rules.rules85to86.airterminal_singleduct_supplysidemixer import Rule as supplymixer86
-from eptransition.rules.rules85to86.otherequipment import Rule as otherequipment86
-from eptransition.rules.rules85to86.zonehvac_airdistributionunit import Rule as zonehvac_adu86
-from eptransition.rules.rules85to86.empd import Rule as empd86
-from eptransition.rules.rules85to86.coilheatinggas import Rule as coilheatinggas86
-from eptransition.rules.rules85to86.exteriorfuelequipment import Rule as exteriorequip86
+from eptransition.rules.rules85to86.branch import Rule as branch86
 from eptransition.rules.rules85to86.chillerheater import Rule as chillerheater86
-from eptransition.rules.rules85to86.setpoint_managers import Rule as setpointmanagers86a
-from eptransition.rules.rules85to86.setpoint_managers import Rule2 as setpointmanagers86b
-from eptransition.rules.rules85to86.ems_actuator import Rule as actuator86
-from eptransition.rules.rules85to86.air_terminal_vav_reheat import Rule as vavreheat86
+from eptransition.rules.rules85to86.coilheatinggas import Rule as coilheatinggas86
 from eptransition.rules.rules85to86.daylighting import Rule as daylighting86a
 from eptransition.rules.rules85to86.daylighting import Rule2 as daylighting86b
 from eptransition.rules.rules85to86.daylighting import Rule3 as daylighting86c
+from eptransition.rules.rules85to86.empd import Rule as empd86
+from eptransition.rules.rules85to86.ems_actuator import Rule as actuator86
+from eptransition.rules.rules85to86.exteriorfuelequipment import Rule as exteriorequip86
+from eptransition.rules.rules85to86.otherequipment import Rule as otherequipment86
 from eptransition.rules.rules85to86.output_variables import Rule as output86
+from eptransition.rules.rules85to86.setpoint_managers import Rule as setpointmanagers86a
+from eptransition.rules.rules85to86.setpoint_managers import Rule2 as setpointmanagers86b
+from eptransition.rules.rules85to86.zonehvac_airdistributionunit import Rule as zonehvac_adu86
+from eptransition.rules.templates.remove_single_field import Rule as remove_field
 
 
 class TypeEnum(object):

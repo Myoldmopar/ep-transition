@@ -1,6 +1,6 @@
+from eptransition.idf.objects import IDFObject
 from eptransition.rules.base_rule import OutputVariableTransitionRule
 from eptransition.rules.rules85to86.utilities import build_ref_pt_list
-from eptransition.idf.objects import IDFObject
 
 
 class Rule(OutputVariableTransitionRule):  # pragma no cover

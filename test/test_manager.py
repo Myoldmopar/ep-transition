@@ -13,9 +13,12 @@ logging.basicConfig(filename=tempfile.mktemp(), level=logging.DEBUG)
 class TestManager(unittest.TestCase):
     def test_valid_transition_results(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "eptransition", "versions", "8.5", "PlantLoadProfile.idf")
+        base_path = os.path.join(cur_dir, "..", "eptransition", "versions", "8.5", "PlantLoadProfile")
+        idf_path, rvi_path, mvi_path = [base_path + ext for ext in [".idf", ".rvi", ".mvi"]]
         working_dir = tempfile.mkdtemp()
         shutil.copy(idf_path, working_dir)
+        shutil.copy(rvi_path, working_dir)
+        shutil.copy(mvi_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
         tm = TransitionManager(final_idf_path)
         original_structure, final_structure = tm.perform_transition()

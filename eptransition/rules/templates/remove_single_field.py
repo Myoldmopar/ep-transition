@@ -3,7 +3,6 @@ from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
 
 class Rule(TransitionRule):
-
     def __init__(self, object_name, zero_based_field_index_to_remove):
         TransitionRule.__init__(self)
         self.object_name = object_name
