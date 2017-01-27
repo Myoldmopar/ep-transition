@@ -14,7 +14,8 @@ class Rule(OutputVariableTransitionRule):  # pragma no cover
         return [self.OV]
 
     def get_simple_swaps(self):
-        return {}
+        return {"Zone Unit Heater Heating Rate": "ABC",
+                "Zone Unit Heater Fan Electric Power": "DEF"}
 
     def get_dependent_object_names(self):
         return ["DAYLIGHTING:DELIGHT:CONTROLS", "DAYLIGHTING:DELIGHT:REFERENCEPOINT"]

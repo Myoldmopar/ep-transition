@@ -53,6 +53,12 @@ class TransitionManager(object):
         if os.path.exists(potential_mvi_path):
             self.original_mvi_file = potential_mvi_path
 
+    def rvi_mvi_replace(self, original_file_path, new_file_path, output_rule):
+        contents = open(original_file_path).read()
+        for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
+            contents = contents.replace(old, new)
+        open(new_file_path, "w").write(contents)
+
     def perform_transition(self):
         """
         This function manages the transition from one version to another by opening, validating, and writing files
@@ -259,15 +265,9 @@ class TransitionManager(object):
                 output_names = output_rule.get_output_objects()
                 # here we can do the rvi mvi file stuff
                 if this_version_rvi_file_path:
-                    rvi_contents = open(prior_version_rvi_file_path).read()
-                    for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
-                        rvi_contents = rvi_contents.replace(old, new)
-                    open(this_version_rvi_file_path, "w").write(rvi_contents)
+                    self.rvi_mvi_replace(prior_version_rvi_file_path, this_version_rvi_file_path, output_rule)
                 if this_version_mvi_file_path:
-                    mvi_contents = open(prior_version_mvi_file_path).read()
-                    for old, new in output_rule.get_simple_swaps().iteritems():  # pragma no cover add coverage sometime
-                        mvi_contents = mvi_contents.replace(old, new)
-                    open(this_version_mvi_file_path, "w").write(mvi_contents)
+                    self.rvi_mvi_replace(prior_version_mvi_file_path, this_version_mvi_file_path, output_rule)
 
             # create a list of objects to be deleted (which is a list of Type/Name, or more accurately Type/Field0
             objects_to_delete = []
