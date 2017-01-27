@@ -17,11 +17,11 @@ if len(sys.argv) > 1:
         unittest.TextTestRunner().run(tests)
 
 
-def my_test_suite():
-    test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover('test', pattern='test_*.py')
-    print(str(test_suite))
-    return test_suite
+# def my_test_suite():
+#     test_loader = unittest.TestLoader()
+#     test_suite = test_loader.discover('test', pattern='test_*.py')
+#     print(str(test_suite))
+#     return test_suite
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(this_dir, 'README.rst'), encoding='utf-8') as i_file:
