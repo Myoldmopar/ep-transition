@@ -342,9 +342,9 @@ class TransitionManager(object):
             for intermediate_idf_object in intermediate_idf_objects:
                 delete = False
                 # take out the pragma once we have a transition rule that actually does deletions
-                if intermediate_idf_object.object_name.upper() in delete_map:  # pragma no cover
-                    if intermediate_idf_object.fields[0].upper() in delete_map[
-                        intermediate_idf_object.object_name.upper()]:
+                inter_obj_name_upper = intermediate_idf_object.object_name.upper()
+                if inter_obj_name_upper in delete_map:  # pragma no cover
+                    if intermediate_idf_object.fields[0].upper() in delete_map[inter_obj_name_upper]:
                         delete = True
                 if not delete:
                     final_idf_objects.append(intermediate_idf_object)
