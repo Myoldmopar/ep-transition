@@ -12,7 +12,7 @@ class TestDriver(unittest.TestCase):
     @unittest.skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_driver(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path_85 = os.path.join(cur_dir, "..", "versions", "8.5", "PlantLoadProfile.idf")
+        idf_path_85 = os.path.join(cur_dir, "..", "versions", "version85", "PlantLoadProfile.idf")
         working_dir = tempfile.mkdtemp()
         shutil.copy(idf_path_85, working_dir)
         final_idf_path_85 = os.path.join(working_dir, os.path.basename(idf_path_85))
@@ -26,7 +26,7 @@ class TestDriver(unittest.TestCase):
 
     def test_driver_cant_transition(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "versions", "8.5", "PlantLoadProfile.idf")
+        idf_path = os.path.join(cur_dir, "..", "versions", "version85", "PlantLoadProfile.idf")
         working_dir = tempfile.mkdtemp()
         # shutil.copy(idf_path, working_dir)  # "forgot" to copy the idf in
         os.path.join(working_dir, os.path.basename(idf_path))

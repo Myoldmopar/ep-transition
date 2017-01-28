@@ -69,7 +69,7 @@ class IDDStructure:
     Relevant "public" members are listed here:
 
     :ivar str file_path: The path given when instantiating this IDD, not necessarily an actual path
-    :ivar float version_float: The floating point representation of the version of this IDD (for 8.6.0 it is 8.6)
+    :ivar float version_float: The floating point representation of the version of this IDD (for version86.0 it is version86)
     :ivar str build_string: The abbreviated git SHA used when generating this IDD
     :ivar [str] single_line_objects: A list of strings, each representing a raw, single-token, name-only IDD object
     :ivar list(IDDGroup) groups: A list of all groups found in the IDD, each of which will contain IDD objects

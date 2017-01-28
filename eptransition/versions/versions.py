@@ -19,6 +19,9 @@ from eptransition.rules.rules85to86.setpoint_managers import Rule2 as setpointma
 from eptransition.rules.rules85to86.zonehvac_airdistributionunit import Rule as zonehvac_adu86
 from eptransition.rules.templates.remove_single_field import Rule as remove_field
 
+from eptransition.versions.version85 import idd as idd85
+from eptransition.versions.version86 import idd as idd86
+
 
 class TypeEnum(object):
     """
@@ -101,12 +104,13 @@ Transition85_86 = SingleTransition(8.5, 8.6,
                                    ],
                                    outputs=output86(),
                                    global_swap={"Coil:Heating:Gas": "Coil:Heating:Fuel"})
-# Transition86_87 = SingleTransition(8.6, 8.7,
+# Transition86_87 = SingleTransition(version86, 8.7,
 #                                    transitions=[
 #                                        branch87.Rule(),
 #                                        controller_list87.Rule(),
 #                                    ],
 #                                    outputs=output87.Rule())
 
+IDD_FILES = {8.5: idd85.idd, 8.6: idd86.idd}
 FILE_TYPES = {8.4: TypeEnum.IDF, 8.5: TypeEnum.IDF, 8.6: TypeEnum.IDF}
 TRANSITIONS = {8.4: Transition84_85, 8.5: Transition85_86}  # key is start version

@@ -84,7 +84,7 @@ class OutputVariableTransitionRule:
     These objects are treated somewhat specially by the tool because a small change can affect so
     many objects, and it would be unwise to expect each version to include so much repeated code.
 
-    The structure of the output objects here is based on 8.5/8.6.  In the future, if the objects didn't change much,
+    The structure of the output objects here is based on version85/version86.  In the future, if the objects didn't change much,
     it would make most sense to just keep using this class and making small tweaks as needed.  If more major
     changes occur, it would be best to create a new base class to move forward.
 

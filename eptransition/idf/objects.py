@@ -243,7 +243,7 @@ class IDFStructure(object):
     Relevant "public" members are listed here:
 
     :ivar str file_path: The path given when instantiating this IDF, not necessarily an actual path
-    :ivar float version_float: The floating point representation of the version of this IDD (for 8.6.0 it is 8.6)
+    :ivar float version_float: The floating point representation of the version of this IDD (for version86.0 it is version86)
     :ivar [IDFObject] objects: A list of all IDF objects found in the IDF
 
     Constructor parameters:
