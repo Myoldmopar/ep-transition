@@ -3,13 +3,13 @@ import os
 import shutil
 
 from eptransition.exceptions import (
-    FileAccessException as eFAE, FileTypeException as eFTE, ManagerProcessingException, ProcessingException
+    FileAccessException as eFAE, ManagerProcessingException, ProcessingException
 )
 from eptransition.idd.processor import IDDProcessor
 from eptransition.idf.objects import IDFStructure, ValidationIssue
 from eptransition.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
-from eptransition.versions.versions import TRANSITIONS, TypeEnum
+from eptransition.versions.versions import TRANSITIONS, IDD_FILES
 
 module_logger = logging.getLogger("eptransition.manager")
 
@@ -53,7 +53,8 @@ class TransitionManager(object):
         if os.path.exists(potential_mvi_path):
             self.original_mvi_file = potential_mvi_path
 
-    def rvi_mvi_replace(self, original_file_path, new_file_path, output_rule):  # pragma no cover - open up later
+    @staticmethod
+    def rvi_mvi_replace(original_file_path, new_file_path, output_rule):  # pragma no cover - open up later
         # first clean up the output variable list, make each key upper case and strip any randomness off of each value
         upper_case_dictionary = dict()
         for k, v in output_rule.get_simple_swaps().iteritems():
@@ -79,13 +80,6 @@ class TransitionManager(object):
         # Validate input file related things
         if not os.path.exists(self.original_input_file):
             raise eFAE(self.original_input_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_INPUT_FILE)
-        if self.original_input_file.endswith(".idf"):
-            original_idf_file_type = TypeEnum.IDF
-        elif self.original_input_file.endswith(".jdf"):  # pragma no cover
-            original_idf_file_type = TypeEnum.JSON
-        else:
-            raise eFTE(self.original_input_file, eFTE.ORIGINAL_INPUT_FILE,
-                       "Unexpected extension, should be .idf or .jdf")
 
         # At this point we now need to know the version of the idf, before we even try to read the idd really
         original_idf_processor = IDFProcessor()
@@ -194,39 +188,13 @@ class TransitionManager(object):
                 ))
 
             # if the IDD files are "None", then try to match them up
-            idd_file = "Energy+.idd"
-            cur_dir = os.path.dirname(os.path.realpath(__file__))
-            if self.original_idd_file is None:
-                self.original_idd_file = os.path.join(cur_dir, "versions", str(this_transition.start_version), idd_file)
-                module_logger.debug("Using \"original\" idd file at path: {}".format(self.original_idd_file))
-            if self.new_idd_file is None:
-                self.new_idd_file = os.path.join(cur_dir, "versions", str(this_transition.end_version), idd_file)
-                module_logger.debug("Using \"new\" idd file at path: {}".format(self.new_idd_file))
-
-            # Validate dictionary file things
-            if not os.path.exists(self.original_idd_file):  # pragma no cover
-                raise eFAE(self.original_idd_file, eFAE.CANNOT_FIND_FILE, eFAE.ORIGINAL_DICT_FILE)
-            if not os.path.exists(self.new_idd_file):  # pragma no cover
-                raise eFAE(self.new_idd_file, eFAE.CANNOT_FIND_FILE, eFAE.UPDATED_DICT_FILE)
-            if self.original_idd_file.endswith(".idd"):
-                original_idd_file_type = TypeEnum.IDF
-            elif self.original_idd_file.endswith(".jdd"):  # pragma no cover
-                original_idd_file_type = TypeEnum.JSON
-            else:  # pragma no cover
-                raise eFTE(self.original_idd_file, eFTE.ORIGINAL_DICT_FILE,
-                           "Unexpected extension, should be .idd or .jdd")
-
-            # now validate the file types match each other
-            if original_idf_file_type == original_idd_file_type:
-                pass  # that's a good thing
-            else:  # pragma no cover
-                raise ManagerProcessingException("Original file types don't match; input file={}; dictionary={}".format(
-                    original_idf_file_type, original_idd_file_type))
+            self.original_idd_file = IDD_FILES[this_transition.start_version]
+            self.new_idd_file = IDD_FILES[this_transition.end_version]
 
             # and process the original idd file
             original_idd_processor = IDDProcessor()
             try:
-                original_idd_structure = original_idd_processor.process_file_given_file_path(self.original_idd_file)
+                original_idd_structure = original_idd_processor.process_file_via_string(self.original_idd_file)
                 module_logger.debug("Successfully processed original idd")
             except ProcessingException as e:  # pragma no cover
                 raise ManagerProcessingException("Could not process original idd; message = " + str(e))
@@ -234,7 +202,7 @@ class TransitionManager(object):
             # and process the new idd file
             new_idd_processor = IDDProcessor()
             try:
-                new_idd_structure = new_idd_processor.process_file_given_file_path(self.new_idd_file)
+                new_idd_structure = new_idd_processor.process_file_via_string(self.new_idd_file)
                 module_logger.debug("Successfully processed \"new\" idd")
             except:  # pragma no cover
                 raise ManagerProcessingException("Could not process new idd; aborting")
@@ -242,12 +210,12 @@ class TransitionManager(object):
             # validate the current idf before continuing
             issues = idf_to_transition.validate(original_idd_structure)
             if len(issues) > 0:  # pragma no cover, we haven't really got these organized yet
-                for i in issues:
-                    if i.severity == ValidationIssue.INFORMATION:
-                        module_logger.debug(str(i))
-                    elif i.severity == ValidationIssue.WARNING:
-                        module_logger.warn(str(i))
-                    elif i.severity == ValidationIssue.ERROR:
+                for issue in issues:
+                    if issue.severity == ValidationIssue.INFORMATION:
+                        module_logger.debug(str(issue))
+                    elif issue.severity == ValidationIssue.WARNING:
+                        module_logger.warn(str(issue))
+                    elif issue.severity == ValidationIssue.ERROR:
                         raise ManagerProcessingException(
                             "Errors found in validating of original idf against original idd; aborting", issues)
 
@@ -273,9 +241,11 @@ class TransitionManager(object):
                 output_names = output_rule.get_output_objects()
                 # here we can do the rvi mvi file stuff
                 if this_version_rvi_file_path:
-                    self.rvi_mvi_replace(prior_version_rvi_file_path, this_version_rvi_file_path, output_rule)
+                    TransitionManager.rvi_mvi_replace(prior_version_rvi_file_path,
+                                                      this_version_rvi_file_path, output_rule)
                 if this_version_mvi_file_path:
-                    self.rvi_mvi_replace(prior_version_mvi_file_path, this_version_mvi_file_path, output_rule)
+                    TransitionManager.rvi_mvi_replace(prior_version_mvi_file_path,
+                                                      this_version_mvi_file_path, output_rule)
 
             # create a list of objects to be deleted (which is a list of Type/Name, or more accurately Type/Field0
             objects_to_delete = []

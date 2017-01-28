@@ -1,5 +1,6 @@
 import StringIO
 import os
+import tempfile
 from unittest import TestCase, skipIf
 
 from eptransition import settings
@@ -19,7 +20,7 @@ Version,
       \\unique-object
       \format singleLine
   A1 ; \\field Version Identifier
-      \\default 8.6
+      \\default version86
 
 """
         processor = IDDProcessor()
@@ -38,7 +39,7 @@ Version,
           \\unique-object
           \format singleLine
       A1 ; \\field Version Identifier
-          \\default 8.6
+          \\default version86
     """
         processor = IDDProcessor()
         ret_value = processor.process_file_via_stream(StringIO.StringIO(idd_object))
@@ -57,7 +58,7 @@ Version,
       \\unique-object
       \\format singleLine
   A1 ; \\field Version Identifier
-      \\default 8.6
+      \\default version86
 
 """
         processor = IDDProcessor()
@@ -166,7 +167,12 @@ class TestIDDProcessingViaFile(TestCase):
     @skipIf(not settings.run_large_tests, "This is a large test that reads the entire idd")
     def test_valid_idd(self):  # pragma: no cover
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idd_path = os.path.join(cur_dir, "..", "..", "versions", "8.6", "Energy+.idd")
+        idd_path = os.path.join(cur_dir, "..", "..", "versions", "version86", "idd.py")
+        import eptransition.versions.version86.idd as idd86
+        working_dir = tempfile.mkdtemp()
+        new_idd_path = os.path.join(working_dir, "Energy+.idd")
+        with open(new_idd_path, 'w') as w:
+            w.write(idd86.idd)
         processor = IDDProcessor()
-        ret_value = processor.process_file_given_file_path(idd_path)
+        ret_value = processor.process_file_given_file_path(new_idd_path)
         self.assertEquals(57, len(ret_value.groups))
