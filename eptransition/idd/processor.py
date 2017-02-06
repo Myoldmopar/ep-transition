@@ -160,7 +160,7 @@ class IDDProcessor:
                 peeked_char = "\n"  # to simulate that the line ended
 
             # if we are on Windows, we may end up with "\r", so move the read and peeked characters forward once
-            if peeked_char == "\r":
+            if peeked_char == "\r":  # pragma no cover -- we don't unit test on windows, so this won't be caught
                 just_read_char = self.read_one_char()
                 peeked_char = self.peek_one_char()
                 if not peeked_char:
