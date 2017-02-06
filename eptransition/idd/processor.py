@@ -64,7 +64,7 @@ class IDDProcessor:
         """
         if not os.path.exists(file_path):
             raise exceptions.ProcessingException("Input IDD file not found=\"" + file_path + "\"")  # pragma: no cover
-        self.idd_file_stream = open(file_path, "r")
+        self.idd_file_stream = open(file_path, "rb")
         self.file_path = file_path
         return self.process_file()
 
@@ -158,6 +158,13 @@ class IDDProcessor:
             peeked_char = self.peek_one_char()
             if not peeked_char:
                 peeked_char = "\n"  # to simulate that the line ended
+
+            # if we are on Windows, we may end up with "\r", so move the read and peeked characters forward once
+            if peeked_char == "\r":  # pragma no cover -- we don't unit test on windows, so this won't be caught
+                just_read_char = self.read_one_char()
+                peeked_char = self.peek_one_char()
+                if not peeked_char:
+                    peeked_char = "\n"
 
             # jump if we are at an EOL
             if just_read_char == "\n":

@@ -36,6 +36,7 @@ setuptools.setup(
     ],
     keywords='cli energyplus',
     packages=setuptools.find_packages(exclude=['test', 'test.*', '.tox']),
+    include_package_data=True,
     install_requires=[],
     extras_require={
         'test': ['coverage', 'unittest', 'coveralls'],
