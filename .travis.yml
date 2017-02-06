@@ -41,4 +41,4 @@ deploy:
   file: dist/eptransition*
   on:
     tags: true
-    condition: $TOX_ENV = binary
+    condition: [[ $TOX_ENV == binarylinux || $TOX_ENV == binaryosx ]]
