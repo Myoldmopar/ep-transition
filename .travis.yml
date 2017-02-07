@@ -5,11 +5,11 @@ os:
 - osx
 env:
   matrix:
-  - env: TOX_ENV=python
-  - env: TOX_ENV=flake8
-  - env: TOX_ENV=spelling
-  - env: TOX_ENV=package
-  - env: TOX_ENV=binary
+  - TOX_ENV=python
+  - TOX_ENV=flake8
+  - TOX_ENV=spelling
+  - TOX_ENV=package
+  - TOX_ENV=binary
 install:
 - sudo apt-get install python-enchant -y
 - pip install --upgrade pip
