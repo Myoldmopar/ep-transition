@@ -1,3 +1,4 @@
+language: python
 cache: pip
 env:
   matrix:
@@ -34,3 +35,12 @@ deploy:
   on:
     tags: true
     condition: $TOX_ENV == binarylinux
+- provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: k+mg38vs1FT7SgCf//Yl35G6S5oGl/Ujz/iTBrKx9pkUvqKb+pL8xq3p+xNBCVyCQZvvFfnMI0Se6ZyJt0PsjkZOJtSIfUgtvL8G6LqINyef7VFOyu92d15e2mEyshwtl6eumzHC74+XZJuQJLp9rvZfogy3oBypPO9rCcIzMZ2KaZ+2+SEEMKAnSjrpLBm6CRN8BneV8D+Wma8CpzgPHRS3G0Aa8rxtAUTi8A9GWUFMi+rWF8odAB4krDsylvTh5hBqlbtDN2Io2CzcEk8gGdEI5Q9kRaMfh+QtZJlU4FuIKtnDvM59MWxnsAzdxeCsoV076qqspSp6aHb7Y7XiOCL1LGuvWPP8k5ALEyZUob+IU/74dQItxoc40ftZvWSpuX//KdgHp1W0ZxDSwUj2+Pl7aIQn5eexlJaCAEE4LVEbWYa9GBRAuDmbiVAm/xPu+F1VIOlrI5OtINua5ATZMNOmpqiHlE7neqBcHjJDndRJ5u+hdMRD3ud1KGj0RqnZwYogl0vasq65oya8TsIgnJrySHVOC3jMpg6z8xIZpacpJmk1lsjs4d+ygEdEicazXe/VkTw9rfY+7LaR81ynjG1OaTerCxZGmIOU0l8CnzBbklfiAvpfJw7GXvkyyTngnmmxM96D1QQr4HHYWqw6kO18XEhwxYI5BvBCE7s/exs=
+  file_glob: true
+  file: dist/eptransitionmac
+  on:
+    tags: true
+    condition: $TOX_ENV == binaryosx
