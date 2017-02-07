@@ -1,12 +1,19 @@
 language: python
 cache: pip
-env:
-  matrix:
-  - TOX_ENV=python
-  - TOX_ENV=flake8
-  - TOX_ENV=spelling
-  - TOX_ENV=package
-  - TOX_ENV=binarylinux
+matrix:
+  include:
+  - os: linux
+    env: TOX_ENV=python
+  - os: linux
+    env: TOX_ENV=flake8
+  - os: linux
+    env: TOX_ENV=spelling
+  - os: linux
+    env: TOX_ENV=package
+  - os: linux
+    env: TOX_ENV=binarylinux
+  - os: osx
+    env: TOX_ENV=binaryosx
 install:
 - sudo apt-get install python-enchant -y
 - pip install --upgrade pip
