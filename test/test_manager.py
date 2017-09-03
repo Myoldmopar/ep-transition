@@ -13,7 +13,7 @@ logging.basicConfig(filename=tempfile.mktemp(), level=logging.DEBUG)
 class TestManager(unittest.TestCase):
     def test_valid_transition_results(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        base_path = os.path.join(cur_dir, "..", "versions", "8.5", "PlantLoadProfile")
+        base_path = os.path.join(cur_dir, "support_files", "8.5", "PlantLoadProfile")
         idf_path, rvi_path, mvi_path = [base_path + ext for ext in [".idf", ".rvi", ".mvi"]]
         working_dir = tempfile.mkdtemp()
         shutil.copy(idf_path, working_dir)
@@ -48,7 +48,7 @@ class TestManager(unittest.TestCase):
 
     def test_idf_doesnt_exist(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "versions", "8.5", "PlantLoadProfile.idf")
+        idf_path = os.path.join(cur_dir, "support_files", "8.5", "PlantLoadProfile.idf")
         working_dir = tempfile.mkdtemp()
         # shutil.copy(idf_path, working_dir)  # "forgot" to copy the idf in
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
@@ -58,7 +58,7 @@ class TestManager(unittest.TestCase):
 
     def test_folder_already_exists(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "versions", "8.5", "PlantLoadProfile.idf")
+        idf_path = os.path.join(cur_dir, "support_files", "8.5", "PlantLoadProfile.idf")
         working_dir = tempfile.mkdtemp()
         shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
@@ -68,7 +68,7 @@ class TestManager(unittest.TestCase):
 
     def test_idf_bad_extension(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "versions", "8.5", "PlantLoadProfile.idf")
+        idf_path = os.path.join(cur_dir, "support_files", "8.5", "PlantLoadProfile.idf")
         working_dir = tempfile.mkdtemp()
         shutil.copyfile(idf_path, os.path.join(working_dir, "bad_extension.idq"))  # "forgot" to copy the idf in
         final_idf_path = os.path.join(working_dir, "bad_extension.idq")
@@ -78,7 +78,7 @@ class TestManager(unittest.TestCase):
 
     def test_cant_process_idf(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "versions", "other", "Invalid.idf")
+        idf_path = os.path.join(cur_dir, "support_files", "other", "Invalid.idf")
         working_dir = tempfile.mkdtemp()
         shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
@@ -88,7 +88,7 @@ class TestManager(unittest.TestCase):
 
     def test_process_idf_no_version(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "versions", "other", "ValidNoVersion.idf")
+        idf_path = os.path.join(cur_dir, "support_files", "other", "ValidNoVersion.idf")
         working_dir = tempfile.mkdtemp()
         shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))
@@ -98,7 +98,7 @@ class TestManager(unittest.TestCase):
 
     def test_process_idf_unincluded_version(self):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        idf_path = os.path.join(cur_dir, "..", "versions", "other", "InvalidVersion.idf")
+        idf_path = os.path.join(cur_dir, "support_files", "other", "InvalidVersion.idf")
         working_dir = tempfile.mkdtemp()
         shutil.copy(idf_path, working_dir)
         final_idf_path = os.path.join(working_dir, os.path.basename(idf_path))

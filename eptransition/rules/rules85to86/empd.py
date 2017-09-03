@@ -1,6 +1,6 @@
 import math
 
-from eptransition.idf.objects import IDFObject
+from pyiddidf.idf.objects import IDFObject
 from eptransition.rules.base_rule import TransitionRule, TransitionReturn
 
 

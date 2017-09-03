@@ -70,10 +70,6 @@ Class Structure:
    eptransition_manager
    eptransition_exceptions
    eptransition_versions_versions
-   eptransition_idd_objects
-   eptransition_idd_processor
-   eptransition_idf_objects
-   eptransition_idf_processor
    eptransition_rules_baserule
    eptransition_rules_versionrule
 
