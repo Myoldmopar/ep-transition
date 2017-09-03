@@ -1,28 +1,14 @@
 #!/usr/bin/env python
 
-import codecs
-import unittest
-import os
 import setuptools
 
-from eptransition import __version__
-
-
-def my_test_suite():
-    test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover('eptransition.test', pattern='test_*.py')
-    print(str(test_suite))
-    return test_suite
-
-this_dir = os.path.abspath(os.path.dirname(__file__))
-with codecs.open(os.path.join(this_dir, 'README.rst'), encoding='utf-8') as i_file:
-    long_description = i_file.read()
+import eptransition
 
 setuptools.setup(
     name='eptransition',
-    version=__version__,
+    version=eptransition.__version__,
     description='EnergyPlus file transition in Python.',
-    long_description=long_description,
+    long_description=open('README.rst').read(),
     url='https://github.com/myoldmopar/ep-transition',
     author='Edwin Lee',
     author_email='leeed2001@gmail.com',
@@ -37,7 +23,7 @@ setuptools.setup(
     keywords='cli energyplus',
     packages=setuptools.find_packages(exclude=['test', 'test.*', '.tox']),
     include_package_data=True,
-    install_requires=[],
+    install_requires=['pyiddidf==0.5'],
     extras_require={
         'test': ['coverage', 'unittest', 'coveralls'],
     },
