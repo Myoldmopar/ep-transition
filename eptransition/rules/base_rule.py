@@ -1,7 +1,7 @@
 import logging
 
 from eptransition.exceptions import UnimplementedMethodException
-from eptransition.idf.objects import IDFObject
+from pyiddidf.idf.objects import IDFObject
 
 module_logger = logging.getLogger("eptransition.rules.base_rule")
 

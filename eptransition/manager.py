@@ -5,9 +5,9 @@ import shutil
 from eptransition.exceptions import (
     FileAccessException as eFAE, FileTypeException as eFTE, ManagerProcessingException, ProcessingException
 )
-from eptransition.idd.processor import IDDProcessor
-from eptransition.idf.objects import IDFStructure, ValidationIssue
-from eptransition.idf.processor import IDFProcessor
+from pyiddidf.idd.processor import IDDProcessor
+from pyiddidf.idf.objects import IDFStructure, ValidationIssue
+from pyiddidf.idf.processor import IDFProcessor
 from eptransition.rules.version_rule import VersionRule
 from eptransition.versions.versions import TRANSITIONS, TypeEnum
 
